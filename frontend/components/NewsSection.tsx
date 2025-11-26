@@ -3,24 +3,27 @@ import Link from "next/link";
 const news = [
   {
     id: 1,
-    title: "Rulleriets öppettider",
-    excerpt: "Nästa tillfälle – Fredag 14/11 kl 17-22. Lite nyheter på kranarna. Kanske Julölen?",
-    date: "2024-11-14",
-    image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=2074"
+    title: "Nytt på Rulleriet - Julöl och After Work",
+    excerpt: "Välkommen till Rulleriet för after work! Vi har olika foodtrucks som serverar härliga tillbehör. Kanske finns julölen på kran snart?",
+    date: "2025-11-14",
+    image: "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=2074",
+    link: "/rulleriet"
   },
   {
     id: 2,
-    title: "Är det AW – Besök rulleriet",
-    excerpt: "Välkomna till Rulleriet! När vi kör AW så har vi olika Foodtrucken utanför som serverar härliga tillbehör!",
-    date: "2024-11-08",
-    image: "https://images.unsplash.com/photo-1513094735237-8f2714d57c13?q=80&w=2073"
+    title: "After Work på Rulleriet",
+    excerpt: "Välkomna till Rulleriet! När vi kör AW har vi olika foodtrucks utanför som serverar härliga tillbehör. Njut av nytappade öl i trevligt sällskap!",
+    date: "2025-11-08",
+    image: "https://images.unsplash.com/photo-1513094735237-8f2714d57c13?q=80&w=2073",
+    link: "/rulleriet"
   },
   {
     id: 3,
-    title: "Ahlafors - Sedan 1854",
-    excerpt: "Läs mer om vår historia och hur allt började i den historiska spinnerifabriken.",
-    date: "2024-10-15",
-    image: "https://images.unsplash.com/photo-1594818020155-ca8dd1a7d13a?q=80&w=2070"
+    title: "Handverksbryggning sedan 1996",
+    excerpt: "Läs mer om vår historia och hur allt började i den historiska spinnerifabriken från 1850-talet. Ett gäng bastubadande ölälskande herrar startade något stort!",
+    date: "2025-10-15",
+    image: "https://images.unsplash.com/photo-1594818020155-ca8dd1a7d13a?q=80&w=2070",
+    link: "/om-oss"
   }
 ];
 
@@ -68,7 +71,7 @@ export default function NewsSection() {
                 </p>
                 
                 <Link 
-                  href={`/nyheter/${item.id}`}
+                  href={item.link}
                   className="inline-block text-amber-700 hover:text-amber-900 font-semibold text-sm uppercase tracking-wider transition-colors"
                 >
                   Läs mer →
@@ -80,8 +83,8 @@ export default function NewsSection() {
 
         {/* View All Button */}
         <div className="text-center mt-12">
-          <Link href="/nyheter" className="btn-secondary">
-            Alla nyheter
+          <Link href="/rulleriet" className="btn-secondary">
+            Se alla evenemang
           </Link>
         </div>
       </div>

@@ -26,8 +26,12 @@ export default function Hero() {
           Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggeri
         </p>
         
-        <p className="text-lg md:text-xl mb-12 text-amber-400 font-serif italic">
-          Sedan 1854
+        <p className="text-lg md:text-xl mb-4 text-amber-400 font-serif italic">
+          Sedan 1996
+        </p>
+
+        <p className="text-base md:text-lg mb-12 text-stone-300 max-w-2xl mx-auto">
+          Mikrobryggeri i det historiska spinneriet från 1850-talet • Alafors, Ale kommun
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

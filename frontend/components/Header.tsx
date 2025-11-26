@@ -26,6 +26,9 @@ export default function Header() {
             <Link href="/rulleriet" className="hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
               Rulleriet
             </Link>
+            <Link href="/recept" className="hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
+              Recept
+            </Link>
             <Link href="/tjanster" className="hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
               Tjänster
             </Link>
@@ -61,6 +64,9 @@ export default function Header() {
             </Link>
             <Link href="/rulleriet" className="block hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
               Rulleriet
+            </Link>
+            <Link href="/recept" className="block hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
+              Recept
             </Link>
             <Link href="/tjanster" className="block hover:text-amber-500 transition-colors uppercase text-sm tracking-wider font-semibold">
               Tjänster
