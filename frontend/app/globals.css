@@ -1,0 +1,121 @@
+@import "tailwindcss";
+
+:root {
+  --color-copper: #b87333;
+  --color-bronze: #cd7f32;
+  --color-amber: #ffbf00;
+  --color-oak: #4a3728;
+  --color-steel: #71797E;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter);
+  --font-serif: var(--font-playfair);
+}
+
+body {
+  @apply font-sans;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  @apply font-serif;
+}
+
+@layer components {
+  .section-padding {
+    @apply py-16 md:py-24 px-4 md:px-8;
+  }
+
+  .container-custom {
+    @apply max-w-7xl mx-auto;
+  }
+
+  .btn-primary {
+    @apply bg-amber-600 hover:bg-amber-700 text-white font-semibold py-3 px-8 rounded-none transition-all duration-300 uppercase tracking-wider text-sm border-2 border-amber-600 hover:border-amber-700;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent hover:bg-stone-900 text-stone-900 hover:text-white font-semibold py-3 px-8 rounded-none transition-all duration-300 uppercase tracking-wider text-sm border-2 border-stone-900;
+  }
+
+  .heading-xl {
+    @apply text-4xl md:text-6xl font-bold tracking-tight;
+  }
+
+  .heading-lg {
+    @apply text-3xl md:text-5xl font-bold tracking-tight;
+  }
+
+  .heading-md {
+    @apply text-2xl md:text-4xl font-bold tracking-tight;
+  }
+
+  .text-copper {
+    color: var(--color-copper);
+  }
+
+  .text-amber-custom {
+    color: var(--color-amber);
+  }
+
+  .bg-copper {
+    background-color: var(--color-copper);
+  }
+
+  .bg-oak {
+    background-color: var(--color-oak);
+  }
+
+  .texture-overlay {
+    position: relative;
+  }
+
+  .texture-overlay::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.02) 0px,
+        rgba(0, 0, 0, 0.02) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+    pointer-events: none;
+  }
+
+  .craft-divider {
+    @apply relative my-12;
+  }
+
+  .craft-divider::before {
+    content: '';
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-0.5 bg-amber-600;
+  }
+
+  .craft-divider::after {
+    content: '◆';
+    @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-50 px-4 text-amber-600;
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f5f5f4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-copper);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-bronze);
+}
