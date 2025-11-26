@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 
 const allProducts = [
   {
@@ -12,7 +15,8 @@ const allProducts = [
     volume: "33 cl",
     systembolaget: "https://www.systembolaget.se/sortiment/?q=ahlaffors",
     image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=2070",
-    category: "ale"
+    category: "ale",
+    featured: true
   },
   {
     id: 2,
@@ -26,7 +30,8 @@ const allProducts = [
     systembolaget: "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3210203/",
     artikelnummer: "32102",
     image: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=2070",
-    category: "ale"
+    category: "ale",
+    featured: true
   },
   {
     id: 3,
@@ -40,7 +45,8 @@ const allProducts = [
     systembolaget: "https://www.systembolaget.se/produkt/ol/ahlafors-jubileums-ipa-3115603/",
     artikelnummer: "31156-03",
     image: "https://images.unsplash.com/photo-1612528443702-f6741f70a049?q=80&w=2070",
-    category: "ipa"
+    category: "ipa",
+    featured: true
   },
   {
     id: 4,
@@ -54,7 +60,8 @@ const allProducts = [
     systembolaget: "https://www.systembolaget.se/produkt/ol/ahlafors-3285303/",
     artikelnummer: "32853",
     image: "https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?q=80&w=2070",
-    category: "lager"
+    category: "lager",
+    featured: true
   },
   {
     id: 5,
@@ -68,7 +75,8 @@ const allProducts = [
     systembolaget: "https://www.systembolaget.se/sortiment/?q=ahlaffors",
     artikelnummer: "81131-06",
     image: "https://images.unsplash.com/photo-1608270586620-248524c67de9?q=80&w=2070",
-    category: "lager"
+    category: "lager",
+    featured: true
   },
   {
     id: 6,
@@ -82,64 +90,123 @@ const allProducts = [
     systembolaget: "https://www.systembolaget.se/produkt/ol/oberoende-3023103/",
     artikelnummer: "30231",
     image: "https://images.unsplash.com/photo-1535958636474-b021ee887b13?q=80&w=2070",
-    category: "ale"
+    category: "ale",
+    featured: true
+  },
+  {
+    id: 7,
+    name: "Ahlafors El Dorado",
+    type: "Lager",
+    description: "Ljus lager i modern stil. Maltig smak med tydlig beska, inslag av sirapslimpa, torkad frukt, apelsinskal och kryddor.",
+    fullDescription: "Ahlafors El Dorado är en ljus lager i modern stil som kombinerar maltiga smaker med en tydlig beska. Perfekt för den som vill ha något lite annorlunda från traditionella lager. Smaker inkluderar sirapslimpa, torkad frukt, apelsinskal och kryddor som skapar en spännande och balanserad upplevelse. Passar utmärkt som sällskapsdryck eller till mat.",
+    style: "Lager",
+    alcohol: "5.2%",
+    volume: "33 cl",
+    systembolaget: "https://www.systembolaget.se/produkt/ol/ahlafors-3241003/",
+    artikelnummer: "32410",
+    image: "https://images.unsplash.com/photo-1618183479302-1e0aa382c36b?q=80&w=2070",
+    category: "lager",
+    featured: false
   }
 ];
 
+const categories = [
+  { id: "alla", name: "Alla", icon: "🍺" },
+  { id: "ale", name: "Ale", icon: "🍻" },
+  { id: "ipa", name: "IPA", icon: "🌿" },
+  { id: "lager", name: "Lager", icon: "✨" }
+];
+
 export default function ProdukterPage() {
+  const [activeCategory, setActiveCategory] = useState("alla");
+
+  const filteredProducts = activeCategory === "alla" 
+    ? allProducts 
+    : allProducts.filter(p => p.category === activeCategory);
+
   return (
     <div className="min-h-screen bg-stone-50">
       {/* Hero Section */}
-      <section className="relative h-[50vh] flex items-center justify-center bg-stone-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-stone-900/70 to-stone-900/90 z-10"></div>
+      <section className="relative h-[60vh] flex items-center justify-center bg-stone-900 text-white overflow-hidden">
+        <div className="absolute inset-0 bg-linear-to-b from-stone-900/80 via-stone-900/70 to-stone-900/90 z-10"></div>
         <div 
-          className="absolute inset-0 bg-cover bg-center"
+          className="absolute inset-0 bg-cover bg-center opacity-40"
           style={{
             backgroundImage: "url('https://images.unsplash.com/photo-1532634733-cae1395e440f?q=80&w=2072')"
           }}
         ></div>
         
         <div className="relative z-20 container-custom text-center">
-          <h1 className="heading-xl mb-6">Våra produkter</h1>
-          <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light">
-            Helmaltsöl bryggt med kärlek efter gamla traditioner
+          <div className="inline-block mb-6">
+            <div className="text-6xl mb-4">🍺</div>
+          </div>
+          <h1 className="heading-xl mb-6">Våra Produkter</h1>
+          <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light leading-relaxed">
+            Helmaltsöl bryggt med <span className="text-amber-400 font-semibold">kärlek</span> efter gamla traditioner
           </p>
+          <div className="mt-8 flex items-center justify-center gap-2 text-sm text-stone-300">
+            <span className="inline-block w-2 h-2 bg-amber-500 rounded-full"></span>
+            <span>Färsk humle</span>
+            <span className="inline-block w-2 h-2 bg-amber-500 rounded-full ml-4"></span>
+            <span>Hantverksmässiga metoder</span>
+            <span className="inline-block w-2 h-2 bg-amber-500 rounded-full ml-4"></span>
+            <span>Tyska renhetslagarna</span>
+          </div>
         </div>
       </section>
 
-      {/* Intro */}
-      <section className="section-padding bg-white">
-        <div className="container-custom max-w-3xl text-center">
-          <p className="text-xl text-stone-700 leading-relaxed mb-4">
-            Våra ölsorter är alla <strong>helmaltsöl</strong> och vi använder alltid <strong>färsk humle</strong>.
-          </p>
-          <p className="text-lg text-stone-600">
-            Hantverksmässiga grunder (de tyska renhetslagarna) och småskaliga metoder är en del av hemligheten bakom våra goda drycker.
-          </p>
+      {/* Category Filter */}
+      <section className="bg-white shadow-md sticky top-0 z-40 border-b-2 border-amber-500">
+        <div className="container-custom">
+          <div className="flex items-center justify-center gap-2 py-6 overflow-x-auto">
+            {categories.map((category) => (
+              <button
+                key={category.id}
+                onClick={() => setActiveCategory(category.id)}
+                className={`px-6 py-3 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
+                  activeCategory === category.id
+                    ? "bg-amber-600 text-white shadow-lg scale-105"
+                    : "bg-stone-100 text-stone-700 hover:bg-stone-200 hover:shadow-md"
+                }`}
+              >
+                <span className="mr-2">{category.icon}</span>
+                {category.name}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Products Grid */}
-      <section className="section-padding bg-stone-100">
+      <section className="section-padding bg-linear-to-b from-stone-50 to-stone-100">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {allProducts.map((product) => (
+            {filteredProducts.map((product) => (
               <div 
                 key={product.id} 
-                className="group bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
+                className="group bg-white rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border-2 border-transparent hover:border-amber-500"
               >
                 {/* Product Image */}
-                <div className="relative h-64 overflow-hidden">
+                <div className="relative h-72 overflow-hidden">
                   <div 
                     className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500"
                     style={{ backgroundImage: `url('${product.image}')` }}
                   ></div>
-                  <div className="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 text-sm font-bold">
+                  <div className="absolute inset-0 bg-linear-to-t from-stone-900/60 via-transparent to-transparent"></div>
+                  
+                  {/* Badges */}
+                  <div className="absolute top-4 right-4 bg-amber-600 text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
                     {product.alcohol}
                   </div>
-                  <div className="absolute top-4 left-4 bg-stone-900/80 text-white px-3 py-1 text-xs uppercase tracking-wider font-semibold">
+                  <div className="absolute top-4 left-4 bg-stone-900/90 text-white px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold shadow-lg">
                     {product.type}
                   </div>
+                  
+                  {product.featured && (
+                    <div className="absolute bottom-4 left-4 bg-amber-500 text-stone-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
+                      ⭐ Populär
+                    </div>
+                  )}
                 </div>
 
                 {/* Product Info */}
@@ -147,32 +214,40 @@ export default function ProdukterPage() {
                   <div className="text-xs uppercase tracking-wider text-copper font-semibold mb-2">
                     {product.style}
                   </div>
-                  <h3 className="text-2xl font-serif font-bold mb-3 text-stone-900">
+                  <h3 className="text-2xl font-serif font-bold mb-3 text-stone-900 group-hover:text-copper transition-colors">
                     {product.name}
                   </h3>
-                  <p className="text-stone-600 mb-4 text-sm leading-relaxed">
+                  <p className="text-stone-600 mb-4 text-sm leading-relaxed line-clamp-3">
                     {product.description}
                   </p>
                   
-                  <div className="flex flex-col gap-2 mt-4">
-                    <div className="text-sm text-stone-500">
-                      <strong>Volym:</strong> {product.volume}
-                    </div>
-                    {product.artikelnummer && (
-                      <div className="text-xs text-stone-400">
-                        Art.nr: {product.artikelnummer}
+                  <div className="flex items-center justify-between gap-4 mt-4 pt-4 border-t border-stone-200">
+                    <div className="text-sm text-stone-700">
+                      <div className="flex items-center gap-2 mb-1">
+                        <svg className="w-4 h-4 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z" />
+                        </svg>
+                        <strong>{product.volume}</strong>
                       </div>
-                    )}
+                      {product.artikelnummer && (
+                        <div className="text-xs text-stone-400">
+                          Art.nr: {product.artikelnummer}
+                        </div>
+                      )}
+                    </div>
+                    
+                    <a 
+                      href={product.systembolaget}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full font-semibold text-xs uppercase tracking-wider transition-all shadow-md hover:shadow-lg"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                      </svg>
+                      Köp
+                    </a>
                   </div>
-
-                  <a 
-                    href={product.systembolaget}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-block mt-4 text-amber-700 hover:text-amber-900 font-semibold text-sm uppercase tracking-wider transition-colors border-b-2 border-amber-700 hover:border-amber-900"
-                  >
-                    Hitta på Systembolaget →
-                  </a>
                 </div>
               </div>
             ))}
