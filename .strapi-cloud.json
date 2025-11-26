@@ -1,0 +1,6 @@
+{
+  "enabled": true,
+  "project": {
+    "baseDirectory": "backend"
+  }
+}
