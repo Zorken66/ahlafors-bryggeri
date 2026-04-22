@@ -1,0 +1,1305 @@
+{
+  "site": {
+    "companyName": "Ahlafors Bryggerier",
+    "metadataTitle": "Ahlafors Bryggerier - Hantverk i varje droppe",
+    "metadataDescription": "Mikrobryggeri sedan 1996. Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier i Alafors, norr om Göteborg.",
+    "metadataKeywords": [
+      "öl",
+      "bryggeri",
+      "hantverk",
+      "mikrobryggeri",
+      "Alafors",
+      "Göteborg",
+      "cider"
+    ]
+  },
+  "homepage": {
+    "sectionOrder": [
+      {
+        "id": "hero",
+        "enabled": true
+      },
+      {
+        "id": "about",
+        "enabled": true
+      },
+      {
+        "id": "products",
+        "enabled": true
+      },
+      {
+        "id": "news",
+        "enabled": true
+      },
+      {
+        "id": "services",
+        "enabled": true
+      },
+      {
+        "id": "cta",
+        "enabled": true
+      }
+    ],
+    "heroEyebrow": "Sedan 1996",
+    "heroTitle": "Hantverk i varje droppe",
+    "heroLead": "Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier",
+    "heroTagline": "Sedan 1996",
+    "heroBody": "Mikrobryggeri i det historiska spinneriet från 1850-talet • Alafors, Ale kommun",
+    "heroBackgroundImage": "/media/2026-04-22-444676c2-0dc5-4604-8eac-f971124ae9d9.jpg",
+    "heroOverlayOpacity": 80,
+    "heroPrimaryCtaLabel": "Upptäck vårt sortiment",
+    "heroPrimaryCtaLink": "/produkter",
+    "heroSecondaryCtaLabel": "Besök Rulleriet",
+    "heroSecondaryCtaLink": "/rulleriet",
+    "productsTitle": "Våra produkter",
+    "productsIntro": "Varje produkt är ett bevis på vårt engagemang för hantverket och kvaliteten",
+    "productsCtaLabel": "Se alla produkter",
+    "newsTitle": "Nyheter",
+    "newsIntro": "Håll dig uppdaterad med det senaste från bryggeriet",
+    "newsCtaLabel": "Se alla evenemang",
+    "servicesTitle": "Våra tjänster",
+    "servicesIntro": "Vi erbjuder mer än bara öl – vi skapar upplevelser",
+    "ctaTitle": "Beställ enkelt till Systembolaget",
+    "ctaLead": "Vår öl och cider går att köpa och beställa till vilket Systembolag som helst i landet.",
+    "ctaBody": "Inom kort står din dryck på hyllan, redo att avnjutas. Upptäck den äkta smaken av hantverk – från oss till dig.",
+    "ctaPrimaryLabel": "Se vårt sortiment",
+    "ctaPrimaryLink": "/produkter",
+    "ctaSecondaryLabel": "Kontakta oss",
+    "ctaSecondaryLink": "/kontakt",
+    "ctaCards": [
+      {
+        "icon": "📍",
+        "title": "Besök oss",
+        "lines": [
+          "Alafors Fabriker",
+          "3 mil norr om Göteborg"
+        ]
+      },
+      {
+        "icon": "🍺",
+        "title": "Rulleriet",
+        "lines": [
+          "Smakbar & evenemang",
+          "Kolla våra öppettider"
+        ]
+      },
+      {
+        "icon": "✉️",
+        "title": "Kontakt",
+        "lines": [
+          "info@ahlaforsbryggerier.se"
+        ]
+      }
+    ]
+  },
+  "about": {
+    "homepageHeading": "Ett av Sveriges äldsta mikrobryggerier",
+    "homepageParagraphs": [
+      "Startade år 1996 av ett gäng bastubadande ölälskande herrar i Alafors – ett litet samhälle ca 2,5 mil norr Göteborg i Ale kommun.",
+      "Bryggeriet är beläget i det gamla spinneriet från 1850-talet. Vi brygger vårt öl med mycket kärlek och ideellt arbete efter gamla traditioner av kornmalt, hela humlekottar, vatten och jäst. Vi tillverkar även drycker av ciderkaraktär.",
+      "Våra produkter tillhör det lokala sortimentet och finns på lager på Systembolagen i Nödinge, Kungälv och Bäckebol, men kan beställas över hela landet. Det säljs även på en del pubar och restauranger i Göteborg och Kungälv.",
+      "Hantverksmässiga grunder (de tyska renhetslagarna) och småskaliga metoder är en del av hemligheten bakom våra goda drycker."
+    ],
+    "homepageImage": "https://images.unsplash.com/photo-1504502350688-00f5d59bbdeb?q=80&w=2070",
+    "stats": [
+      {
+        "label": "Grundat",
+        "value": "1996"
+      },
+      {
+        "label": "Hantverk",
+        "value": "100%"
+      },
+      {
+        "label": "Spinneriet",
+        "value": "1850"
+      },
+      {
+        "label": "Produktion",
+        "value": "Lokal"
+      }
+    ],
+    "pageHeroTitle": "Om Ahlafors Bryggerier",
+    "pageHeroSubtitle": "Ett av Sveriges äldsta mikrobryggerier",
+    "pageHeroImage": "https://images.unsplash.com/photo-1594818020155-ca8dd1a7d13a?q=80&w=2070",
+    "pageHeroOverlayOpacity": 80,
+    "historyTitle": "Historien",
+    "historyParagraphs": [
+      "Ahlafors Bryggerier startade år 1996 av ett gäng bastubadande ölälskande herrar i Alafors – ett litet samhälle ca 2,5 mil norr Göteborg i Ale kommun.",
+      "Bryggeriet är beläget i det gamla spinneriet från 1850-talet. Vi brygger vårt öl med mycket kärlek och ideellt arbete efter gamla traditioner av kornmalt, hela humlekottar, vatten och jäst."
+    ],
+    "historyImage": "/media/2026-04-22-444676c2-0dc5-4604-8eac-f971124ae9d9.jpg",
+    "craftTitle": "Vårt hantverk",
+    "craftLead": "Våra ölsorter är alla helmaltsöl och vi använder alltid färsk humle. Hantverksmässiga grunder (de tyska renhetslagarna) och småskaliga metoder är en del av hemligheten bakom våra goda drycker.",
+    "ingredients": [
+      "Kornmalt – Högkvalitativ malt för bästa smak",
+      "Hela humlekottar – Alltid färsk humle",
+      "Vatten – Rent och naturligt",
+      "Jäst – Noggrant utvald"
+    ],
+    "distributionParagraphs": [
+      "Våra produkter tillhör det lokala sortimentet och finns på lager på Systembolagen i Nödinge, Kungälv och Bäckebol, men kan beställas över hela landet.",
+      "Vi säljs även på en del pubar och restauranger i Göteborg och Kungälv. Våra alkoholsvagare produkter finns i livsmedelsbutiker i Ale, Kungälv och Stenungsund."
+    ],
+    "locationTitle": "Besök oss",
+    "locationLead": "Alafors, ca 2,5 mil norr om Göteborg i Ale kommun",
+    "locationSublead": "I det historiska spinneriet från 1850-talet"
+  },
+  "productsPage": {
+    "heroTitle": "Våra Produkter",
+    "heroSubtitle": "Helmaltsöl bryggt med kärlek efter gamla traditioner",
+    "heroImage": "https://images.unsplash.com/photo-1532634733-cae1395e440f?q=80&w=2072",
+    "heroHighlights": [
+      "Färsk humle",
+      "Hantverksmässiga metoder",
+      "Tyska renhetslagarna"
+    ],
+    "heroOverlayOpacity": 80,
+    "seoTitle": "Ahlafors Bryggerier - Produkter",
+    "seoDescription": "Mikrobryggeri sedan 1996. Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier i Alafors, norr om Göteborg.",
+    "emptyStateText": "Inga produkter i den här kategorin ännu.",
+    "ctaTitle": "Beställ till Systembolaget",
+    "ctaText": "Vår öl och cider kan beställas till vilket Systembolag som helst i landet.",
+    "ctaPrimaryLabel": "Besök Rulleriet",
+    "ctaPrimaryLink": "/rulleriet",
+    "ctaSecondaryLabel": "Kontakta oss",
+    "ctaSecondaryLink": "/kontakt"
+  },
+  "productDetailPage": {
+    "heroOverlayOpacity": 80,
+    "backLinkLabel": "Tillbaka till produkter",
+    "descriptionHeading": "Om produkten",
+    "linksHeading": "Länkar",
+    "linksEmptyText": "Inga länkar tillagda ännu.",
+    "linkActionLabel": "Öppna",
+    "dataHeading": "Produktdata",
+    "articleNumberLabel": "Artikelnummer",
+    "publishedLabel": "Publicerad",
+    "relatedCountLabel": "Liknande produkter",
+    "relatedEyebrow": "Mer att upptäcka",
+    "relatedTitle": "Relaterade produkter",
+    "allProductsLabel": "Alla produkter",
+    "viewProductLabel": "Visa produkt"
+  },
+  "products": [
+    {
+      "id": "artisan-lager",
+      "name": "Artisan Lager",
+      "slug": "artisan-lager",
+      "type": "Lager",
+      "description": "sällskaps öl till rätter av ljust kött, eller till vegetariska rätter.",
+      "fullDescription": "Maltig smak med inslag av apelsinskal, knäckebröd och honung.\n Denna dryck är idealisk att servera vid en temperatur av 8-10°C, vilket framhäver dess rika och balanserade smakprofil. Den passar utmärkt som sällskapsdryck och kan avnjutas i sociala sammanhang, där dess komplexitet kan uppskattas av gästerna.\n Den rekommenderas till rätter av ljust kött, såsom kyckling eller kalkon, där den milda sötman och maltiga tonen kan komplettera köttets naturliga smaker. Dessutom är den ett utmärkt val till vegetariska rätter, särskilt de med inslag av honung eller citrus, vilket förstärker smakupplevelsen.\n Denna dryck är ett mångsidigt val för olika tillfällen och matstilar, och dess aromatiska profil gör den till ett uppskattat inslag på varje bord. För att få ut det mesta av dess smak, rekommenderas att servera den i glas som tillåter aromerna att utvecklas fullt ut.",
+      "style": "Lager",
+      "alcohol": "4.7%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-artisan-lager-110903/",
+      "artikelnummer": "1109",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/08/artisan2-673x1024.png",
+      "category": "lager",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Artisan Lager",
+      "seoDescription": "sällskaps öl till rätter av ljust kött, eller till vegetariska rätter.",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-artisan-lager-110903/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/08/artisan2.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-haze",
+      "name": "Ahlafors Haze",
+      "slug": "ahlafors-haze",
+      "type": "Ale",
+      "description": "Något ”hazy” American Pale Ale (APA). Humlearomatisk smak med tydlig beska, inslag av ananas, tallbarr, grapefrukt, honung och passionsfrukt.",
+      "fullDescription": "Något ”hazy” American Pale Ale (APA).\n\nHumlearomatisk smak med tydlig beska, inslag av ananas, tallbarr, grapefrukt, honung och passionsfrukt.",
+      "style": "Hazy IPA",
+      "alcohol": "5.2%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3043603/",
+      "artikelnummer": "30436",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforshaze-282x1024.webp",
+      "category": "ale",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Haze",
+      "seoDescription": "Något ”hazy” American Pale Ale (APA). Humlearomatisk smak med tydlig beska, inslag av ananas, tallbarr, grapefrukt, honung och passionsfrukt.",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3043603/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforshaze-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-el-dorado",
+      "name": "Ahlafors El Dorado",
+      "slug": "ahlafors-el-dorado",
+      "type": "Lager",
+      "description": "Ljus lager i modern stil. Maltig smak med tydlig beska, inslag av sirapslimpa, torkad frukt, apelsinskal och kryddor.",
+      "fullDescription": "Ljus lager i modern stil.\n\nMaltig smak med tydlig beska, inslag av sirapslimpa, torkad frukt, apelsinskal och kryddor.",
+      "style": "Lager",
+      "alcohol": "5.2%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3241003/",
+      "artikelnummer": "32410",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforseldorado-286x1024.webp",
+      "category": "lager",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors El Dorado",
+      "seoDescription": "Ljus lager i modern stil. Maltig smak med tydlig beska, inslag av sirapslimpa, torkad frukt, apelsinskal och kryddor.",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3241003/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforseldorado-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-britt",
+      "name": "Ahlafors Britt",
+      "slug": "ahlafors-britt",
+      "type": "Ale",
+      "description": "Engelsk Bitter är en mångsidig och smakrik öl som erbjuder en balanserad kombination av maltighet och beska.",
+      "fullDescription": "Engelsk Bitter är en mångsidig och smakrik öl som erbjuder en balanserad kombination av maltighet och beska. Dess komplexa smaknyanser gör den till ett utmärkt val för den som uppskattar en dryck med djup och karaktär, oavsett om det är för att njuta av den ensam eller tillsammans med mat.\n\nEngelsk Bitter bör serveras vid en temperatur mellan 10-12°C för att framhäva dess fulla smakprofil. Den är idealisk som sällskapsdryck, men passar även utmärkt till rätter av lamm- eller nötkött. Kombinationen av dess rika smaker och den balanserade beskan gör den till ett utmärkt val för den som vill ha en dryck som kompletterar en mängd olika maträtter.",
+      "style": "English Bitter",
+      "alcohol": "5.4%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3210203/",
+      "artikelnummer": "32102",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsbritt-274x1024.webp",
+      "category": "ale",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Britt",
+      "seoDescription": "Engelsk Bitter är en mångsidig och smakrik öl som erbjuder en balanserad kombination av maltighet och beska.",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3210203/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsbritt-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "oberoende-apa",
+      "name": "Oberoende American Pale Ale",
+      "slug": "oberoende-american-pale-ale",
+      "type": "Ale",
+      "description": "Utforska det spännande samarbetet inom Sveriges Oberoende Bryggerier, där varje bryggeri bidrar med sin unika expertis och passion för hantverket. Vårt bidrag till detta samarbete är en exklusiv…",
+      "fullDescription": "Utforska det spännande samarbetet inom Sveriges Oberoende Bryggerier, där varje bryggeri bidrar med sin unika expertis och passion för hantverket. Vårt bidrag till detta samarbete är en exklusiv APA (American Pale Ale), som utmärker sig genom sin balanserade och humlearomatiska profil.\n\nDenna APA är noggrant utvald för att erbjuda en rik och komplex smakupplevelse. Den har en tydlig beska som balanseras av en frisk och fruktig humlearom. Smakprofilen är fyllig och aromatisk, med inslag av krusbär som ger en lätt syrlig ton, samt en subtil kryddighet från rosmarin och vitpeppar. Fruktigheten förstärks av inslag av grapefrukt och ananas, vilket ger en tropisk och frisk karaktär till ölen.\n\nDenna öl är perfekt för den som uppskattar en humlearomatisk smak med tydlig beska och komplexitet. Den passar utmärkt att avnjutas i sociala sammanhang, till mat eller som en uppfriskande dryck efter en lång dag. Genom att delta i detta samarbete visar Sveriges Oberoende Bryggerier sitt engagemang för kvalitet, innovation och att främja det svenska hantverket inom ölbryggning.",
+      "style": "American Pale Ale",
+      "alcohol": "5.6%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/oberoende-3023103/",
+      "artikelnummer": "30231",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsoberoende-270x1024.webp",
+      "category": "ale",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Oberoende American Pale Ale",
+      "seoDescription": "Utforska det spännande samarbetet inom Sveriges Oberoende Bryggerier, där varje bryggeri bidrar med sin unika expertis och passion för hantverket. Vårt bidrag till detta samarbete är en exklusiv…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/oberoende-3023103/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsoberoende-scaled-e1754491379532.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "jubileumsipa",
+      "name": "Jubileumsipa",
+      "slug": "jubileums-ipa",
+      "type": "Ipa",
+      "description": "För att markera ett speciellt tillfälle i vårt sortiment presenterar vi stolt Ahlafors Jubileums IPA, en exklusiv crossover som kombinerar det bästa av våra traditionella ölsorter med en…",
+      "fullDescription": "För att markera ett speciellt tillfälle i vårt sortiment presenterar vi stolt Ahlafors Jubileums IPA, en exklusiv crossover som kombinerar det bästa av våra traditionella ölsorter med en modern, innovativ twist. Denna öl är ett uttryck för vår passion för hantverk och vår vilja att utforska nya smaker och aromer\n\nInspirerad av de senaste trenderna från den amerikanska västkusten, är denna IPA en kraftfull och aggressivt humlad öl som tilltalar den moderna ölintresserade. Den är skapad för att erbjuda en intensiv smakupplevelse med en tydlig humleprofil och en balanserad maltbas.\n\nDenna öl är humlad med en nästan överdriven mängd av tre av de mest framstående amerikanska humlesorterna: Mosaic, Simcoe och Nelson Sauvin. Dessa ger en komplex aromprofil med inslag av tropiska frukter, citrus, och en subtil vinös karaktär från Nelson Sauvin. Resultatet är en öl som är både aromatisk och kraftfull, med en tydlig bitterhet som balanserar maltens sötma.\n\nFör att ytterligare förstärka smakupplevelsen innehåller Ahlafors Jubileums IPA kornmalt av hög kvalitet, vilket ger en fyllig kropp och en rundad maltighet. Denna kombination av ingredienser och humleval gör att ölen passar utmärkt för den som söker en kraftfull och smakrik IPA.",
+      "style": "IPA",
+      "alcohol": "6.0%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-jubileums-ipa-3115603/",
+      "artikelnummer": "31156-03",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Jubileums-Ipa-Produktbild-673x1024.png",
+      "category": "ipa",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Jubileumsipa",
+      "seoDescription": "För att markera ett speciellt tillfälle i vårt sortiment presenterar vi stolt Ahlafors Jubileums IPA, en exklusiv crossover som kombinerar det bästa av våra traditionella ölsorter med en…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-jubileums-ipa-3115603/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Jubileums-Ipa-Produktbild.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "pale-ale",
+      "name": "Pale Ale",
+      "slug": "pale-ale",
+      "type": "Ale",
+      "description": "Upptäck en välbalanserad och ljus öl som förför dina sinnen med sin behagliga beska och rika smaker. Denna öl kombinerar subtila inslag av bär, citrus och stenfrukter, vilket…",
+      "fullDescription": "Upptäck en välbalanserad och ljus öl som förför dina sinnen med sin behagliga beska och rika smaker. Denna öl kombinerar subtila inslag av bär, citrus och stenfrukter, vilket ger en komplex och tillfredsställande smakprofil.\n\nDen är skapad med en noggrant utvald blandning av Pale Ale- och karamellmalt, vilket bidrar till dess ljusa och fylliga karaktär. Den amerikanska, nyzeeländska humlen ger en frisk och aromatisk touch, som förhöjer hela smakupplevelsen. Perfekt för den som söker en lättdrucken öl med djup och nyans, idealisk för avkoppling eller sociala tillfällen.\n\nDenna öl är ett utmärkt val för den som uppskattar en balanserad kombination av malt och humle, med en frisk och fruktig eftersmak som lämnar ett varaktigt intryck.",
+      "style": "Pale Ale",
+      "alcohol": "3.5%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/sortiment/?q=ahlaffors",
+      "artikelnummer": "",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/02/Ahlafors-Pale-Ale-Produktbild-673x1024.png",
+      "category": "ale",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Pale Ale",
+      "seoDescription": "Upptäck en välbalanserad och ljus öl som förför dina sinnen med sin behagliga beska och rika smaker. Denna öl kombinerar subtila inslag av bär, citrus och stenfrukter, vilket…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/sortiment/?q=ahlaffors"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/02/Ahlafors-Pale-Ale-Produktbild-673x1024.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-ljusa",
+      "name": "Ahlafors Ljusa",
+      "slug": "ljusa",
+      "type": "Lager",
+      "description": "Upptäck Ahlafors Ljusa, en exklusiv underjäst helmaltsöl som förädlas med noggrant utvalda ingredienser för att erbjuda en unik smakupplevelse. Denna öl bryggs på en fin blandning av pilsner-…",
+      "fullDescription": "Upptäck Ahlafors Ljusa , en exklusiv underjäst helmaltsöl som förädlas med noggrant utvalda ingredienser för att erbjuda en unik smakupplevelse. Denna öl bryggs på en fin blandning av pilsner- och karamellmalt, vilket skapar en balanserad och rik smakprofil. Den eleganta humlingen, med tre givor av Sydtysk Perle, tillför subtil arom och en lätt bitterhet som harmoniskt kompletterar maltens sötma.\n\nLjusan är varsamt filtrerad för att bevara dess naturliga karaktär och fräschör, samtidigt som den är opastöriserad för att behålla alla naturliga smaker och aromer. Denna process ger ölen en fylligare kropp och en mer komplex smakupplevelse, vilket gör den till ett utmärkt val för den som söker en högkvalitativ och autentisk öl.\n\nMed sin eleganta framtoning och balanserade smakprofil är Ahlafors Ljusa ett utmärkt val för såväl vardagsnjutning som för speciella tillfällen. Den kombinerar traditionell bryggkonst med moderna smaker, vilket gör den till ett självklart val för den kräsne ölälskaren.",
+      "style": "Ljus Lager",
+      "alcohol": "5.0%",
+      "volume": "50/33 cl",
+      "systembolaget": "https://www.systembolaget.se/sortiment/?q=ahlaffors",
+      "artikelnummer": "81131-06",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/01/Ahlafors-Ljusa-Produktbild-673x1024.png",
+      "category": "lager",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Ljusa",
+      "seoDescription": "Upptäck Ahlafors Ljusa, en exklusiv underjäst helmaltsöl som förädlas med noggrant utvalda ingredienser för att erbjuda en unik smakupplevelse. Denna öl bryggs på en fin blandning av pilsner-…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/sortiment/?q=ahlaffors"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/01/Ahlafors-Ljusa-Produktbild.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-marzen",
+      "name": "Ahlafors Märzen",
+      "slug": "ahlafors-marzen",
+      "type": "Lager",
+      "description": "Upptäck Ahlafors Märzen, en öl som utmärker sig med sin rika och maltiga doft. Denna unika dryck kombinerar en harmonisk blandning av aromer som knäckebröd, torkade aprikoser, choklad,…",
+      "fullDescription": "Upptäck Ahlafors Märzen, en öl som utmärker sig med sin rika och maltiga doft. Denna unika dryck kombinerar en harmonisk blandning av aromer som knäckebröd, torkade aprikoser, choklad, honung, örter och en frisk touch av apelsin. Varje klunk erbjuder en balanserad smakupplevelse där de maltiga inslagen möter den subtila sötman från honung och aprikoser, medan de aromatiska örterna och apelsinen tillför en frisk och komplex karaktär.\n\nAhlafors Märzen är ett utmärkt val för den som söker en öl med djup och nyanserad smakprofil, perfekt för att avnjutas vid olika tillfällen. Den maltiga doften och de rika aromerna gör den till ett självklart val för den kräsne ölälskaren som uppskattar kvalitetsdrycker med karaktär och elegans.",
+      "style": "Märzen",
+      "alcohol": "5.4%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3285303/",
+      "artikelnummer": "32853",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsma-274x1024.webp",
+      "category": "lager",
+      "featured": true,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Märzen",
+      "seoDescription": "Upptäck Ahlafors Märzen, en öl som utmärker sig med sin rika och maltiga doft. Denna unika dryck kombinerar en harmonisk blandning av aromer som knäckebröd, torkade aprikoser, choklad,…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3285303/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsma-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-heritage",
+      "name": "Ahlafors Heritage",
+      "slug": "ahlafors-heritage",
+      "type": "Ale",
+      "description": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och…",
+      "fullDescription": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och komplex smakupplevelse.\n\nDen maltiga smaken är tydlig och fyllig, där inslag av rågbröd ger en rustik karaktär. Tillsammans med torkad frukt skapar den en sötma som balanserar den beska tonen. Knäck och apelsinskal tillför en subtil sötma och friskhet, medan kryddorna ger en varm och inbjudande eftersmak.\n\nDenna öl är perfekt för den som vill njuta av en traditionell brittisk stil med moderna inslag. Den passar utmärkt till mat som rätter med kraftiga smaker, ostbrickor eller som en avkopplande dryck vid sociala tillfällen. Med sin välbalanserade profil och rika aromer erbjuder Extra Special Bitter en njutning för alla sinnen.",
+      "style": "Extra Special Bitter",
+      "alcohol": "5.6%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3236903/",
+      "artikelnummer": "32369",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsherit-272x1024.webp",
+      "category": "ale",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Heritage",
+      "seoDescription": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3236903/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsherit-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-ipa",
+      "name": "Ahlafors IPA",
+      "slug": "ahlafors-ipa",
+      "type": "Ipa",
+      "description": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och…",
+      "fullDescription": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och komplex smakupplevelse.\n\nDen maltiga smaken är tydlig och fyllig, där inslag av rågbröd ger en rustik karaktär. Tillsammans med torkad frukt skapar den en sötma som balanserar den beska tonen. Knäck och apelsinskal tillför en subtil sötma och friskhet, medan kryddorna ger en varm och inbjudande eftersmak.\n\nDenna öl är perfekt för den som vill njuta av en traditionell brittisk stil med moderna inslag. Den passar utmärkt till mat som rätter med kraftiga smaker, ostbrickor eller som en avkopplande dryck vid sociala tillfällen. Med sin välbalanserade profil och rika aromer erbjuder Extra Special Bitter en njutning för alla sinnen.\n\nUpplev en humlearomatisk smak med inslag av knäckebröd, honung, timjan och citrus. Denna öl levererar en frisk och aromatisk smakprofil som tilltalar den moderna ölälskaren och passar utmärkt till en mängd olika tillfällen.",
+      "style": "IPA",
+      "alcohol": "5.6%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3226903/",
+      "artikelnummer": "32269",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsIPA-274x1024.webp",
+      "category": "ipa",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors IPA",
+      "seoDescription": "Upptäck vår Extra Special Bitter, en öl som förför med sin välbalanserade brittiska stil. Den är skapad för att tilltala den kräsne ölälskaren som söker en rik och…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3226903/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsIPA-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ginger",
+      "name": "Ahlafors Ginger",
+      "slug": "ginger",
+      "type": "Cider",
+      "description": "Ahlafors Ginger är en uppfriskande dryck som förnyar din smakupplevelse med sin ciderkaraktär och den intensiva smaken av ingefära. Den är perfekt att dricka kall, gärna med en…",
+      "fullDescription": "Ahlafors Ginger är en uppfriskande dryck som förnyar din smakupplevelse med sin ciderkaraktär och den intensiva smaken av ingefära. Den är perfekt att dricka kall, gärna med en isbit i glaset för att förstärka den friska känslan.\n\nNjut av varje klunk och låt den ge dig en energigivande och smakrik stund. Den passar utmärkt som en svalkande dryck under varma dagar eller som en del av sociala tillfällen där du vill imponera med en frisk och naturlig smak.\n\nAhlafors Ginger är ett utmärkt val för dig som söker en dryck som kombinerar friskhet, smakrikedom och en liten kick av ingefära. Servera den gärna direkt ur kylen för att maximera den uppfriskande effekten och njut av dess naturliga och balanserade smakprofil.",
+      "style": "Ciderkaraktär med ingefära",
+      "alcohol": "4.5%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-3092203/",
+      "artikelnummer": "30922-03",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Ginger-Produktbild-673x1024.png",
+      "category": "cider",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Ginger",
+      "seoDescription": "Ahlafors Ginger är en uppfriskande dryck som förnyar din smakupplevelse med sin ciderkaraktär och den intensiva smaken av ingefära. Den är perfekt att dricka kall, gärna med en…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-3092203/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Ginger-Produktbild.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-lager",
+      "name": "Ahlafors Lager",
+      "slug": "ahlafors-lager",
+      "type": "Lager",
+      "description": "Upptäck vår amerikanska amber lager, en bärnstensfärgad öl som bryggs med karamellmalt för att skapa en rik och fyllig smak. Vi humlar den med utvalda amerikanska humlesorter, vilket…",
+      "fullDescription": "Upptäck vår amerikanska amber lager, en bärnstensfärgad öl som bryggs med karamellmalt för att skapa en rik och fyllig smak. Vi humlar den med utvalda amerikanska humlesorter, vilket ger en frisk och aromatisk karaktär.\n\nDenna lager är perfekt för den som söker en balanserad och smakrik dryck med tydliga humletoner och en len maltighet.\n\nNjut av dess friska smakprofil och den vackra bärnstensfärgen, som gör den till ett utmärkt val för både vardags- och festliga tillfällen.",
+      "style": "Lager",
+      "alcohol": "5.0%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3224203/",
+      "artikelnummer": "32242",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsLager-275x1024.webp",
+      "category": "lager",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Lager",
+      "seoDescription": "Upptäck vår amerikanska amber lager, en bärnstensfärgad öl som bryggs med karamellmalt för att skapa en rik och fyllig smak. Vi humlar den med utvalda amerikanska humlesorter, vilket…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3224203/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsLager.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-ljus-lager",
+      "name": "Ahlafors Ljus Lager",
+      "slug": "ahlafors-ljus-lager",
+      "type": "Lager",
+      "description": "Upptäck vårt lager i tysk stil, där varje detalj är noggrant utvald för att skapa en autentisk upplevelse. Vi erbjuder en atmosfär som för tankarna till traditionella tyska…",
+      "fullDescription": "Upptäck vårt lager i tysk stil, där varje detalj är noggrant utvald för att skapa en autentisk upplevelse. Vi erbjuder en atmosfär som för tankarna till traditionella tyska lager, med en tydlig betoning på kvalitet och hantverk. Vår lager är en plats där du kan njuta av en genuin smakupplevelse och utforska det rika arvet av tysk bryggkonst.\n\nDoften av vår lager är maltig och inbjudande, med inslag av ljust knäckebröd som ger en lätt och fräsch karaktär. Den söta tonen av honung kompletterar aromen och tillför en subtil sötma som balanserar maltens fyllighet. Örterna tillför en friskhet och komplexitet, medan inslagen av apelsinskal ger en lätt citrusaktig nyans som lyfter hela doftbilden. Denna kombination av aromer skapar en harmonisk och inbjudande doftprofil som lockar till provsmakning.\n\nVår lager är perfekt för den som söker en dryck med karaktär och tradition, samtidigt som den erbjuder en modern och tilltalande smak. Oavsett om du är en entusiast eller nybörjare, kan du förvänta dig en upplevelse som för tankarna till klassiska tyska bryggerier, men med en unik twist som gör den till din egen.",
+      "style": "Ljus Lager",
+      "alcohol": "4.8%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3282803/",
+      "artikelnummer": "32828",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsljlager-274x1024.webp",
+      "category": "lager",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Ljus Lager",
+      "seoDescription": "Upptäck vårt lager i tysk stil, där varje detalj är noggrant utvald för att skapa en autentisk upplevelse. Vi erbjuder en atmosfär som för tankarna till traditionella tyska…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3282803/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsljlager-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "flader",
+      "name": "Ahlafors Fläder",
+      "slug": "flader",
+      "type": "Cider",
+      "description": "Upptäck Ahlafors Fläder, en uppfriskande dryck med ciderkaraktär som förnyar din smakupplevelse. Den har en tydlig smak av fläder som ger en frisk och aromatisk känsla varje gång…",
+      "fullDescription": "Upptäck Ahlafors Fläder, en uppfriskande dryck med ciderkaraktär som förnyar din smakupplevelse. Den har en tydlig smak av fläder som ger en frisk och aromatisk känsla varje gång du tar en klunk. Servera den kall för att maximera dess fräschör, gärna med en isbit i glaset för en extra svalkande effekt.\n\nAhlafors Fläder är perfekt för att njuta av en varm dag eller som en lätt och smakrik dryck vid sociala tillfällen. Den kombinerar naturliga ingredienser med en balanserad sötma och syra, vilket gör den till ett utmärkt val för den som söker en frisk och välsmakande dryck.\n\nOavsett om du dricker den ensam eller tillsammans med vänner, erbjuder Ahlafors Fläder en uppfriskande och njutbar upplevelse som förhöjer varje tillfälle.",
+      "style": "Cider",
+      "alcohol": "4.5%",
+      "volume": "50/33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-flader-8865603/",
+      "artikelnummer": "88656-02",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Flader-Produktbild-673x1024.png",
+      "category": "cider",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Fläder",
+      "seoDescription": "Upptäck Ahlafors Fläder, en uppfriskande dryck med ciderkaraktär som förnyar din smakupplevelse. Den har en tydlig smak av fläder som ger en frisk och aromatisk känsla varje gång…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-flader-8865603/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Flader-Produktbild-673x1024.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "skagerrak-pils",
+      "name": "Skagerrak Pils",
+      "slug": "skagerrak-pils",
+      "type": "Lager",
+      "description": "Upptäck vårt moderna lager, som är kraftigt humlat för en intensiv smakupplevelse. Det har en maltig karaktär med en tydlig beska som balanserar smakerna perfekt. I varje klunk…",
+      "fullDescription": "Upptäck vårt moderna lager, som är kraftigt humlat för en intensiv smakupplevelse. Det har en maltig karaktär med en tydlig beska som balanserar smakerna perfekt. I varje klunk kan du njuta av inslag av knäckebröd, vilket ger en torr och rostad ton.\n\nFrån lagret framträder också friska smaker av apelsin och färska örter, vilket tillför en aromatisk dimension. Dessutom finns subtila inslag av honung och ananas som ger en sötma och fruktighet, vilket gör detta lager till ett komplext och tilltalande val för den kräsne dryckesälskaren.\n\nDen moderna bryggningen kombinerar traditionella metoder med innovativa inslag, vilket resulterar i en dryck som är både fräsch och kraftfull. Oavsett tillfälle, erbjuder detta lager en balanserad och njutbar smakprofil som tilltalar en bred publik och passar utmärkt till olika matupplevelser.",
+      "style": "Pilsner",
+      "alcohol": "5.2%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3247004/",
+      "artikelnummer": "32470",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsskagerrak-275x1024.webp",
+      "category": "lager",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Skagerrak Pils",
+      "seoDescription": "Upptäck vårt moderna lager, som är kraftigt humlat för en intensiv smakupplevelse. Det har en maltig karaktär med en tydlig beska som balanserar smakerna perfekt. I varje klunk…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3247004/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsskagerrak-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "peach-passion",
+      "name": "Cider Peach Passion",
+      "slug": "peach-passion",
+      "type": "Cider",
+      "description": "Upplev en mycket fruktig smak med en lätt sötma och en tydlig karaktär av persika. Du känner även inslag av passionsfrukt och päron som förhöjer smakupplevelsen. Servera drycken…",
+      "fullDescription": "Upplev en mycket fruktig smak med en lätt sötma och en tydlig karaktär av persika. Du känner även inslag av passionsfrukt och päron som förhöjer smakupplevelsen.\n\nServera drycken vid 8-10°C för att njuta av dess bästa egenskaper som en perfekt sällskapsdryck. Denna dryck är idealisk för att skapa en trevlig atmosfär och passar utmärkt till olika tillfällen där du vill imponera på dina gäster med en frisk och aromrik smakupplevelse.\n\nHitta på Systebolaget →",
+      "style": "Cider",
+      "alcohol": "4.5%",
+      "volume": "33 cl",
+      "systembolaget": "",
+      "artikelnummer": "33607",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/05/Passion_45-673x1024.png",
+      "category": "cider",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Cider Peach Passion",
+      "seoDescription": "Upplev en mycket fruktig smak med en lätt sötma och en tydlig karaktär av persika. Du känner även inslag av passionsfrukt och päron som förhöjer smakupplevelsen. Servera drycken…",
+      "links": [],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/05/Passion_45-673x1024.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "lingon",
+      "name": "Cider Lingon",
+      "slug": "lingon",
+      "type": "Cider",
+      "description": "Upptäck Ahlafors Lingon, en uppfriskande dryck med ciderkaraktär som förhöjer din smakupplevelse. Den har en tydlig smak av lingon som ger en naturlig och fräsch känsla. Servera den…",
+      "fullDescription": "Upptäck Ahlafors Lingon, en uppfriskande dryck med ciderkaraktär som förhöjer din smakupplevelse. Den har en tydlig smak av lingon som ger en naturlig och fräsch känsla.\n\nServera den kall för bästa njutning, gärna med en isbit i glaset för att förstärka den kylda, friska smaken. Ahlafors Lingon är perfekt för att svalka dig under varma dagar eller som en lättdryck till middagen. Den kombinerar en balanserad sötma med en subtil syrlighet, vilket gör den till ett utmärkt val för den som söker en smakrik och uppfriskande dryck.\n\nNjut av den direkt ur kylen för att få ut det mesta av dess friska karaktär och låt den bli en naturlig del av din sociala samvaro eller avkopplande stunder.",
+      "style": "Cider",
+      "alcohol": "4.5%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-lingon-3057603/",
+      "artikelnummer": "30573-02",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Lingon-Produktbild-673x1024.png",
+      "category": "cider",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Cider Lingon",
+      "seoDescription": "Upptäck Ahlafors Lingon, en uppfriskande dryck med ciderkaraktär som förhöjer din smakupplevelse. Den har en tydlig smak av lingon som ger en naturlig och fräsch känsla. Servera den…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-lingon-3057603/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Lingon-Produktbild-673x1024.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-imperator",
+      "name": "Ahlafors Imperator",
+      "slug": "ahlafors-imperator",
+      "type": "Stout",
+      "description": "Upplev en maltig, rostad och söt smakprofil som förför dina sinnen. Denna dryck bjuder på inslag av kavring, torkad frukt, mörk choklad, romrussin, espressokaffe, nötter och apelsin, vilket…",
+      "fullDescription": "Upplev en maltig, rostad och söt smakprofil som förför dina sinnen. Denna dryck bjuder på inslag av kavring, torkad frukt, mörk choklad, romrussin, espressokaffe, nötter och apelsin, vilket skapar en komplex och välbalanserad smakupplevelse.\n\nServera den vid en temperatur mellan 14 och 16°C för att framhäva dess rika aromer. Den passar utmärkt som sällskapsdryck eller som ett perfekt tillbehör till chokladdesserter, där dess djupa smaker kan njutas fullt ut.\n\nNjut av denna dryck för att förhöja stämningen vid sociala tillfällen eller som en lyxig avslutning på en måltid.",
+      "style": "Imperial Stout",
+      "alcohol": "8.4%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3241503/",
+      "artikelnummer": "32415",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsImp-272x1024.webp",
+      "category": "stout",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Ahlafors Imperator",
+      "seoDescription": "Upplev en maltig, rostad och söt smakprofil som förför dina sinnen. Denna dryck bjuder på inslag av kavring, torkad frukt, mörk choklad, romrussin, espressokaffe, nötter och apelsin, vilket…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3241503/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsImp-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "lingon-alkoholfri",
+      "name": "Alkoholfri Cider Lingon",
+      "slug": "lingon-alkoholfri",
+      "type": "Cider",
+      "description": "Ahlafors Lingon är en uppfriskande alkoholfri dryck av ciderkaraktär",
+      "fullDescription": "Upptäck Ahlafors Lingon, en uppfriskande alkoholfri dryck med ciderkaraktär och en tydlig smak av lingon. Den serveras bäst kall, gärna med en isbit i glaset för att förstärka den friska och livfulla smaken. Denna dryck är perfekt för dig som vill njuta av en smakrik och alkoholfri alternativ, oavsett tillfälle. Ahlafors Lingon erbjuder en balanserad kombination av sötma och syra, vilket gör den till ett utmärkt val för både vardag och fest. Du kan köpa Ahlafors Lingon 0,5% i lokala butiker i Ale kommun, vilket gör det enkelt att hitta och njuta av denna unika dryck när du önskar. Ge dig själv en uppfriskande smakupplevelse och välj Ahlafors Lingon för en frisk och naturlig dryck som passar alla tillfällen.\n\nAhlafors Lingon 0,5% finns att köpa i lokala butiker i Ale kommun.",
+      "style": "Cider",
+      "alcohol": "0.5%",
+      "volume": "33 cl",
+      "systembolaget": "",
+      "artikelnummer": "",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/03/Ahlafors-Lingon-07-Produktbild-673x1024.png",
+      "category": "cider",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-11-11",
+      "seoTitle": "Ahlafors Alkoholfri Cider Lingon",
+      "seoDescription": "Ahlafors Lingon är en uppfriskande alkoholfri dryck av ciderkaraktär",
+      "links": [],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/03/Ahlafors-Lingon-07-Produktbild-673x1024.png",
+      "relatedProductIds": []
+    },
+    {
+      "id": "ahlafors-into-the-deep",
+      "name": "Ahlafors Into The Deep",
+      "slug": "ahlafors-into-the-deep",
+      "type": "Ipa",
+      "description": "Monstret är tillbaka. Denna gång som Krakens lillasyster, en kraftfull och juiceig dubbel IPA med tydlig humlearom, balanserad beska och lätt sötma. Smaken bjuder på fruktiga toner av…",
+      "fullDescription": "Monstret är tillbaka. Denna gång som Krakens lillasyster, en kraftfull och juiceig dubbel IPA med tydlig humlearom, balanserad beska och lätt sötma. Smaken bjuder på fruktiga toner av aprikos, ananas, passionsfrukt och grapefrukt, tillsammans med inslag av tallbarr och mjuk maltighet. En intensiv men välbalanserad öl för dig som söker mycket smak.",
+      "style": "Dubbel IPA",
+      "alcohol": "8.5%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3260003/",
+      "artikelnummer": "3260003",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforsinto-271x1024.webp",
+      "category": "ipa",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-12-12",
+      "seoTitle": "Ahlafors Ahlafors Into The Deep",
+      "seoDescription": "Monstret är tillbaka. Denna gång som Krakens lillasyster, en kraftfull och juiceig dubbel IPA med tydlig humlearom, balanserad beska och lätt sötma. Smaken bjuder på fruktiga toner av…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3260003/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforsinto-scaled.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "porter",
+      "name": "Porter",
+      "slug": "porter",
+      "type": "Porter",
+      "description": "Ahlafors Porter är en klassisk svensk porter med nyanserad och maltig karaktär. Smaken domineras av kavring, mörk choklad och kaffe, kompletterat med toner av torkad frukt, nötter, lakrits…",
+      "fullDescription": "Ahlafors Porter är en klassisk svensk porter med nyanserad och maltig karaktär. Smaken domineras av kavring, mörk choklad och kaffe, kompletterat med toner av torkad frukt, nötter, lakrits och apelsin. En fyllig men balanserad öl som passar lika bra som sällskapsdryck som till rätter av fläsk, lamm eller nötkött.",
+      "style": "Porter",
+      "alcohol": "4.7%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3280203/",
+      "artikelnummer": "3280203",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/56578313_400-272x1024.webp",
+      "category": "porter",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-12-12",
+      "seoTitle": "Ahlafors Porter",
+      "seoDescription": "Ahlafors Porter är en klassisk svensk porter med nyanserad och maltig karaktär. Smaken domineras av kavring, mörk choklad och kaffe, kompletterat med toner av torkad frukt, nötter, lakrits…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3280203/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/56578313_400.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "american-pale-ale",
+      "name": "American Pale Ale",
+      "slug": "american-pale-ale",
+      "type": "Ale",
+      "description": "Ahlafors Bryggerier American Pale Ale är en svensk APA med tydlig beska och maltig karaktär. Smaken bjuder på inslag av knäckebröd, torkade aprikoser, tallkåda och apelsinskal, balanserat med…",
+      "fullDescription": "Ahlafors Bryggerier American Pale Ale är en svensk APA med tydlig beska och maltig karaktär. Smaken bjuder på inslag av knäckebröd, torkade aprikoser, tallkåda och apelsinskal, balanserat med en lätt sötma av smörkola. En smakrik öl som passar lika bra som sällskapsdryck som till rätter av fläsk, lamm eller nötkött.",
+      "style": "American Pale Ale",
+      "alcohol": "5.6%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3040003/",
+      "artikelnummer": "3040003",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/58715322_400-270x1024.webp",
+      "category": "ale",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-12-12",
+      "seoTitle": "Ahlafors American Pale Ale",
+      "seoDescription": "Ahlafors Bryggerier American Pale Ale är en svensk APA med tydlig beska och maltig karaktär. Smaken bjuder på inslag av knäckebröd, torkade aprikoser, tallkåda och apelsinskal, balanserat med…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3040003/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/58715322_400.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "julol",
+      "name": "Julöl",
+      "slug": "julol",
+      "type": "Ale",
+      "description": "Julöl till rätter av ljust kött, eller till vegetariska rätter. Denna julöl är noggrant bryggd för att erbjuda en rik och komplex smakprofil som förhöjer julens festligheter.",
+      "fullDescription": "Upptäck Ahlafors julöl, ett exklusivt överjäst, ofiltrerat helmaltsöl som är inspirerat av den engelska ölstilen.\n\nDenna julöl är noggrant bryggd för att erbjuda en rik och komplex smakprofil som förhöjer julens festligheter. Med sin fruktiga karaktär framhävs inslag av torkad frukt, nötter, apelsinskal och smörkola. Det ger en balanserad och fyllig smakupplevelse. Den överjästa processen bidrar till en djupare arom och en mjukare, mer rundad smak, samtidigt som den ofiltrerade naturen ger en naturlig och oförfalskad karaktär.\n\nAhlafors julöl passar utmärkt till julens alla festmåltider eller som en avkopplande dryck under vinterkvällar. Den är ett utmärkt val för den som söker en traditionell, men ändå unik julöl med en rik smakprofil och en elegant, fruktig ton. Njut av denna öl för att skapa minnesvärda stunder under julhelgen och för att förhöja julens festligheter med en dryck som kombinerar tradition och kvalitet på ett harmoniskt sätt.",
+      "style": "Julöl",
+      "alcohol": "6.0%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3687103/",
+      "artikelnummer": "3687103",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2018/12/24642434_400-269x1024.webp",
+      "category": "ale",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-12-12",
+      "seoTitle": "Ahlafors Julöl",
+      "seoDescription": "Julöl till rätter av ljust kött, eller till vegetariska rätter. Denna julöl är noggrant bryggd för att erbjuda en rik och komplex smakprofil som förhöjer julens festligheter.",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3687103/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2018/12/24642434_400.webp",
+      "relatedProductIds": []
+    },
+    {
+      "id": "fortis-aurum",
+      "name": "Fortis Aurum",
+      "slug": "fortis-aurum",
+      "type": "Ale",
+      "description": "Ahlafors Fortis Aurum är en kraftfull ljus stark ale i belgisk trippelstil med maltig kropp och balanserad sötma. Smaken präglas av ljust bröd, honung, kryddor, skumbanan och torkade…",
+      "fullDescription": "Ahlafors Fortis Aurum är en kraftfull ljus stark ale i belgisk trippelstil med maltig kropp och balanserad sötma. Smaken präglas av ljust bröd, honung, kryddor, skumbanan och torkade aprikoser, med en fyllig och rund avslutning. En smakrik öl som passar både som sällskapsdryck och till vegetariskt eller rustika rätter av ljust kött.",
+      "style": "Belgisk Tripel",
+      "alcohol": "8.5%",
+      "volume": "33 cl",
+      "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3282003/",
+      "artikelnummer": "3282003",
+      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/53891029_400-270x1024.webp",
+      "category": "ale",
+      "featured": false,
+      "published": true,
+      "publishedAt": "2025-12-12",
+      "seoTitle": "Ahlafors Fortis Aurum",
+      "seoDescription": "Ahlafors Fortis Aurum är en kraftfull ljus stark ale i belgisk trippelstil med maltig kropp och balanserad sötma. Smaken präglas av ljust bröd, honung, kryddor, skumbanan och torkade…",
+      "links": [
+        {
+          "label": "Systembolaget",
+          "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3282003/"
+        }
+      ],
+      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/53891029_400.webp",
+      "relatedProductIds": []
+    }
+  ],
+  "news": [
+    {
+      "id": "nytt-pa-rulleriet",
+      "title": "Nytt på Rulleriet - Julöl och After Work",
+      "excerpt": "Välkommen till Rulleriet för after work! Vi har olika foodtrucks som serverar härliga tillbehör. Kanske finns julölen på kran snart?",
+      "date": "2025-11-14",
+      "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=2074",
+      "link": "/rulleriet",
+      "featured": true
+    },
+    {
+      "id": "after-work-pa-rulleriet",
+      "title": "After Work på Rulleriet",
+      "excerpt": "Välkomna till Rulleriet! När vi kör AW har vi olika foodtrucks utanför som serverar härliga tillbehör. Njut av nytappade öl i trevligt sällskap!",
+      "date": "2025-11-08",
+      "image": "https://images.unsplash.com/photo-1513094735237-8f2714d57c13?q=80&w=2073",
+      "link": "/rulleriet",
+      "featured": true
+    },
+    {
+      "id": "hantverksbryggning-sedan-1996",
+      "title": "Handverksbryggning sedan 1996",
+      "excerpt": "Läs mer om vår historia och hur allt började i den historiska spinnerifabriken från 1850-talet. Ett gäng bastubadande ölälskande herrar startade något stort!",
+      "date": "2025-10-15",
+      "image": "https://images.unsplash.com/photo-1594818020155-ca8dd1a7d13a?q=80&w=2070",
+      "link": "/om-oss",
+      "featured": false
+    }
+  ],
+  "services": [
+    {
+      "id": "profileringsol",
+      "title": "Profileringsöl för företag",
+      "shortDescription": "Skapa unika ölsorter för ditt företag eller förening.",
+      "description": "Skapa unika ölsorter för ditt företag eller förening. Vi hjälper dig från koncept till färdig produkt.",
+      "details": [
+        "Anpassad receptur efter era önskemål",
+        "Egen etikett med ert företags profil",
+        "Perfekt för företagsevent och gåvor",
+        "Minsta beställning enligt överenskommelse"
+      ],
+      "icon": "🏢",
+      "link": "/tjanster#profileringsol"
+    },
+    {
+      "id": "bar-restaurangol",
+      "title": "Bar & Restaurangöl",
+      "shortDescription": "Öl i fat eller flaska för din restaurang eller bar.",
+      "description": "Öl i fat eller flaska för restauranger och pubar.",
+      "details": [
+        "30 liters eller 15 liters fat",
+        "Fasta leveranser eller engångsbeställning",
+        "Högkvalitativa hantverksöl",
+        "Säljs på pubar och restauranger i Göteborg och Kungälv"
+      ],
+      "icon": "🍺",
+      "link": "/tjanster#bar-restaurangol"
+    },
+    {
+      "id": "festutrustning",
+      "title": "Festutrustning",
+      "shortDescription": "Bordspumpar och bardisk för uthyrning.",
+      "description": "Bordspumpar och bardisk för uthyrning.",
+      "details": [
+        "Bordspump med kylanläggning",
+        "Komplett bardisk för större event",
+        "För privata fester och evenemang",
+        "Köp öl i 30 eller 15 liters fat"
+      ],
+      "icon": "🎉",
+      "link": "/tjanster#festutrustning"
+    },
+    {
+      "id": "presentkort-merchandise",
+      "title": "Presentkort & Merchandise",
+      "shortDescription": "Ge bort upplevelser och produkter.",
+      "description": "Ge bort upplevelser och produkter.",
+      "details": [
+        "Presentkort på öl och besök på Rulleriet",
+        "Ölpaket med våra bästa sorter",
+        "Ahlafors-merchandise",
+        "Perfekt som företagsgåva"
+      ],
+      "icon": "🎁",
+      "link": "/tjanster#presentkort-merchandise"
+    }
+  ],
+  "servicesPage": {
+    "heroTitle": "Våra tjänster",
+    "heroSubtitle": "Vi hjälper gärna till med allt som ett bryggeri kan erbjuda",
+    "heroImage": "https://images.unsplash.com/photo-1504502350688-00f5d59bbdeb?q=80&w=2070",
+    "heroOverlayOpacity": 80,
+    "seoTitle": "Ahlafors Bryggerier - Tjänster",
+    "seoDescription": "Mikrobryggeri sedan 1996. Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier i Alafors, norr om Göteborg.",
+    "introText": "Vi som ett mindre bryggeri har möjligheten att se till våra kunders behov. Ni som restaurangägare, festfixare eller ölintresserad skall känna er välkommen hos oss.",
+    "ctaTitle": "Intresserad?",
+    "ctaText": "Kontakta oss för mer information om våra tjänster och hur vi kan hjälpa er.",
+    "ctaPrimaryLabel": "Kontakta oss",
+    "ctaPrimaryLink": "/kontakt",
+    "ctaSecondaryLabel": "Se våra produkter",
+    "ctaSecondaryLink": "/produkter"
+  },
+  "recipes": [
+    {
+      "id": "olmarinerad-entrecote",
+      "title": "Ölmarinerad Entrecôte",
+      "description": "Saftig entrecôte marinerad i vår kraftfulla IPA med rosmarin och vitlök. Perfekt på grillen!",
+      "ingredients": [
+        "4 entrecôte-stekar (ca 200g styck)",
+        "3 dl Ahlafors Jubileumsipa",
+        "3 vitlöksklyftor, pressade",
+        "2 msk olivolja",
+        "2 msk soja",
+        "1 msk honung",
+        "2 kvistar färsk rosmarin",
+        "Salt och peppar"
+      ],
+      "instructions": [
+        "Blanda IPA, vitlök, olivolja, soja, honung och hackad rosmarin i en skål.",
+        "Lägg entrecôte-stekarna i en form och häll över marinaden.",
+        "Låt marinera i kylskåp i minst 4 timmar, gärna över natten.",
+        "Ta upp köttet 30 minuter innan grillning för rumstemperatur.",
+        "Grilla på hög värme ca 3-4 minuter per sida för medium.",
+        "Låt vila i 5 minuter innan servering.",
+        "Servera med grillade grönsaker och mer IPA!"
+      ],
+      "difficulty": "Medel",
+      "time": "30 min + marinering",
+      "servings": "4 portioner",
+      "pairing": "Ahlafors Jubileumsipa",
+      "image": "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069"
+    },
+    {
+      "id": "olbrod-med-ljusa",
+      "title": "Ölbröd med Ljusa",
+      "description": "Saftigt och smakfullt bröd med vår Ljusa lager. Perfekt som tillbehör till grillen eller till ost.",
+      "ingredients": [
+        "5 dl Ahlafors Ljusa",
+        "9 dl vetemjöl",
+        "2 dl rågmjöl",
+        "1 dl sirap",
+        "2 tsk salt",
+        "50g jäst",
+        "2 msk rapsolja"
+      ],
+      "instructions": [
+        "Värm ölen till fingervarmt (37°C).",
+        "Smula jästen i en bunke och lös upp den i lite av den varma ölen.",
+        "Tillsätt resten av ölen, sirap, salt och olja.",
+        "Blanda ihop vetemjölet och rågmjölet.",
+        "Arbeta in mjölet lite i taget tills degen släpper från bunken.",
+        "Låt jäsa under bakduk i ca 40 minuter.",
+        "Knåda degen och forma till 2 limpor.",
+        "Lägg i smorda formar och låt jäsa ytterligare 30 minuter.",
+        "Grädda i 200°C i ca 40 minuter.",
+        "Låt svalna på galler."
+      ],
+      "difficulty": "Lätt",
+      "time": "2 timmar",
+      "servings": "2 limpor",
+      "pairing": "Ahlafors Ljusa",
+      "image": "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2072"
+    },
+    {
+      "id": "olsoppa-med-rotsaker",
+      "title": "Ölsoppa med Rotsaker",
+      "description": "Rustik och värmande rotsakssoppa med maltiga toner från vår Märzen lager.",
+      "ingredients": [
+        "3 dl Ahlafors Märzen",
+        "3 morötter",
+        "1 palsternacka",
+        "1/2 rotselleri",
+        "2 schalottenlökar",
+        "1 liter grönsaksbuljong",
+        "2 dl vispgrädde",
+        "2 msk smör",
+        "Salt, peppar och timjan"
+      ],
+      "instructions": [
+        "Skala och tärna alla rotsaker i bitar.",
+        "Fräs schalottenlöken i smör tills den är mjuk.",
+        "Tillsätt rotsakerna och fräs i några minuter.",
+        "Häll i ölen och låt koka ihop till hälften.",
+        "Tillsätt buljongen och låt sjuda tills rotsakerna är mjuka (ca 20 min).",
+        "Mixa soppan slät med stavmixer.",
+        "Rör ner grädden och smaka av med salt, peppar och timjan.",
+        "Servera med färskt bröd och ett glas Märzen!"
+      ],
+      "difficulty": "Lätt",
+      "time": "45 minuter",
+      "servings": "4 portioner",
+      "pairing": "Ahlafors Märzen",
+      "image": "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=2071"
+    },
+    {
+      "id": "beer-battered-fish-chips",
+      "title": "Beer Battered Fish & Chips",
+      "description": "Krispig friterad fisk i smet med vår Pale Ale. En klassiker som aldrig sviker!",
+      "ingredients": [
+        "600g torskfilé",
+        "2 dl Ahlafors Pale Ale",
+        "2 dl vetemjöl",
+        "1 tsk bakpulver",
+        "Salt och peppar",
+        "4 stora potatisar",
+        "Olja till fritering",
+        "Citronklyftor och tartarsås till servering"
+      ],
+      "instructions": [
+        "Skär potatisen i tjocka strips och blötlägg i kallt vatten i 30 min.",
+        "Torka potatisen och fritera i 160°C i 5 minuter. Låt svalna.",
+        "Blanda mjöl, bakpulver, salt och peppar. Rör ner ölen till en slät smet.",
+        "Dela fisken i portionsbitar och krydda med salt och peppar.",
+        "Doppa fisken i smeten och fritera i 180°C tills den är gyllene (ca 4-5 min).",
+        "Fritera potatisen igen i 180°C tills den är krispig och gyllene.",
+        "Servera med citron, tartarsås och självklart en kall Pale Ale!"
+      ],
+      "difficulty": "Medel",
+      "time": "60 minuter",
+      "servings": "4 portioner",
+      "pairing": "Ahlafors Pale Ale",
+      "image": "https://images.unsplash.com/photo-1579208575657-c595a05383b7?q=80&w=2070"
+    },
+    {
+      "id": "olglaserad-flaskkarre",
+      "title": "Ölglaserad Fläskkarré",
+      "description": "Succulent fläskkarré glaserad med vår maltiga Britt och honungsenap.",
+      "ingredients": [
+        "1 kg fläskkarré",
+        "2 dl Ahlafors Britt",
+        "3 msk honung",
+        "2 msk dijonsenap",
+        "2 vitlöksklyftor",
+        "2 msk smör",
+        "Salt, peppar och timjan"
+      ],
+      "instructions": [
+        "Sätt ugnen på 125°C.",
+        "Krydda fläskkarrén med salt, peppar och timjan.",
+        "Bryn köttet i smör på alla sidor i en stekpanna.",
+        "Lägg över i en ugnsform.",
+        "Koka ihop öl, honung, senap och pressad vitlök till en tjock glasyr.",
+        "Pensla köttet med glasyren.",
+        "Stek i ugn tills innertemperaturen är 65°C (ca 45-60 min).",
+        "Pensla med mer glasyr var 15:e minut.",
+        "Låt vila i 10 minuter innan uppskärning.",
+        "Servera med rotsaksmos och mer Britt!"
+      ],
+      "difficulty": "Medel",
+      "time": "90 minuter",
+      "servings": "4-6 portioner",
+      "pairing": "Ahlafors Britt",
+      "image": "https://images.unsplash.com/photo-1432139509613-5c4255815697?q=80&w=2085"
+    },
+    {
+      "id": "olcheesecake-med-karamell",
+      "title": "Ölcheesecake med Karamell",
+      "description": "Krämig cheesecake med maltiga toner och salt karamellsås - en överraskning för smaklökarna!",
+      "ingredients": [
+        "200g digestivekex",
+        "100g smör",
+        "600g philadelphiaost",
+        "1 dl Ahlafors Märzen",
+        "1 dl socker",
+        "3 ägg",
+        "1 dl vispgrädde",
+        "2 tsk vaniljsocker",
+        "Salt karamellsås till servering"
+      ],
+      "instructions": [
+        "Sätt ugnen på 175°C.",
+        "Mosa kexen fint och blanda med smält smör. Tryck ut i botten på en springform (24 cm).",
+        "Gräddbaka i 10 minuter. Låt svalna.",
+        "Vispa philadelphiaost och socker pösigt.",
+        "Tillsätt äggen ett i taget.",
+        "Rör ner ölen, grädde och vaniljsocker.",
+        "Häll smeten över kakbottnen.",
+        "Gräddbaka i 50-60 minuter tills kakan är nästan fast men darrar lätt i mitten.",
+        "Låt svalna i ugnen med dörren på glänt.",
+        "Kyl i minst 4 timmar, gärna över natten.",
+        "Servera med salt karamellsås och brygda nötter!"
+      ],
+      "difficulty": "Medel",
+      "time": "90 min + kylning",
+      "servings": "8-10 portioner",
+      "pairing": "Ahlafors Märzen",
+      "image": "https://images.unsplash.com/photo-1533134242443-d4e2e2f79a3f?q=80&w=2070"
+    }
+  ],
+  "recipesPage": {
+    "heroTitle": "Recept",
+    "heroSubtitle": "Spännande dryckesrecept och maträtter med våra öl",
+    "heroImage": "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070",
+    "heroOverlayOpacity": 80,
+    "seoTitle": "Ahlafors Bryggerier - Recept",
+    "seoDescription": "Mikrobryggeri sedan 1996. Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier i Alafors, norr om Göteborg.",
+    "introTitle": "Vi presenterar ett urval av spännande recept som du kan prova hemma.",
+    "introText": "Vi presenterar ett urval av spännande recept som du kan prova hemma.",
+    "introSubtext": "Utforska våra enkla steg-för-steg-instruktioner med våra öl som huvudingrediens eller som perfekt tillbehör.",
+    "ctaTitle": "Upptäck våra produkter",
+    "ctaText": "Alla våra öl och cider finns att beställa på Systembolaget över hela landet.",
+    "ctaPrimaryLabel": "Se produkter",
+    "ctaPrimaryLink": "/produkter",
+    "ctaSecondaryLabel": "Kontakta oss",
+    "ctaSecondaryLink": "/kontakt"
+  },
+  "rulleriet": {
+    "heroTitle": "Rulleriet",
+    "heroSubtitle": "Ahlafors Taproom / Smakbar",
+    "heroImage": "/media/2026-04-22-80a16387-7d97-4915-9832-e92021f53224.jpg",
+    "heroOverlayOpacity": 60,
+    "introTitle": "Välkommen till Rulleriet",
+    "introParagraphs": [
+      "Vi erbjuder ständigt ett brett utbud av Ahlafors-sortimentet. Här serverar vi inte bara våra klassiska ölsorter utan också unika, experimentella brygder och smygpremiärer på kommande öl.",
+      "Vi är alltid i rörelse och strävar efter att ge våra gäster en dynamisk och spännande ölupplevelse. Dessutom finns ett noga utvalt urval av alkoholfria alternativ för den som vill njuta av goda smaker utan alkohol.",
+      "Vårt mål är att skapa en inbjudande atmosfär där ölintresserade kan utforska nya smaker, delta i provningar och ta del av det senaste inom bryggkonst. Oavsett om du är en erfaren ölfantast eller nyfiken nybörjare, är du varmt välkommen att upptäcka vad Rulleriet har att erbjuda."
+    ],
+    "paymentTitle": "Betalning",
+    "paymentText": "Betalning sker med kort. Välkomna att rulla in!",
+    "blogTitle": "Nytt från Rulleriet",
+    "blogIntro": "Här publicerar vi nyheter, tappsläpp, kvällar och annat som händer i smakbaren.",
+    "blogPosts": [
+      {
+        "id": "rulleriet-aw-julol",
+        "title": "After Work och julöl på gång",
+        "slug": "after-work-och-julol-pa-gang",
+        "excerpt": "Fredagens AW närmar sig och vi förbereder nya öl på kranarna inför senhösten.",
+        "content": "På fredag öppnar vi återigen dörrarna för After Work i Rulleriet.\n\nVi fyller kranarna med ett urval av favoriter och håller samtidigt ögonen öppna för säsongens första julöl. Som vanligt finns det mat utanför från våra vänner i foodtrucken.\n\nHåll utkik här på sidan för fler uppdateringar under veckan.",
+        "image": "https://images.unsplash.com/photo-1513094735237-8f2714d57c13?q=80&w=2073",
+        "publishedAt": "2025-11-12",
+        "featured": true,
+        "published": true
+      },
+      {
+        "id": "rulleriet-nyheter-pa-kranarna",
+        "title": "Nyheter på kranarna i november",
+        "slug": "nyheter-pa-kranarna-i-november",
+        "excerpt": "Vi testar nya tapp med både klassiker och mindre provbrygder under november.",
+        "content": "November innebär att vi blandar våra mest uppskattade klassiker med mindre provbrygder i baren.\n\nFör dig som besöker Rulleriet betyder det att utbudet kan förändras från vecka till vecka. Vi gillar att låta gästerna prova sådant som ännu inte nått större lanseringar.\n\nKom förbi och fråga personalen vad som är nytt just den här veckan.",
+        "image": "https://images.unsplash.com/photo-1600271886742-f049cd451bba?q=80&w=2074",
+        "publishedAt": "2025-11-05",
+        "featured": false,
+        "published": true
+      }
+    ],
+    "events": [
+      {
+        "date": "2025-09-19",
+        "time": "17:00 - 22:00",
+        "title": "Quiz-kväll på Rulleriet",
+        "description": "Rulleriet öppnar kl 17. Det blir Quiz!",
+        "food": "La Chiva står för maten"
+      },
+      {
+        "date": "2025-10-03",
+        "time": "17:00 - 22:00",
+        "title": "After Work",
+        "description": "AW på Rulleriet? Naturligtvis!",
+        "food": "A taste of britain står för maten"
+      },
+      {
+        "date": "2025-10-17",
+        "time": "17:00 - 22:00",
+        "title": "Höstrus med Arepas",
+        "description": "Vi kör i höstrusket. Premiär för La Delicia foodtruck.",
+        "food": "Det blir Arepas"
+      },
+      {
+        "date": "2025-11-01",
+        "time": "16:00 - 21:00",
+        "title": "Lördagskväll med irakisk mat",
+        "description": "Vi bryter av med en lördag. Premiär för irakisk foodtruck.",
+        "food": "Irakiskt"
+      },
+      {
+        "date": "2025-11-14",
+        "time": "17:00 - 22:00",
+        "title": "Nyheter på kranarna",
+        "description": "Lite nyheter på kranarna. Kanske Julölen?",
+        "food": "The Mexican BBQ kommer tillbaka med Tacos"
+      },
+      {
+        "date": "2025-11-28",
+        "time": "17:00 - 22:00",
+        "title": "Säsongsavslutning",
+        "description": "Säsongsavslutning. Efter detta tar vi semester tills våren kommer.",
+        "food": "Våra irakiska vänner står för maten igen"
+      }
+    ],
+    "locationTitle": "Hitta hit",
+    "locationText": "Rulleriet finns i det gamla spinneriet från 1850-talet i Alafors, ca 2,5 mil norr om Göteborg i Ale kommun."
+  },
+  "contact": {
+    "heroTitle": "Kontakta oss",
+    "heroSubtitle": "Välkommen att höra av dig – vi finns i hjärtat av Alafors",
+    "heroImage": "https://images.unsplash.com/photo-1486718448742-163732cd1544?q=80&w=2070",
+    "heroOverlayOpacity": 80,
+    "addressTitle": "Adress",
+    "addressLines": [
+      "Ahlafors Bryggerier AB",
+      "Spinnerigatan (gamla spinneriet från 1850-talet)",
+      "449 41 Alafors",
+      "Ale kommun"
+    ],
+    "locationTitle": "Plats",
+    "locationDescription": "Bryggeriet är beläget i det gamla spinneriet från 1850-talet, cirka 2,5 mil norr om Göteborg.",
+    "socialLinks": [
+      {
+        "platform": "Facebook",
+        "url": "https://www.facebook.com/AhlaforsBryggerier/"
+      },
+      {
+        "platform": "Instagram",
+        "url": "https://www.instagram.com/ahlaforsbryggerier/"
+      }
+    ],
+    "productsInfoTitle": "Hitta våra produkter",
+    "productsInfoParagraphs": [
+      "Våra produkter finns på lager på Systembolagen i Nödinge, Kungälv och Bäckebol, men kan beställas över hela landet.",
+      "Våra alkoholsvagare produkter säljs även i livsmedelsbutiker i Ale, Kungälv och Stenungsund."
+    ],
+    "email": "info@ahlaforsbryggeri.se",
+    "phone": "",
+    "contactFormSubjectPlaceholder": "Hur kan vi hjälpa dig?",
+    "mapTitle": "Hitta hit",
+    "mapSubtitle": "Cirka 2,5 mil norr om Göteborg",
+    "ctaTitle": "Besök Rulleriet",
+    "ctaText": "Välkommen till vår smakbar där du kan provsmaka våra ölsorter och uppleva bryggeriets atmosfär."
+  }
+}

@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
           {/* Om Bryggeriet */}
           <div>
-            <h3 className="text-amber-500 font-serif text-xl font-bold mb-4">Ahlafors Bryggeri</h3>
+            <h3 className="text-amber-500 font-serif text-xl font-bold mb-4">Ahlafors Bryggerier</h3>
             <p className="text-sm leading-relaxed">
               Hantverk i varje droppe sedan 1996. Mikrobryggeri i hjärtat av den historiska spinnerifabriken i Alafors.
             </p>

@@ -1,32 +1,77 @@
 # Ahlafors Bryggeri
 
-Headless CMS-baserad webbplats för Ahlafors Bryggeri.
+Next.js-webbplats med eget CMS för Ahlafors Bryggeri.
 
 ## Struktur
 
-- `/backend` - Strapi CMS
-- `/frontend` - Next.js frontend (Vercel)
+- `/frontend` - Webbplats, API-rutter och admin
+- `/frontend/content/site-content.json` - Innehållsdatabas
+- `/frontend/app/admin` - Eget CMS
 
 ## Komma igång
 
 ```bash
-# Installera beroenden
 npm install
 
-# Starta utvecklingsmiljö (båda applikationer)
 npm run dev
-
-# Starta endast backend
-npm run dev:backend
-
-# Starta endast frontend
-npm run dev:frontend
 ```
 
-## Backend (Strapi)
+Öppna sedan:
 
-Backend körs på `http://localhost:1337`
+- Webbplats: `http://localhost:3000`
+- CMS: `http://localhost:3000/admin`
 
-## Frontend (Next.js)
+## Miljövariabler
 
-Frontend körs på `http://localhost:3000`
+Skapa `frontend/.env.local`:
+
+```bash
+CMS_SESSION_SECRET=en-lang-slumpad-hemlighet
+CMS_COOKIE_SECURE=false
+CMS_ADMIN_USERS=[{"username":"admin","displayName":"Admin","passwordHash":"scrypt:..."}]
+CMS_DB_HOST=127.0.0.1
+CMS_DB_PORT=5432
+CMS_DB_NAME=ahlafors_cms
+CMS_DB_USER=cms
+CMS_DB_PASSWORD=cms
+```
+
+Skapa hash för ett lösenord med:
+
+```bash
+npm run cms:hash-password -- mittlosenord
+```
+
+Skapa en färdig adminpost för `CMS_ADMIN_USERS` med:
+
+```bash
+npm run cms:create-admin-user -- admin mittlosenord "Admin"
+```
+
+Exempel med flera admins:
+
+```json
+[{"username":"admin","displayName":"Admin","passwordHash":"scrypt:..."},{"username":"mattias","displayName":"Mattias","passwordHash":"scrypt:..."}]
+```
+
+Skriv användarna till PostgreSQL med:
+
+```bash
+npm run cms:seed-admins
+```
+
+## Docker Desktop
+
+1. Kopiera `.env.docker.example` till `.env`
+2. Sätt `CMS_ADMIN_USERS`, `CMS_SESSION_SECRET` och PostgreSQL-variablerna
+3. Kör `docker compose up --build`
+
+Öppna sedan:
+
+- Webbplats: `http://localhost:3000`
+- CMS: `http://localhost:3000/admin`
+
+CMS-data, admin-användare, sessioner och login-skydd lagras i PostgreSQL-volymen `postgres_data`.
+För lokal HTTP-körning i Docker ska `CMS_COOKIE_SECURE=false`. Sätt den till `true` bakom riktig HTTPS i produktion.
+
+Om port `3000` redan används kan du sätta t.ex. `APP_PORT=3001` i `.env` och sedan öppna `http://localhost:3001`.

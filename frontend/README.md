@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend
 
-## Getting Started
+Next.js-app för Ahlafors Bryggeri med publik webbplats och eget CMS.
 
-First, run the development server:
+## Starta lokalt
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Öppna `http://localhost:3000` för webbplatsen och `http://localhost:3000/admin` för CMS.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## CMS
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Skapa `frontend/.env.local`:
 
-## Learn More
+```bash
+CMS_SESSION_SECRET=en-lang-slumpad-hemlighet
+CMS_COOKIE_SECURE=false
+CMS_ADMIN_USERS=[{"username":"admin","displayName":"Admin","passwordHash":"scrypt:..."}]
+CMS_DB_HOST=127.0.0.1
+CMS_DB_PORT=5432
+CMS_DB_NAME=ahlafors_cms
+CMS_DB_USER=cms
+CMS_DB_PASSWORD=cms
+```
 
-To learn more about Next.js, take a look at the following resources:
+Allt innehåll lagras i PostgreSQL. `frontend/content/site-content.json` används som seed vid första uppstart.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Skapa adminposter för `CMS_ADMIN_USERS` med:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm run cms:create-admin-user -- admin mittlosenord "Admin"
+```
 
-## Deploy on Vercel
+## Viktiga mappar
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` - sidor och API-rutter
+- `components/` - UI-komponenter
+- `content/` - CMS-data
+- `lib/` - innehållslagring och auth för admin

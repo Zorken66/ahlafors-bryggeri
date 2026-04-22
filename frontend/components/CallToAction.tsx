@@ -1,9 +1,10 @@
 import Link from "next/link";
 
-export default function CallToAction() {
+import type { SiteContent } from "@/lib/content-schema";
+
+export default function CallToAction({ homepage }: { homepage: SiteContent["homepage"] }) {
   return (
     <section className="section-padding bg-stone-900 text-white relative overflow-hidden">
-      {/* Background pattern */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" 
              style={{
@@ -15,48 +16,38 @@ export default function CallToAction() {
       <div className="container-custom relative z-10">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="heading-lg mb-6">
-            Beställ enkelt till <span className="text-amber-400">Systembolaget</span>
+            {homepage.ctaTitle}
           </h2>
           
           <p className="text-xl mb-4 text-stone-300">
-            Vår öl och cider går att köpa och beställa till vilket Systembolag som helst i landet.
+            {homepage.ctaLead}
           </p>
           
           <p className="text-lg mb-12 text-stone-400">
-            Inom kort står din dryck på hyllan, redo att avnjutas. Upptäck den äkta smaken av hantverk – från oss till dig.
+            {homepage.ctaBody}
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-12">
-            <Link href="/produkter" className="btn-primary">
-              Se vårt sortiment
+            <Link href={homepage.ctaPrimaryLink} className="btn-primary">
+              {homepage.ctaPrimaryLabel}
             </Link>
-            <Link href="/kontakt" className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
-              Kontakta oss
+            <Link href={homepage.ctaSecondaryLink} className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
+              {homepage.ctaSecondaryLabel}
             </Link>
           </div>
 
           <div className="grid md:grid-cols-3 gap-8 mt-16 pt-16 border-t border-stone-700">
-            <div>
-              <div className="text-amber-400 text-5xl mb-4">📍</div>
-              <h3 className="font-serif font-bold text-xl mb-2">Besök oss</h3>
-              <p className="text-stone-400">Alafors Fabriker<br />3 mil norr om Göteborg</p>
-            </div>
-            
-            <div>
-              <div className="text-amber-400 text-5xl mb-4">🍺</div>
-              <h3 className="font-serif font-bold text-xl mb-2">Rulleriet</h3>
-              <p className="text-stone-400">Smakbar & evenemang<br />Kolla våra öppettider</p>
-            </div>
-            
-            <div>
-              <div className="text-amber-400 text-5xl mb-4">✉️</div>
-              <h3 className="font-serif font-bold text-xl mb-2">Kontakt</h3>
-              <p className="text-stone-400">
-                <a href="mailto:info@ahlaforsbryggerier.se" className="hover:text-amber-400 transition-colors">
-                  info@ahlaforsbryggerier.se
-                </a>
-              </p>
-            </div>
+            {homepage.ctaCards.map((card) => (
+              <div key={`${card.title}-${card.icon}`}>
+                <div className="text-amber-400 text-5xl mb-4">{card.icon}</div>
+                <h3 className="font-serif font-bold text-xl mb-2">{card.title}</h3>
+                <p className="text-stone-400">
+                  {card.lines.map((line) => (
+                    <span key={line} className="block">{line}</span>
+                  ))}
+                </p>
+              </div>
+            ))}
           </div>
         </div>
       </div>

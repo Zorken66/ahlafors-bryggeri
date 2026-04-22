@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${CMS_DB_NAME:-ahlafors_cms}
+      POSTGRES_USER: ${CMS_DB_USER:-cms}
+      POSTGRES_PASSWORD: ${CMS_DB_PASSWORD:-cms}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${CMS_DB_USER:-cms} -d ${CMS_DB_NAME:-ahlafors_cms}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      CMS_SESSION_SECRET: ${CMS_SESSION_SECRET:-local-dev-secret}
+      CMS_COOKIE_SECURE: ${CMS_COOKIE_SECURE:-false}
+      CMS_ADMIN_USERS: "${CMS_ADMIN_USERS:-}"
+      CMS_DB_HOST: postgres
+      CMS_DB_PORT: 5432
+      CMS_DB_NAME: ${CMS_DB_NAME:-ahlafors_cms}
+      CMS_DB_USER: ${CMS_DB_USER:-cms}
+      CMS_DB_PASSWORD: ${CMS_DB_PASSWORD:-cms}
+      CONTACT_NOTIFICATION_TO: ${CONTACT_NOTIFICATION_TO:-}
+      CONTACT_NOTIFICATION_FROM: ${CONTACT_NOTIFICATION_FROM:-}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      NODE_ENV: production
+    restart: unless-stopped
+    volumes:
+      - cms_uploads:/app/frontend/public/uploads
+
+volumes:
+  postgres_data:
+  cms_uploads:

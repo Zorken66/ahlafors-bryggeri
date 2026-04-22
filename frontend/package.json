@@ -9,13 +9,21 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@types/sanitize-html": "^2.16.1",
+    "cropperjs": "^1.6.2",
     "next": "16.0.4",
+    "nodemailer": "^8.0.5",
+    "pg": "^8.20.0",
     "react": "19.2.0",
-    "react-dom": "19.2.0"
+    "react-cropper": "^2.3.3",
+    "react-dom": "19.2.0",
+    "sanitize-html": "^2.17.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.0",
+    "@types/pg": "^8.20.0",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

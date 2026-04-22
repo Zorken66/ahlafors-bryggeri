@@ -101,6 +101,55 @@ h1, h2, h3, h4, h5, h6 {
     content: '◆';
     @apply absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-stone-50 px-4 text-amber-600;
   }
+
+  .rich-text-editor:empty::before {
+    content: attr(data-placeholder);
+    @apply text-stone-400;
+  }
+
+  .rich-text-editor p {
+    @apply mb-3;
+  }
+
+  .rich-text-editor ul {
+    @apply mb-3 list-disc pl-6;
+  }
+
+  .rich-text-editor ol {
+    @apply mb-3 list-decimal pl-6;
+  }
+
+  .rich-text-editor blockquote {
+    @apply mb-3 border-l-4 border-amber-600 pl-4 italic text-stone-600;
+  }
+
+  .rich-text-editor h3 {
+    @apply mb-3 text-xl font-bold text-stone-900;
+  }
+
+  .rich-text-content p {
+    @apply mb-4;
+  }
+
+  .rich-text-content ul {
+    @apply mb-4 list-disc pl-6;
+  }
+
+  .rich-text-content ol {
+    @apply mb-4 list-decimal pl-6;
+  }
+
+  .rich-text-content blockquote {
+    @apply mb-4 border-l-4 border-amber-600 pl-4 italic text-stone-600;
+  }
+
+  .rich-text-content h3 {
+    @apply mb-3 text-2xl font-bold text-stone-900;
+  }
+
+  .rich-text-content a {
+    @apply font-semibold text-amber-700 underline underline-offset-4 hover:text-amber-900;
+  }
 }
 
 ::-webkit-scrollbar {

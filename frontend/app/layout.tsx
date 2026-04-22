@@ -3,6 +3,10 @@ import { Playfair_Display, Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { readSiteContent } from "@/lib/content-store";
+import { getCanonicalBase, withAbsoluteUrl } from "@/lib/site-metadata";
+
+export const dynamic = "force-dynamic";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -16,11 +20,25 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "Ahlafors Bryggeri - Hantverk i varje droppe",
-  description: "Mikrobryggeri sedan 1854. Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggeri i Alafors, norr om Göteborg.",
-  keywords: ["öl", "bryggeri", "hantverk", "mikrobryggeri", "Alafors", "Göteborg", "cider"],
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const content = await readSiteContent();
+
+  return {
+    title: content.site.metadataTitle,
+    description: content.site.metadataDescription,
+    keywords: content.site.metadataKeywords,
+    metadataBase: new URL(content.site.canonicalUrl || getCanonicalBase()),
+    alternates: {
+      canonical: content.site.canonicalUrl || getCanonicalBase(),
+    },
+    openGraph: {
+      title: content.site.metadataTitle,
+      description: content.site.metadataDescription,
+      url: content.site.canonicalUrl || getCanonicalBase(),
+      images: content.site.ogImage ? [{ url: withAbsoluteUrl(content.site.ogImage) }] : undefined,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

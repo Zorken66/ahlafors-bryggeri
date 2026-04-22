@@ -1,229 +1,48 @@
-export default function ReceptPage() {
-  const recipes = [
-    {
-      id: 1,
-      title: "Ölmarinerad Entrecôte",
-      description: "Saftig entrecôte marinerad i vår kraftfulla IPA med rosmarin och vitlök. Perfekt på grillen!",
-      ingredients: [
-        "4 entrecôte-stekar (ca 200g styck)",
-        "3 dl Ahlafors Jubileumsipa",
-        "3 vitlöksklyftor, pressade",
-        "2 msk olivolja",
-        "2 msk soja",
-        "1 msk honung",
-        "2 kvistar färsk rosmarin",
-        "Salt och peppar"
-      ],
-      instructions: [
-        "Blanda IPA, vitlök, olivolja, soja, honung och hackad rosmarin i en skål.",
-        "Lägg entrecôte-stekarna i en form och häll över marinaden.",
-        "Låt marinera i kylskåp i minst 4 timmar, gärna över natten.",
-        "Ta upp köttet 30 minuter innan grillning för rumstemperatur.",
-        "Grilla på hög värme ca 3-4 minuter per sida för medium.",
-        "Låt vila i 5 minuter innan servering.",
-        "Servera med grillade grönsaker och mer IPA!"
-      ],
-      difficulty: "Medel",
-      time: "30 min + marinering",
-      servings: "4 portioner",
-      pairing: "Ahlafors Jubileumsipa",
-      image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069"
-    },
-    {
-      id: 2,
-      title: "Ölbröd med Ljusa",
-      description: "Saftigt och smakfullt bröd med vår Ljusa lager. Perfekt som tillbehör till grillen eller till ost.",
-      ingredients: [
-        "5 dl Ahlafors Ljusa",
-        "9 dl vetemjöl",
-        "2 dl rågmjöl",
-        "1 dl sirap",
-        "2 tsk salt",
-        "50g jäst",
-        "2 msk rapsolja"
-      ],
-      instructions: [
-        "Värm ölen till fingervarmt (37°C).",
-        "Smula jästen i en bunke och lös upp den i lite av den varma ölen.",
-        "Tillsätt resten av ölen, sirap, salt och olja.",
-        "Blanda ihop vetemjölet och rågmjölet.",
-        "Arbeta in mjölet lite i taget tills degen släpper från bunken.",
-        "Låt jäsa under bakduk i ca 40 minuter.",
-        "Knåda degen och forma till 2 limpor.",
-        "Lägg i smorda formar och låt jäsa ytterligare 30 minuter.",
-        "Grädda i 200°C i ca 40 minuter.",
-        "Låt svalna på galler."
-      ],
-      difficulty: "Lätt",
-      time: "2 timmar",
-      servings: "2 limpor",
-      pairing: "Ahlafors Ljusa",
-      image: "https://images.unsplash.com/photo-1509440159596-0249088772ff?q=80&w=2072"
-    },
-    {
-      id: 3,
-      title: "Ölsoppa med Rotsaker",
-      description: "Rustik och värmande rotsakssoppa med maltiga toner från vår Märzen lager.",
-      ingredients: [
-        "3 dl Ahlafors Märzen",
-        "3 morötter",
-        "1 palsternacka",
-        "1/2 rotselleri",
-        "2 schalottenlökar",
-        "1 liter grönsaksbuljong",
-        "2 dl vispgrädde",
-        "2 msk smör",
-        "Salt, peppar och timjan"
-      ],
-      instructions: [
-        "Skala och tärna alla rotsaker i bitar.",
-        "Fräs schalottenlöken i smör tills den är mjuk.",
-        "Tillsätt rotsakerna och fräs i några minuter.",
-        "Häll i ölen och låt koka ihop till hälften.",
-        "Tillsätt buljongen och låt sjuda tills rotsakerna är mjuka (ca 20 min).",
-        "Mixa soppan slät med stavmixer.",
-        "Rör ner grädden och smaka av med salt, peppar och timjan.",
-        "Servera med färskt bröd och ett glas Märzen!"
-      ],
-      difficulty: "Lätt",
-      time: "45 minuter",
-      servings: "4 portioner",
-      pairing: "Ahlafors Märzen",
-      image: "https://images.unsplash.com/photo-1547592166-23ac45744acd?q=80&w=2071"
-    },
-    {
-      id: 4,
-      title: "Beer Battered Fish & Chips",
-      description: "Krispig friterad fisk i smet med vår Pale Ale. En klassiker som aldrig sviker!",
-      ingredients: [
-        "600g torskfilé",
-        "2 dl Ahlafors Pale Ale",
-        "2 dl vetemjöl",
-        "1 tsk bakpulver",
-        "Salt och peppar",
-        "4 stora potatisar",
-        "Olja till fritering",
-        "Citronklyftor och tartarsås till servering"
-      ],
-      instructions: [
-        "Skär potatisen i tjocka strips och blötlägg i kallt vatten i 30 min.",
-        "Torka potatisen och fritera i 160°C i 5 minuter. Låt svalna.",
-        "Blanda mjöl, bakpulver, salt och peppar. Rör ner ölen till en slät smet.",
-        "Dela fisken i portionsbitar och krydda med salt och peppar.",
-        "Doppa fisken i smeten och fritera i 180°C tills den är gyllene (ca 4-5 min).",
-        "Fritera potatisen igen i 180°C tills den är krispig och gyllene.",
-        "Servera med citron, tartarsås och självklart en kall Pale Ale!"
-      ],
-      difficulty: "Medel",
-      time: "60 minuter",
-      servings: "4 portioner",
-      pairing: "Ahlafors Pale Ale",
-      image: "https://images.unsplash.com/photo-1579208575657-c595a05383b7?q=80&w=2070"
-    },
-    {
-      id: 5,
-      title: "Ölglaserad Fläskkarré",
-      description: "Succulent fläskkarré glaserad med vår maltiga Britt och honungsenap.",
-      ingredients: [
-        "1 kg fläskkarré",
-        "2 dl Ahlafors Britt",
-        "3 msk honung",
-        "2 msk dijonsenap",
-        "2 vitlöksklyftor",
-        "2 msk smör",
-        "Salt, peppar och timjan"
-      ],
-      instructions: [
-        "Sätt ugnen på 125°C.",
-        "Krydda fläskkartén med salt, peppar och timjan.",
-        "Bryn köttet i smör på alla sidor i en stekpanna.",
-        "Lägg över i en ugnsform.",
-        "Koka ihop öl, honung, senap och pressad vitlök till en tjock glasyr.",
-        "Pensla köttet med glasyren.",
-        "Stek i ugn tills innertemperaturen är 65°C (ca 45-60 min).",
-        "Pensla med mer glasyr var 15:e minut.",
-        "Låt vila i 10 minuter innan uppskärning.",
-        "Servera med rotsaksmos och mer Britt!"
-      ],
-      difficulty: "Medel",
-      time: "90 minuter",
-      servings: "4-6 portioner",
-      pairing: "Ahlafors Britt",
-      image: "https://images.unsplash.com/photo-1432139509613-5c4255815697?q=80&w=2085"
-    },
-    {
-      id: 6,
-      title: "Ölcheesecake med Karamell",
-      description: "Krämig cheesecake med maltiga toner och salt karamellsås - en överraskning för smaklökarna!",
-      ingredients: [
-        "200g digestivekex",
-        "100g smör",
-        "600g philadelphiaost",
-        "1 dl Ahlafors Märzen",
-        "1 dl socker",
-        "3 ägg",
-        "1 dl vispgrädde",
-        "2 tsk vaniljsocker",
-        "Salt karamellsås till servering"
-      ],
-      instructions: [
-        "Sätt ugnen på 175°C.",
-        "Mosa kexen fint och blanda med smält smör. Tryck ut i botten på en springform (24 cm).",
-        "Gräddbaka i 10 minuter. Låt svalna.",
-        "Vispa philadelphiaost och socker pösigt.",
-        "Tillsätt äggen ett i taget.",
-        "Rör ner ölen, grädde och vaniljsocker.",
-        "Häll smeten över kakbottnen.",
-        "Gräddbaka i 50-60 minuter tills kakan är nästan fast men darrar lätt i mitten.",
-        "Låt svalna i ugnen med dörren på glänt.",
-        "Kyl i minst 4 timmar, gärna över natten.",
-        "Servera med salt karamellsås och brygda nötter!"
-      ],
-      difficulty: "Medel",
-      time: "90 min + kylning",
-      servings: "8-10 portioner",
-      pairing: "Ahlafors Märzen",
-      image: "https://images.unsplash.com/photo-1533134242443-d4e2e2f79a3f?q=80&w=2070"
-    }
-  ];
+import Link from "next/link";
+import type { Metadata } from "next";
+
+import { readSiteContent } from "@/lib/content-store";
+import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
+import { getPublishedRecipes } from "@/lib/published-content";
+
+export default async function ReceptPage() {
+  const { recipes, recipesPage, site } = await readSiteContent();
+  const publishedRecipes = getPublishedRecipes(recipes);
 
   return (
     <div className="min-h-screen bg-stone-50">
-      {/* Hero Section */}
       <section className="relative h-[50vh] flex items-center justify-center bg-stone-900 text-white overflow-hidden">
-        <div className="absolute inset-0 bg-linear-to-b from-stone-900/70 to-stone-900/90 z-10"></div>
+        <div className="absolute inset-0 z-10" style={buildHeroOverlayStyle(recipesPage.heroOverlayOpacity)}></div>
         <div 
           className="absolute inset-0 bg-cover bg-center"
           style={{
-            backgroundImage: "url('https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=2070')"
+            backgroundImage: `url('${recipesPage.heroImage}')`
           }}
         ></div>
         
         <div className="relative z-20 container-custom text-center">
-          <h1 className="heading-xl mb-6">Recept</h1>
+          <h1 className="heading-xl mb-6">{recipesPage.heroTitle}</h1>
           <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light">
-            Spännande dryckesrecept och maträtter med våra öl
+            {recipesPage.heroSubtitle}
           </p>
         </div>
       </section>
 
-      {/* Intro */}
       <section className="section-padding bg-white">
         <div className="container-custom max-w-3xl text-center">
           <p className="text-xl text-stone-700 leading-relaxed mb-4">
-            Vi presenterar ett urval av <strong>spännande recept</strong> som du kan prova hemma.
+            {recipesPage.introTitle}
           </p>
           <p className="text-lg text-stone-600">
-            Utforska våra enkla steg-för-steg-instruktioner med våra öl som huvudingrediens eller som perfekt tillbehör.
+            {recipesPage.introSubtext}
           </p>
         </div>
       </section>
 
-      {/* Recipes Grid */}
       <section className="section-padding bg-stone-100">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recipes.map((recipe) => (
+            {publishedRecipes.map((recipe) => (
               <div 
                 key={recipe.id} 
                 className="group bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
@@ -319,20 +138,26 @@ export default function ReceptPage() {
       {/* CTA Section */}
       <section className="section-padding bg-oak text-white">
         <div className="container-custom text-center max-w-3xl">
-          <h2 className="heading-md mb-6">Upptäck våra produkter</h2>
-          <p className="text-xl mb-8">
-            Alla våra öl och cider finns att beställa på Systembolaget över hela landet.
-          </p>
+          <h2 className="heading-md mb-6">{recipesPage.ctaTitle}</h2>
+          <p className="text-xl mb-8">{recipesPage.ctaText}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/produkter" className="btn-primary">
-              Se produkter
-            </a>
-            <a href="/kontakt" className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
-              Kontakta oss
-            </a>
+            <Link href={recipesPage.ctaPrimaryLink} className="btn-primary">
+              {recipesPage.ctaPrimaryLabel}
+            </Link>
+            <Link href={recipesPage.ctaSecondaryLink} className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
+              {recipesPage.ctaSecondaryLabel}
+            </Link>
           </div>
         </div>
       </section>
     </div>
   );
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { recipesPage, site } = await readSiteContent();
+  return {
+    title: recipesPage.seoTitle || `${site.companyName} - Recept`,
+    description: recipesPage.seoDescription || site.metadataDescription,
+  };
 }

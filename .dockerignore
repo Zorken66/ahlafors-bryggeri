@@ -1,0 +1,10 @@
+.git
+.gitignore
+.next
+node_modules
+frontend/.next
+frontend/node_modules
+backend
+npm-debug.log*
+*.local
+*.log
