@@ -1220,46 +1220,35 @@
     ],
     "events": [
       {
-        "date": "2025-09-19",
+        "date": "2026-04-24",
         "time": "17:00 - 22:00",
-        "title": "Quiz-kväll på Rulleriet",
-        "description": "Rulleriet öppnar kl 17. Det blir Quiz!",
-        "food": "La Chiva står för maten"
+        "title": "After Work med Rollin Bistros",
+        "description": "Rollin Bistros kommer på besök i Rulleriet. Välkommen till en kväll med mat och dryck i smakbaren.",
+        "image": "/media/rulleriet-rollin-bistros.jpg",
+        "food": "Rollin Bistros"
       },
       {
-        "date": "2025-10-03",
+        "date": "2026-05-08",
         "time": "17:00 - 22:00",
-        "title": "After Work",
-        "description": "AW på Rulleriet? Naturligtvis!",
-        "food": "A taste of britain står för maten"
+        "title": "After Work med Tikka Roti",
+        "description": "Tikka Roti kommer tillbaka till Rulleriet för ännu en kväll med smakrik mat och god dryck.",
+        "image": "/media/rulleriet-tikka-roti.png",
+        "food": "Tikka Roti"
       },
       {
-        "date": "2025-10-17",
+        "date": "2026-05-22",
         "time": "17:00 - 22:00",
-        "title": "Höstrus med Arepas",
-        "description": "Vi kör i höstrusket. Premiär för La Delicia foodtruck.",
-        "food": "Det blir Arepas"
+        "title": "After Work i Rulleriet",
+        "description": "Vi öppnar som vanligt kl. 17. Matinslaget presenteras närmare eventdatumet.",
+        "image": "/media/2026-04-22-80a16387-7d97-4915-9832-e92021f53224.jpg",
+        "food": "Överraskning"
       },
       {
-        "date": "2025-11-01",
-        "time": "16:00 - 21:00",
-        "title": "Lördagskväll med irakisk mat",
-        "description": "Vi bryter av med en lördag. Premiär för irakisk foodtruck.",
-        "food": "Irakiskt"
-      },
-      {
-        "date": "2025-11-14",
+        "date": "2026-06-05",
         "time": "17:00 - 22:00",
-        "title": "Nyheter på kranarna",
-        "description": "Lite nyheter på kranarna. Kanske Julölen?",
-        "food": "The Mexican BBQ kommer tillbaka med Tacos"
-      },
-      {
-        "date": "2025-11-28",
-        "time": "17:00 - 22:00",
-        "title": "Säsongsavslutning",
-        "description": "Säsongsavslutning. Efter detta tar vi semester tills våren kommer.",
-        "food": "Våra irakiska vänner står för maten igen"
+        "title": "Försommarkväll i Rulleriet",
+        "description": "Vi välkomnar till en ny kväll i Rulleriet. Information om mat och upplägg uppdateras närmare datumet.",
+        "image": "/media/2026-04-22-80a16387-7d97-4915-9832-e92021f53224.jpg"
       }
     ],
     "locationTitle": "Hitta hit",
