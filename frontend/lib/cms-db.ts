@@ -171,6 +171,8 @@ async function syncAdminUsers() {
   const users = getCmsUsers();
 
   for (const user of users) {
+    const normalizedUsername = user.username.trim().toLowerCase();
+
     await pool.query(
       `
         INSERT INTO cms_admin_users (username, display_name, password_hash, role, is_active)
@@ -178,7 +180,7 @@ async function syncAdminUsers() {
         ON CONFLICT (username) DO UPDATE
         SET role = COALESCE(cms_admin_users.role, EXCLUDED.role)
       `,
-      [user.username, user.displayName ?? user.username, user.passwordHash, user.role ?? "superadmin"],
+      [normalizedUsername, user.displayName ?? user.username, user.passwordHash, user.role ?? "superadmin"],
     );
   }
 }

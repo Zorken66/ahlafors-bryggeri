@@ -75,6 +75,14 @@ function parseRedirects(value: string): RedirectEntry[] {
     .filter((redirect) => redirect.source && redirect.destination);
 }
 
+function createEmptyRedirect(): RedirectEntry {
+  return {
+    source: "",
+    destination: "",
+    permanent: true,
+  };
+}
+
 export default function SiteSectionManager({
   content,
   onSave,
@@ -289,18 +297,107 @@ export default function SiteSectionManager({
         <div className="space-y-6 rounded-3xl border border-stone-200 p-6">
           <div>
             <h3 className="text-lg font-bold text-stone-900">Redirects</h3>
-            <p className="mt-1 text-sm text-stone-600">Hantera gamla länkar som ska skickas vidare till nya adresser. Format: `kalla|mal|permanent` eller `kalla|mal|temporary`, en rad per redirect.</p>
+            <p className="mt-1 text-sm text-stone-600">Hantera gamla länkar som ska skickas vidare till nya adresser. Använd relativa sökvägar som `/gammal-sida` eller fullständiga URL:er om målet ligger externt.</p>
           </div>
 
-          <label className="block">
-            <span className="mb-2 block text-sm font-semibold text-stone-700">Redirectlista</span>
-            <textarea
-              value={formatRedirects(draft.redirects)}
-              onChange={(event) => setDraft((current) => ({ ...current, redirects: parseRedirects(event.target.value) }))}
-              rows={12}
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 font-mono text-sm"
-            />
-          </label>
+          <div className="space-y-4">
+            {draft.redirects.map((redirect, index) => (
+              <div key={`${redirect.source}-${redirect.destination}-${index}`} className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_160px_120px] lg:items-end">
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-stone-700">Från</span>
+                    <input
+                      value={redirect.source}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          redirects: current.redirects.map((entry, entryIndex) =>
+                            entryIndex === index ? { ...entry, source: normalizeRedirectPath(event.target.value) } : entry,
+                          ),
+                        }))
+                      }
+                      placeholder="/gammal-sida"
+                      className="w-full rounded-xl border border-stone-300 px-4 py-3"
+                    />
+                  </label>
+
+                  <label className="block">
+                    <span className="mb-2 block text-sm font-semibold text-stone-700">Till</span>
+                    <input
+                      value={redirect.destination}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          redirects: current.redirects.map((entry, entryIndex) =>
+                            entryIndex === index ? { ...entry, destination: normalizeRedirectPath(event.target.value) } : entry,
+                          ),
+                        }))
+                      }
+                      placeholder="/ny-sida"
+                      className="w-full rounded-xl border border-stone-300 px-4 py-3"
+                    />
+                  </label>
+
+                  <label className="flex items-center gap-3 rounded-xl border border-stone-300 bg-white px-4 py-3">
+                    <input
+                      type="checkbox"
+                      checked={redirect.permanent}
+                      onChange={(event) =>
+                        setDraft((current) => ({
+                          ...current,
+                          redirects: current.redirects.map((entry, entryIndex) =>
+                            entryIndex === index ? { ...entry, permanent: event.target.checked } : entry,
+                          ),
+                        }))
+                      }
+                      className="h-4 w-4 rounded border-stone-300"
+                    />
+                    <span className="text-sm font-semibold text-stone-700">Permanent</span>
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDraft((current) => ({
+                        ...current,
+                        redirects: current.redirects.filter((_, entryIndex) => entryIndex !== index),
+                      }))
+                    }
+                    className="rounded-xl border border-red-200 px-4 py-3 text-sm font-semibold text-red-700 transition hover:border-red-300 hover:bg-red-50"
+                  >
+                    Ta bort
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={() =>
+                setDraft((current) => ({
+                  ...current,
+                  redirects: [...current.redirects, createEmptyRedirect()],
+                }))
+              }
+              className="rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-500"
+            >
+              Ny redirect
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                setDraft((current) => ({
+                  ...current,
+                  redirects: parseRedirects(formatRedirects(current.redirects)),
+                }))
+              }
+              className="rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-stone-700 transition hover:border-stone-500"
+            >
+              Städa listan
+            </button>
+          </div>
         </div>
       )}
 

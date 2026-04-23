@@ -45,6 +45,7 @@ export default function CmsLoginForm() {
             onChange={(event) => setUsername(event.target.value)}
             className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
           />
+          <span className="mt-2 block text-xs text-stone-500">Användarnamn hanteras utan skillnad på stora och små bokstäver.</span>
         </label>
         <label className="block">
           <span className="mb-2 block text-sm font-semibold text-stone-700">Lösenord</span>

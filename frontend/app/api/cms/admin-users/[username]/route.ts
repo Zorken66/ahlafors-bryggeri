@@ -17,6 +17,7 @@ export async function PATCH(request: Request, context: RouteContext) {
   }
 
   const { username } = await context.params;
+  const normalizedUsername = username.trim().toLowerCase();
 
   try {
     const body = (await request.json()) as {
@@ -26,15 +27,15 @@ export async function PATCH(request: Request, context: RouteContext) {
       role?: "superadmin" | "editor" | "blog_editor" | "contact_editor";
     };
 
-    if (auth.session.username === username && body.isActive === false) {
+    if (auth.session.username.toLowerCase() === normalizedUsername && body.isActive === false) {
       return NextResponse.json({ error: "Du kan inte stänga av ditt eget konto." }, { status: 400 });
     }
 
-    if (auth.session.username === username && body.role && body.role !== auth.session.role) {
+    if (auth.session.username.toLowerCase() === normalizedUsername && body.role && body.role !== auth.session.role) {
       return NextResponse.json({ error: "Du kan inte ändra din egen roll." }, { status: 400 });
     }
 
-    await updateCmsAdminUser(username, body);
+    await updateCmsAdminUser(normalizedUsername, body);
     return NextResponse.json({ ok: true });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Kunde inte uppdatera admin-användaren.";

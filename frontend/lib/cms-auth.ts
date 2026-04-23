@@ -98,16 +98,22 @@ export function getCmsUsers() {
 }
 
 export async function getCmsUser(username: string) {
+  const normalizedUsername = username.trim().toLowerCase();
+
+  if (!normalizedUsername) {
+    return null;
+  }
+
   await ensureCmsDatabaseReady();
   const pool = getCmsDbPool();
   const { rows } = await pool.query<CmsAdminUserRow>(
     `
       SELECT username, display_name, password_hash, is_active, role
       FROM cms_admin_users
-      WHERE username = $1
+      WHERE LOWER(username) = $1
       LIMIT 1
     `,
-    [username],
+    [normalizedUsername],
   );
 
   const row = rows[0];

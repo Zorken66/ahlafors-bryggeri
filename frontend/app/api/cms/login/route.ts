@@ -5,7 +5,7 @@ import { createCmsSession, verifyCmsCredentials } from "@/lib/cms-auth";
 
 export async function POST(request: Request) {
   const body = (await request.json()) as { username?: string; password?: string };
-  const username = body.username?.trim() ?? "";
+  const username = body.username?.trim().toLowerCase() ?? "";
   const password = body.password?.trim() ?? "";
   const forwardedFor = request.headers.get("x-forwarded-for");
   const ip = forwardedFor?.split(",")[0]?.trim() || "unknown";

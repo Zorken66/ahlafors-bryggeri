@@ -60,6 +60,20 @@ export async function createCmsAdminUser(input: {
     throw new Error("Användarnamn, visningsnamn och lösenord krävs.");
   }
 
+  const existingUser = await pool.query<{ username: string }>(
+    `
+      SELECT username
+      FROM cms_admin_users
+      WHERE LOWER(username) = $1
+      LIMIT 1
+    `,
+    [username],
+  );
+
+  if (existingUser.rows.length > 0) {
+    throw new Error("Användarnamnet används redan.");
+  }
+
   await pool.query(
     `
       INSERT INTO cms_admin_users (username, display_name, password_hash, role, is_active)
@@ -80,8 +94,13 @@ export async function updateCmsAdminUser(
 ) {
   await ensureCmsDatabaseReady();
   const pool = getCmsDbPool();
+  const normalizedUsername = username.trim().toLowerCase();
   const updates: string[] = [];
   const values: Array<string | number | boolean> = [];
+
+  if (!normalizedUsername) {
+    throw new Error("Användarnamn krävs.");
+  }
 
   if (typeof input.displayName === "string") {
     const displayName = input.displayName.trim();
@@ -114,18 +133,22 @@ export async function updateCmsAdminUser(
   }
 
   updates.push("updated_at = CURRENT_TIMESTAMP");
-  values.push(username);
+  values.push(normalizedUsername);
 
-  await pool.query(
+  const result = await pool.query(
     `
       UPDATE cms_admin_users
       SET ${updates.join(", ")}
-      WHERE username = $${values.length}
+      WHERE LOWER(username) = $${values.length}
     `,
     values,
   );
 
+  if (result.rowCount === 0) {
+    throw new Error("Admin-användaren hittades inte.");
+  }
+
   if (input.isActive === false) {
-    await pool.query("DELETE FROM cms_sessions WHERE username = $1", [username]);
+    await pool.query("DELETE FROM cms_sessions WHERE LOWER(username) = $1", [normalizedUsername]);
   }
 }
