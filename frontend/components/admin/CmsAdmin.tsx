@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import AdminUsersManager from "@/components/admin/AdminUsersManager";
+import AdminDashboard from "@/components/admin/AdminDashboard";
 import AboutSectionManager from "@/components/admin/AboutSectionManager";
 import ContactMessagesManager from "@/components/admin/ContactMessagesManager";
 import ContactSectionManager from "@/components/admin/ContactSectionManager";
@@ -26,6 +27,14 @@ type AdminStatus = {
   message: string;
 };
 
+type AdminFocusState = {
+  section: CmsSection;
+  targetId?: string;
+  targetTab?: string;
+  targetAnchorId?: string;
+  token: number;
+};
+
 function isJsonEditorSection(section: CmsSection): section is keyof SiteContent {
   return !["site", "homepage", "news", "recipes", "rulleriet", "rullerietPosts", "adminUsers", "contactMessages", "revisions", "about", "contact", "products", "services", "media", "operations"].includes(section);
 }
@@ -38,6 +47,7 @@ const roleLabels: Record<CmsRole, string> = {
 };
 
 const sections: Array<{ key: CmsSection; label: string }> = [
+  { key: "operations", label: "Översikt" },
   { key: "site", label: "Site" },
   { key: "homepage", label: "Förstasida" },
   { key: "media", label: "Media" },
@@ -57,10 +67,13 @@ const sections: Array<{ key: CmsSection; label: string }> = [
 export default function CmsAdmin({ username, role }: { username: string; role: CmsRole }) {
   const [content, setContent] = useState<SiteContent | null>(null);
   const allowedSections = getAllowedSectionsForRole(role);
-  const [activeSection, setActiveSection] = useState<CmsSection>(allowedSections[0] ?? "site");
+  const [activeSection, setActiveSection] = useState<CmsSection>(
+    allowedSections.includes("operations") ? "operations" : (allowedSections[0] ?? "site"),
+  );
   const [editorValue, setEditorValue] = useState("");
   const [status, setStatus] = useState<AdminStatus | null>(null);
   const [loading, setLoading] = useState(false);
+  const [focusState, setFocusState] = useState<AdminFocusState | null>(null);
 
   useEffect(() => {
     if (!status || status.kind !== "success") {
@@ -119,6 +132,14 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
     if (content && isJsonEditorSection(section)) {
       setEditorValue(JSON.stringify(content[section], null, 2));
     }
+  }
+
+  function handleDashboardOpenSection(focus: Omit<AdminFocusState, "token">) {
+    setActiveSection(focus.section);
+    setFocusState({
+      ...focus,
+      token: Date.now(),
+    });
   }
 
   async function persistContent(nextContent: SiteContent, options?: { sectionKey?: CmsSection; changeSummary?: string }) {
@@ -228,7 +249,14 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
             </div>
           )}
           {activeSection === "rullerietPosts" && content ? (
-            <RullerietPostsManager content={content} onSave={persistContent} />
+            <RullerietPostsManager
+              content={content}
+              onSave={persistContent}
+              initialSelectedId={focusState?.section === "rullerietPosts" ? focusState.targetId : undefined}
+              focusToken={focusState?.section === "rullerietPosts" ? focusState.token : undefined}
+            />
+          ) : activeSection === "operations" && content ? (
+            <AdminDashboard content={content} allowedSections={allowedSections} onOpenSection={handleDashboardOpenSection} />
           ) : activeSection === "homepage" && content ? (
             <HomepageSectionManager content={content} onSave={persistContent} />
           ) : activeSection === "site" && content ? (
@@ -240,15 +268,43 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
           ) : activeSection === "media" ? (
             <MediaLibraryManager />
           ) : activeSection === "news" && content ? (
-            <NewsManager content={content} onSave={persistContent} />
+            <NewsManager
+              content={content}
+              onSave={persistContent}
+              initialSelectedId={focusState?.section === "news" ? focusState.targetId : undefined}
+              focusToken={focusState?.section === "news" ? focusState.token : undefined}
+            />
           ) : activeSection === "products" && content ? (
-            <ProductsManager content={content} onSave={persistContent} />
+            <ProductsManager
+              content={content}
+              onSave={persistContent}
+              initialSelectedId={focusState?.section === "products" ? focusState.targetId : undefined}
+              initialTab={focusState?.section === "products" ? focusState.targetTab as "page" | "settings" | "products" | undefined : undefined}
+              focusToken={focusState?.section === "products" ? focusState.token : undefined}
+            />
           ) : activeSection === "services" && content ? (
-            <ServicesManager content={content} onSave={persistContent} />
+            <ServicesManager
+              content={content}
+              onSave={persistContent}
+              initialSelectedId={focusState?.section === "services" ? focusState.targetId : undefined}
+              initialTab={focusState?.section === "services" ? focusState.targetTab as "page" | "services" | undefined : undefined}
+              focusToken={focusState?.section === "services" ? focusState.token : undefined}
+            />
           ) : activeSection === "recipes" && content ? (
-            <RecipesManager content={content} onSave={persistContent} />
+            <RecipesManager
+              content={content}
+              onSave={persistContent}
+              initialSelectedId={focusState?.section === "recipes" ? focusState.targetId : undefined}
+              initialTab={focusState?.section === "recipes" ? focusState.targetTab as "page" | "recipes" | undefined : undefined}
+              focusToken={focusState?.section === "recipes" ? focusState.token : undefined}
+            />
           ) : activeSection === "rulleriet" && content ? (
-            <RullerietSectionManager content={content} onSave={persistContent} />
+            <RullerietSectionManager
+              content={content}
+              onSave={persistContent}
+              initialFocusEventAnchorId={focusState?.section === "rulleriet" ? focusState.targetAnchorId : undefined}
+              focusToken={focusState?.section === "rulleriet" ? focusState.token : undefined}
+            />
           ) : activeSection === "adminUsers" ? (
             <AdminUsersManager currentUsername={username} />
           ) : activeSection === "contactMessages" ? (

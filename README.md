@@ -7,6 +7,9 @@ Next.js-webbplats med eget CMS för Ahlafors Bryggeri.
 - `/frontend` - Webbplats, API-rutter och admin
 - `/frontend/content/site-content.json` - Innehållsdatabas
 - `/frontend/app/admin` - Eget CMS
+- `/docs/cms` - CMS-vision, roadmap och epics
+- `/docs/deploy` - deploy-, VPS- och cutover-dokumentation
+- `/docs/project` - projektplanering och innehållsunderlag
 
 ## Komma igång
 
@@ -75,3 +78,12 @@ CMS-data, admin-användare, sessioner och login-skydd lagras i PostgreSQL-volyme
 För lokal HTTP-körning i Docker ska `CMS_COOKIE_SECURE=false`. Sätt den till `true` bakom riktig HTTPS i produktion.
 
 Om port `3000` redan används kan du sätta t.ex. `APP_PORT=3001` i `.env` och sedan öppna `http://localhost:3001`.
+
+## Produktion
+
+För VPS:
+
+- `deploy-vps.ps1` = koddeploy
+- `promote-content-vps.ps1 -Force` = explicit innehållspromotion till CMS-databasen
+
+De ska inte blandas ihop. Produktions-CMS, inklusive hero-bilder, lever i databasen och ska inte skrivas över vid vanlig deploy.

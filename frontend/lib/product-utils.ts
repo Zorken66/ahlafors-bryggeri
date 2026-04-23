@@ -5,6 +5,13 @@ export type ProductWithComputedFields = ProductEntry & {
   links: ProductLink[];
 };
 
+export function isAnniversaryProduct(product: Pick<ProductEntry, "id" | "name" | "slug">) {
+  const slug = (product.slug || "").toLowerCase();
+  const name = (product.name || "").toLowerCase();
+  const id = (product.id || "").toLowerCase();
+  return slug.includes("jubile") || name.includes("jubile") || id.includes("jubile");
+}
+
 export function slugifyProduct(value: string) {
   return value
     .toLowerCase()

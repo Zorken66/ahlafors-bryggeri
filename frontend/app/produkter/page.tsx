@@ -5,7 +5,7 @@ import ProductImageFrame from "@/components/ProductImageFrame";
 import { readSiteContent } from "@/lib/content-store";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
 import { getPublishedProducts } from "@/lib/published-content";
-import { getProductCategories, normalizeProducts } from "@/lib/product-utils";
+import { getProductCategories, isAnniversaryProduct, normalizeProducts } from "@/lib/product-utils";
 
 type ProductsPageProps = {
   searchParams?: Promise<{
@@ -47,7 +47,7 @@ export default async function ProdukterPage({ searchParams }: ProductsPageProps)
         </div>
       </section>
 
-      <section className="bg-white shadow-md sticky top-0 z-40 border-b-2 border-amber-500">
+      <section className="sticky top-[72px] z-40 border-b-2 border-amber-500 bg-white shadow-md md:top-[84px]">
         <div className="container-custom">
           <div className="flex items-center justify-center gap-2 py-6 overflow-x-auto">
             {categories.map((category) => (
@@ -90,6 +90,11 @@ export default async function ProdukterPage({ searchParams }: ProductsPageProps)
                   <div className="absolute top-4 left-4 bg-stone-900/90 text-white px-4 py-2 rounded-full text-xs uppercase tracking-wider font-semibold shadow-lg">
                     {product.type}
                   </div>
+                  {isAnniversaryProduct(product) && (
+                    <div className="absolute bottom-4 right-4 rounded-full border border-amber-300/60 bg-stone-950/85 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-amber-300 shadow-lg">
+                      30 år
+                    </div>
+                  )}
 
                   {product.featured && (
                     <div className="absolute bottom-4 left-4 bg-amber-500 text-stone-900 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-lg">
@@ -99,6 +104,11 @@ export default async function ProdukterPage({ searchParams }: ProductsPageProps)
                 </div>
 
                 <div className="flex flex-1 flex-col p-6">
+                  {isAnniversaryProduct(product) && (
+                    <div className="mb-3 inline-flex w-fit rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-amber-800">
+                      Jubileumsöl
+                    </div>
+                  )}
                   <div className="text-xs uppercase tracking-wider text-copper font-semibold mb-2">
                     {product.style}
                   </div>

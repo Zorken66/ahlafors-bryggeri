@@ -27,6 +27,22 @@ export default async function OmOssPage() {
         </div>
       </section>
 
+      <section className="border-b border-stone-200 bg-stone-100 py-6">
+        <div className="container-custom">
+          <div className="flex flex-wrap justify-center gap-3">
+            <a href="#styrelse" className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-amber-600 hover:text-amber-700">
+              Styrelse
+            </a>
+            <a href="#alafors" className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-amber-600 hover:text-amber-700">
+              Orten Alafors
+            </a>
+            <a href="#spinneriet" className="rounded-full border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-amber-600 hover:text-amber-700">
+              Spinnerifabriken
+            </a>
+          </div>
+        </div>
+      </section>
+
       <section className="section-padding bg-white">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-12 items-center mb-16">
@@ -91,6 +107,75 @@ export default async function OmOssPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="styrelse" className="section-padding border-y border-stone-200 bg-stone-100">
+        <div className="container-custom">
+          <div className="mx-auto max-w-4xl">
+            <h2 className="heading-md mb-4 text-center">{about.boardTitle}</h2>
+            <p className="mx-auto mb-10 max-w-3xl text-center leading-relaxed text-stone-700">{about.boardIntro}</p>
+
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-stone-200">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">{about.chairTitle}</p>
+                <p className="mt-4 text-lg font-semibold text-stone-900">{about.chairName}</p>
+              </div>
+
+              <div className="rounded-3xl bg-white p-8 shadow-sm ring-1 ring-stone-200 md:col-span-2">
+                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">{about.boardMembersTitle}</p>
+                <ul className="mt-4 grid gap-3 text-stone-700 md:grid-cols-2">
+                  {about.boardMembers.map((member) => (
+                    <li key={member} className="rounded-2xl bg-stone-50 px-4 py-3 ring-1 ring-stone-200">
+                      {member}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-6 rounded-3xl bg-white p-8 shadow-sm ring-1 ring-stone-200">
+              <p className="text-sm font-semibold uppercase tracking-[0.24em] text-amber-700">{about.auditorTitle}</p>
+              <p className="mt-4 text-lg font-semibold text-stone-900">{about.auditorName}</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="alafors" className="section-padding bg-white">
+        <div className="container-custom">
+          <div className="grid gap-12 lg:grid-cols-[0.9fr_1.1fr]">
+            <div>
+              <h2 className="heading-md mb-6">{about.alaforsTitle}</h2>
+              <div className="space-y-4 leading-relaxed text-stone-700">
+                {about.alaforsParagraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+
+            <div className="rounded-[2rem] bg-stone-100 p-8 ring-1 ring-stone-200">
+              <h3 className="text-2xl font-serif font-bold text-stone-900">{about.alaforsHistoryTitle}</h3>
+              <div className="mt-6 space-y-4 leading-relaxed text-stone-700">
+                {about.alaforsHistoryParagraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="spinneriet" className="section-padding bg-stone-900 text-white">
+        <div className="container-custom max-w-5xl">
+          <h2 className="heading-md mb-8 text-center">{about.spinnerTitle}</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            {about.spinnerParagraphs.map((paragraph) => (
+              <div key={paragraph} className="rounded-[2rem] border border-white/10 bg-white/5 p-6 leading-relaxed text-stone-200">
+                <p>{paragraph}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

@@ -11,12 +11,125 @@
       "Alafors",
       "Göteborg",
       "cider"
+    ],
+    "footer": {
+      "brandHeading": "Ahlafors Bryggerier",
+      "brandText": "Hantverk i varje droppe sedan 1996. Mikrobryggeri i hjärtat av den historiska spinnerifabriken i Alafors.",
+      "navigationTitle": "Navigation",
+      "navigationLinks": [
+        {
+          "label": "Produkter",
+          "href": "/produkter"
+        },
+        {
+          "label": "Rulleriet",
+          "href": "/rulleriet"
+        },
+        {
+          "label": "Recept",
+          "href": "/recept"
+        },
+        {
+          "label": "Tjänster",
+          "href": "/tjanster"
+        },
+        {
+          "label": "Om oss",
+          "href": "/om-oss"
+        },
+        {
+          "label": "Kontakt",
+          "href": "/kontakt"
+        }
+      ],
+      "contactTitle": "Kontakt",
+      "contactLines": [
+        "Spinnerigatan",
+        "449 41 Alafors",
+        "Ale kommun"
+      ],
+      "contactLinkLabel": "Kontakta oss",
+      "contactLinkHref": "/kontakt",
+      "socialTitle": "Följ oss",
+      "socialLinks": [
+        {
+          "platform": "Facebook",
+          "url": "https://www.facebook.com/AhlaforsBryggerier/"
+        },
+        {
+          "platform": "Instagram",
+          "url": "https://www.instagram.com/ahlaforsbryggerier/"
+        }
+      ],
+      "legalText": "© 2026 Ahlafors Bryggerier AB. Alla rättigheter förbehållna.",
+      "disclaimerText": "Njut ansvarsfullt. Våra produkter innehåller alkohol."
+    },
+    "redirects": [
+      {
+        "source": "/bryggeriet",
+        "destination": "/om-oss",
+        "permanent": true
+      },
+      {
+        "source": "/styrelse",
+        "destination": "/om-oss#styrelse",
+        "permanent": true
+      },
+      {
+        "source": "/orten-alafors",
+        "destination": "/om-oss#alafors",
+        "permanent": true
+      },
+      {
+        "source": "/ortenalafors",
+        "destination": "/om-oss#alafors",
+        "permanent": true
+      },
+      {
+        "source": "/spinnerifabrik",
+        "destination": "/om-oss#spinneriet",
+        "permanent": true
+      },
+      {
+        "source": "/spinnerifabriken",
+        "destination": "/om-oss#spinneriet",
+        "permanent": true
+      },
+      {
+        "source": "/profileringsol",
+        "destination": "/tjanster#profileringsol",
+        "permanent": true
+      },
+      {
+        "source": "/bar-restaurangol",
+        "destination": "/tjanster#bar-restaurangol",
+        "permanent": true
+      },
+      {
+        "source": "/festutrustning",
+        "destination": "/tjanster#festutrustning",
+        "permanent": true
+      },
+      {
+        "source": "/presentkort",
+        "destination": "/tjanster#presentkort-merchandise",
+        "permanent": true
+      },
+      {
+        "source": "/presentkort-merchandise",
+        "destination": "/tjanster#presentkort-merchandise",
+        "permanent": true
+      }
     ]
   },
   "homepage": {
     "sectionOrder": [
       {
         "id": "hero",
+        "enabled": true
+      },
+      {
+        "id": "anniversary",
         "enabled": true
       },
       {
@@ -40,9 +153,9 @@
         "enabled": true
       }
     ],
-    "heroEyebrow": "Sedan 1996",
-    "heroTitle": "Hantverk i varje droppe",
-    "heroLead": "Upptäck det unika hantverket bakom varje flaska från Ahlafors Bryggerier",
+    "heroEyebrow": "Jubileumsår 2026",
+    "heroTitle": "30 år av hantverk i varje droppe",
+    "heroLead": "Ahlafors Bryggerier firar 30 år med jubileumsöl, upplevelser i Rulleriet och småskaligt brygghantverk från Alafors.",
     "heroTagline": "Sedan 1996",
     "heroBody": "Mikrobryggeri i det historiska spinneriet från 1850-talet • Alafors, Ale kommun",
     "heroBackgroundImage": "/media/2026-04-22-444676c2-0dc5-4604-8eac-f971124ae9d9.jpg",
@@ -51,6 +164,21 @@
     "heroPrimaryCtaLink": "/produkter",
     "heroSecondaryCtaLabel": "Besök Rulleriet",
     "heroSecondaryCtaLink": "/rulleriet",
+    "anniversaryEyebrow": "Jubileumsår 2026",
+    "anniversaryBadge": "30 år",
+    "anniversaryTitle": "Tre decennier av lokalt brygghantverk",
+    "anniversaryLead": "Ahlafors Bryggerier firar 30 år med jubileumsöl, kvällar i Rulleriet och samma småskaliga kärlek till hantverket som när allt började 1996.",
+    "anniversaryBody": "Från det historiska spinneriet i Alafors fortsätter vi att brygga öl och cider med lokal förankring, klassiska metoder och nyfikenhet inför nästa kapitel. Jubileumsåret får ta plats både i glaset och i upplevelsen för besökare, kunder och vänner till bryggeriet.",
+    "anniversaryImage": "/media/2026-04-22-80a16387-7d97-4915-9832-e92021f53224.jpg",
+    "anniversaryHighlights": [
+      "Grundat 1996 i Alafors",
+      "30 år av hantverk och gemenskap",
+      "Fira med jubileumsöl och event i Rulleriet"
+    ],
+    "anniversaryPrimaryCtaLabel": "Utforska jubileumsölen",
+    "anniversaryPrimaryCtaLink": "/produkter/jubileums-ipa",
+    "anniversarySecondaryCtaLabel": "Se kommande event",
+    "anniversarySecondaryCtaLink": "/rulleriet",
     "productsTitle": "Våra produkter",
     "productsIntro": "Varje produkt är ett bevis på vårt engagemang för hantverket och kvaliteten",
     "productsCtaLabel": "Se alla produkter",
@@ -141,6 +269,41 @@
       "Våra produkter tillhör det lokala sortimentet och finns på lager på Systembolagen i Nödinge, Kungälv och Bäckebol, men kan beställas över hela landet.",
       "Vi säljs även på en del pubar och restauranger i Göteborg och Kungälv. Våra alkoholsvagare produkter finns i livsmedelsbutiker i Ale, Kungälv och Stenungsund."
     ],
+    "boardTitle": "Styrelse",
+    "boardIntro": "Styrelsens uppgift är att styra och besluta om bryggeriets strategiska inriktning, ekonomi och förvaltning samt att vara länken mellan ägare och operativ ledning.",
+    "chairTitle": "Ordförande",
+    "chairName": "Mikael Jensen, Ahlafors Industrihotell",
+    "boardMembersTitle": "Ledamöter",
+    "boardMembers": [
+      "Emris Olsson, Ahlafors Industrihotell",
+      "Mattias Olsson, Ahlafors Industrihotell",
+      "Robert Lundblad, VD",
+      "Eric Dahllöw, Ahlafors Bryggeriförening",
+      "Niklas Wallström, Ahlafors Bryggeriförening"
+    ],
+    "auditorTitle": "Revisor",
+    "auditorName": "BDO - Rickard Carli",
+    "alaforsTitle": "Orten Alafors",
+    "alaforsParagraphs": [
+      "Alafors ligger i Ale kommun, som bildades 1974 och följer de äldre kommun- och sockengränserna i området. Forskare är ganska eniga om att gränserna här i stort sett varit oförändrade sedan kristendomens inträde i länet under 1000- och 1100-talen.",
+      "De första Aleborna var fångstmän och fiskare som kom via älven. Landskapet såg annorlunda ut då, med en betydligt högre havsnivå efter inlandsisen. De första boplatserna var tillfälliga, men det bördiga landet, tillgången till fisk och de stora skogarna gjorde att människor blev allt mer bofasta."
+    ],
+    "alaforsHistoryTitle": "Historia Alafors",
+    "alaforsHistoryParagraphs": [
+      "Innan spinneriet uppfördes bestod Alafors av några utspridda gårdar där man bedrev jordbruk och hantverk. Med industrins framväxt började ett samhälle växa fram kring fabriken, med arbetarbostäder och tjänstemannavillor i takt med att människor flyttade in.",
+      "I början var det främst utsocknes arbetare som hade rum i arbetarbostäderna under veckorna och vandrade hem på helgerna. Först under 1860-talet blev invånarna mer bofasta, då framför allt unga kvinnor som arbetade i fabriken.",
+      "Inflyttningen gjorde att hus, affärer och skolor växte fram. Så småningom organiserade sig invånarna i föreningar som Ahlafors Spinneris fackförening, Lyktan, Ahlafors IF och Elimförsamlingen. Flera av dessa finns fortfarande kvar och påminner om samhällets historia.",
+      "Mycket av det som industrin byggde upp finns ännu kvar i Alafors. Bostadshus, gatunamn och flera byggnader används fortfarande, samtidigt som fabriksområdet fått nytt liv genom småföretag, föreningar och sedan mitten av 1990-talet även Ahlafors Bryggerier."
+    ],
+    "spinnerTitle": "Spinnerifabriken",
+    "spinnerParagraphs": [
+      "År 1854 påbörjades bygget av det som skulle bli Ahlafors Spinneri, efter initiativ från handelsmän i Göteborg som Axel Keiller och Edwin Willerding. Fabrikens placering valdes utifrån den goda tillgången på vattenkraft från sjöar och vattendrag i området.",
+      "Bygget stod klart 1855 och året därpå sattes fabriken i drift. Verksamheten utvecklades trots ekonomiska svängningar, och produktionen av spunnet bomullsgarn ökade kraftigt under andra halvan av 1800-talet.",
+      "År 1888 fick bolaget likviditetsproblem och togs över under namnet Ahlafors Nya Spinneri AB. Ett elektricitetsverk anlades som komplement till gasverket och vattenkraften för att stärka driften.",
+      "I mars 1905 brann fabriken ner till grunden. Efter branden deltog arbetarna själva i återuppbyggnaden, och den nya fabriken stod färdig 1906 med ännu bättre produktionsmöjligheter.",
+      "Under första världskriget minskade produktionen kraftigt på grund av råvarubrist, och fabriken tvingades periodvis stänga. Efter kriget följde nya ekonomiska problem, förkortade arbetsveckor och återkommande motgångar trots investeringar i nya byggnader och uppköp.",
+      "Trots olika försök att hålla verksamheten levande lades fabriken slutligen ner 1966. Därmed gick en mer än hundraårig industrihistoria i graven, men byggnaderna lever vidare och rymmer idag nytt liv, nya verksamheter och Ahlafors Bryggerier."
+    ],
     "locationTitle": "Besök oss",
     "locationLead": "Alafors, ca 2,5 mil norr om Göteborg i Ale kommun",
     "locationSublead": "I det historiska spinneriet från 1850-talet"
@@ -194,7 +357,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-artisan-lager-110903/",
       "artikelnummer": "1109",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/08/artisan2-673x1024.png",
+      "image": "/media/product-artisan2-673x1024.png",
       "category": "lager",
       "featured": false,
       "published": true,
@@ -207,7 +370,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-artisan-lager-110903/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/08/artisan2.png",
+      "ogImage": "/media/product-artisan2.png",
       "relatedProductIds": []
     },
     {
@@ -222,7 +385,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3043603/",
       "artikelnummer": "30436",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforshaze-282x1024.webp",
+      "image": "/media/product-Aforshaze-282x1024.webp",
       "category": "ale",
       "featured": false,
       "published": true,
@@ -235,7 +398,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3043603/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforshaze-scaled.webp",
+      "ogImage": "/media/product-Aforshaze-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -250,7 +413,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3241003/",
       "artikelnummer": "32410",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforseldorado-286x1024.webp",
+      "image": "/media/product-aforseldorado-286x1024.webp",
       "category": "lager",
       "featured": false,
       "published": true,
@@ -263,7 +426,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3241003/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforseldorado-scaled.webp",
+      "ogImage": "/media/product-aforseldorado-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -278,7 +441,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3210203/",
       "artikelnummer": "32102",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsbritt-274x1024.webp",
+      "image": "/media/product-Aforsbritt-274x1024.webp",
       "category": "ale",
       "featured": true,
       "published": true,
@@ -291,7 +454,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3210203/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsbritt-scaled.webp",
+      "ogImage": "/media/product-Aforsbritt-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -306,7 +469,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/oberoende-3023103/",
       "artikelnummer": "30231",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsoberoende-270x1024.webp",
+      "image": "/media/product-Aforsoberoende-270x1024.webp",
       "category": "ale",
       "featured": true,
       "published": true,
@@ -319,7 +482,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/oberoende-3023103/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsoberoende-scaled-e1754491379532.webp",
+      "ogImage": "/media/product-Aforsoberoende-scaled-e1754491379532.webp",
       "relatedProductIds": []
     },
     {
@@ -334,7 +497,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-jubileums-ipa-3115603/",
       "artikelnummer": "31156-03",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Jubileums-Ipa-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Jubileums-Ipa-Produktbild-673x1024.png",
       "category": "ipa",
       "featured": true,
       "published": true,
@@ -347,7 +510,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-jubileums-ipa-3115603/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Jubileums-Ipa-Produktbild.png",
+      "ogImage": "/media/product-Ahlafors-Jubileums-Ipa-Produktbild.png",
       "relatedProductIds": []
     },
     {
@@ -362,7 +525,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/sortiment/?q=ahlaffors",
       "artikelnummer": "",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/02/Ahlafors-Pale-Ale-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Pale-Ale-Produktbild-673x1024.png",
       "category": "ale",
       "featured": true,
       "published": true,
@@ -375,7 +538,7 @@
           "url": "https://www.systembolaget.se/sortiment/?q=ahlaffors"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/02/Ahlafors-Pale-Ale-Produktbild-673x1024.png",
+      "ogImage": "/media/product-Ahlafors-Pale-Ale-Produktbild-673x1024.png",
       "relatedProductIds": []
     },
     {
@@ -390,7 +553,7 @@
       "volume": "50/33 cl",
       "systembolaget": "https://www.systembolaget.se/sortiment/?q=ahlaffors",
       "artikelnummer": "81131-06",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/01/Ahlafors-Ljusa-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Ljusa-Produktbild-673x1024.png",
       "category": "lager",
       "featured": true,
       "published": true,
@@ -403,7 +566,7 @@
           "url": "https://www.systembolaget.se/sortiment/?q=ahlaffors"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/01/Ahlafors-Ljusa-Produktbild.png",
+      "ogImage": "/media/product-Ahlafors-Ljusa-Produktbild.png",
       "relatedProductIds": []
     },
     {
@@ -418,7 +581,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3285303/",
       "artikelnummer": "32853",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsma-274x1024.webp",
+      "image": "/media/product-Aforsma-274x1024.webp",
       "category": "lager",
       "featured": true,
       "published": true,
@@ -431,7 +594,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3285303/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsma-scaled.webp",
+      "ogImage": "/media/product-Aforsma-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -446,7 +609,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3236903/",
       "artikelnummer": "32369",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsherit-272x1024.webp",
+      "image": "/media/product-Aforsherit-272x1024.webp",
       "category": "ale",
       "featured": false,
       "published": true,
@@ -459,7 +622,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3236903/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsherit-scaled.webp",
+      "ogImage": "/media/product-Aforsherit-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -474,7 +637,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3226903/",
       "artikelnummer": "32269",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsIPA-274x1024.webp",
+      "image": "/media/product-AforsIPA-274x1024.webp",
       "category": "ipa",
       "featured": false,
       "published": true,
@@ -487,7 +650,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3226903/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsIPA-scaled.webp",
+      "ogImage": "/media/product-AforsIPA-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -502,7 +665,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-3092203/",
       "artikelnummer": "30922-03",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Ginger-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Ginger-Produktbild-673x1024.png",
       "category": "cider",
       "featured": false,
       "published": true,
@@ -515,7 +678,7 @@
           "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-3092203/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Ginger-Produktbild.png",
+      "ogImage": "/media/product-Ahlafors-Ginger-Produktbild.png",
       "relatedProductIds": []
     },
     {
@@ -530,7 +693,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3224203/",
       "artikelnummer": "32242",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsLager-275x1024.webp",
+      "image": "/media/product-AforsLager-275x1024.webp",
       "category": "lager",
       "featured": false,
       "published": true,
@@ -543,7 +706,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3224203/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsLager.webp",
+      "ogImage": "/media/product-AforsLager.webp",
       "relatedProductIds": []
     },
     {
@@ -558,7 +721,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3282803/",
       "artikelnummer": "32828",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsljlager-274x1024.webp",
+      "image": "/media/product-Aforsljlager-274x1024.webp",
       "category": "lager",
       "featured": false,
       "published": true,
@@ -571,7 +734,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3282803/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsljlager-scaled.webp",
+      "ogImage": "/media/product-Aforsljlager-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -586,7 +749,7 @@
       "volume": "50/33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-flader-8865603/",
       "artikelnummer": "88656-02",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Flader-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Flader-Produktbild-673x1024.png",
       "category": "cider",
       "featured": false,
       "published": true,
@@ -599,7 +762,7 @@
           "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-flader-8865603/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Flader-Produktbild-673x1024.png",
+      "ogImage": "/media/product-Ahlafors-Flader-Produktbild-673x1024.png",
       "relatedProductIds": []
     },
     {
@@ -614,7 +777,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3247004/",
       "artikelnummer": "32470",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsskagerrak-275x1024.webp",
+      "image": "/media/product-Aforsskagerrak-275x1024.webp",
       "category": "lager",
       "featured": false,
       "published": true,
@@ -627,7 +790,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3247004/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/Aforsskagerrak-scaled.webp",
+      "ogImage": "/media/product-Aforsskagerrak-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -642,7 +805,7 @@
       "volume": "33 cl",
       "systembolaget": "",
       "artikelnummer": "33607",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/05/Passion_45-673x1024.png",
+      "image": "/media/product-Passion_45-673x1024.png",
       "category": "cider",
       "featured": false,
       "published": true,
@@ -650,7 +813,7 @@
       "seoTitle": "Ahlafors Cider Peach Passion",
       "seoDescription": "Upplev en mycket fruktig smak med en lätt sötma och en tydlig karaktär av persika. Du känner även inslag av passionsfrukt och päron som förhöjer smakupplevelsen. Servera drycken…",
       "links": [],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2019/05/Passion_45-673x1024.png",
+      "ogImage": "/media/product-Passion_45-673x1024.png",
       "relatedProductIds": []
     },
     {
@@ -665,7 +828,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-lingon-3057603/",
       "artikelnummer": "30573-02",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Lingon-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Lingon-Produktbild-673x1024.png",
       "category": "cider",
       "featured": false,
       "published": true,
@@ -678,7 +841,7 @@
           "url": "https://www.systembolaget.se/produkt/cider-blanddrycker/ahlafors-lingon-3057603/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2016/02/Ahlafors-Lingon-Produktbild-673x1024.png",
+      "ogImage": "/media/product-Ahlafors-Lingon-Produktbild-673x1024.png",
       "relatedProductIds": []
     },
     {
@@ -693,7 +856,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3241503/",
       "artikelnummer": "32415",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsImp-272x1024.webp",
+      "image": "/media/product-AforsImp-272x1024.webp",
       "category": "stout",
       "featured": false,
       "published": true,
@@ -706,7 +869,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3241503/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/AforsImp-scaled.webp",
+      "ogImage": "/media/product-AforsImp-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -721,7 +884,7 @@
       "volume": "33 cl",
       "systembolaget": "",
       "artikelnummer": "",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/03/Ahlafors-Lingon-07-Produktbild-673x1024.png",
+      "image": "/media/product-Ahlafors-Lingon-07-Produktbild-673x1024.png",
       "category": "cider",
       "featured": false,
       "published": true,
@@ -729,7 +892,7 @@
       "seoTitle": "Ahlafors Alkoholfri Cider Lingon",
       "seoDescription": "Ahlafors Lingon är en uppfriskande alkoholfri dryck av ciderkaraktär",
       "links": [],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2017/03/Ahlafors-Lingon-07-Produktbild-673x1024.png",
+      "ogImage": "/media/product-Ahlafors-Lingon-07-Produktbild-673x1024.png",
       "relatedProductIds": []
     },
     {
@@ -744,7 +907,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3260003/",
       "artikelnummer": "3260003",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforsinto-271x1024.webp",
+      "image": "/media/product-aforsinto-271x1024.webp",
       "category": "ipa",
       "featured": false,
       "published": true,
@@ -757,7 +920,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3260003/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/05/aforsinto-scaled.webp",
+      "ogImage": "/media/product-aforsinto-scaled.webp",
       "relatedProductIds": []
     },
     {
@@ -772,7 +935,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3280203/",
       "artikelnummer": "3280203",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/56578313_400-272x1024.webp",
+      "image": "/media/product-56578313_400-272x1024.webp",
       "category": "porter",
       "featured": false,
       "published": true,
@@ -785,7 +948,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3280203/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/56578313_400.webp",
+      "ogImage": "/media/product-56578313_400.webp",
       "relatedProductIds": []
     },
     {
@@ -800,7 +963,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3040003/",
       "artikelnummer": "3040003",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/58715322_400-270x1024.webp",
+      "image": "/media/product-58715322_400-270x1024.webp",
       "category": "ale",
       "featured": false,
       "published": true,
@@ -813,7 +976,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-bryggerier-3040003/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/58715322_400.webp",
+      "ogImage": "/media/product-58715322_400.webp",
       "relatedProductIds": []
     },
     {
@@ -828,7 +991,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3687103/",
       "artikelnummer": "3687103",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2018/12/24642434_400-269x1024.webp",
+      "image": "/media/product-24642434_400-269x1024.webp",
       "category": "ale",
       "featured": false,
       "published": true,
@@ -841,7 +1004,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3687103/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2018/12/24642434_400.webp",
+      "ogImage": "/media/product-24642434_400.webp",
       "relatedProductIds": []
     },
     {
@@ -856,7 +1019,7 @@
       "volume": "33 cl",
       "systembolaget": "https://www.systembolaget.se/produkt/ol/ahlafors-3282003/",
       "artikelnummer": "3282003",
-      "image": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/53891029_400-270x1024.webp",
+      "image": "/media/product-53891029_400-270x1024.webp",
       "category": "ale",
       "featured": false,
       "published": true,
@@ -869,7 +1032,7 @@
           "url": "https://www.systembolaget.se/produkt/ol/ahlafors-3282003/"
         }
       ],
-      "ogImage": "https://www.ahlaforsbryggerier.se/wp-content/uploads/2025/12/53891029_400.webp",
+      "ogImage": "/media/product-53891029_400.webp",
       "relatedProductIds": []
     }
   ],
@@ -905,9 +1068,15 @@
   "services": [
     {
       "id": "profileringsol",
-      "title": "Profileringsöl för företag",
-      "shortDescription": "Skapa unika ölsorter för ditt företag eller förening.",
-      "description": "Skapa unika ölsorter för ditt företag eller förening. Vi hjälper dig från koncept till färdig produkt.",
+      "title": "Profileringsöl",
+      "shortDescription": "Eget öl med er etikett för mässor, företagsevent och andra tillfällen där ni vill sätta en personlig prägel.",
+      "description": "Vi brygger och tappar vårt öl med era egna etiketter för företagsevent, mässor och andra tillfällen.",
+      "bodyParagraphs": [
+        "Vi brygger och tappar våra egna ölmärken, men vi erbjuder också att tappa upp öl med andra etiketter. Det innebär att ni kan få vårt öl tappat i flaskor med era egna etiketter, perfekt för olika tillfällen.",
+        "Oavsett om det gäller mässor, företagsfester eller andra evenemang, kan ni anpassa ölen efter era behov. Vår tjänst ger er möjlighet att skapa en unik och personlig touch på er dryck, vilket kan bidra till att göra ert evenemang minnesvärt.",
+        "Vi arbetar aktivt med att säkerställa hög kvalitet och snabb leverans, så att ni kan fokusera på att skapa en framgångsrik och uppskattad tillställning.",
+        "Kontakta oss för att diskutera era önskemål och få mer information om våra tjänster för etikettanpassad öl. Vi ser fram emot att hjälpa er att göra ert evenemang extra speciellt med vår flexibla och professionella lösning."
+      ],
       "details": [
         "Anpassad receptur efter era önskemål",
         "Egen etikett med ert företags profil",
@@ -915,7 +1084,9 @@
         "Minsta beställning enligt överenskommelse"
       ],
       "icon": "🏢",
-      "link": "/tjanster#profileringsol"
+      "link": "/tjanster#profileringsol",
+      "image": "/media/profilol-med-logotyp-cropped.png",
+      "imageCaption": "Här ser ni några av våra samarbeten."
     },
     {
       "id": "bar-restaurangol",

@@ -7,7 +7,7 @@ import { readSiteContent } from "@/lib/content-store";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
 import { getPublishedProducts } from "@/lib/published-content";
 import { buildOpenGraphMetadata, withAbsoluteUrl } from "@/lib/site-metadata";
-import { findProductBySlug, getRelatedProducts } from "@/lib/product-utils";
+import { findProductBySlug, getRelatedProducts, isAnniversaryProduct } from "@/lib/product-utils";
 
 type ProductPageProps = {
   params: Promise<{ slug: string }>;
@@ -61,6 +61,11 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
           </Link>
           <div className="mt-8 max-w-3xl">
             <div className="mb-4 text-sm font-semibold uppercase tracking-[0.3em] text-amber-300">{product.style}</div>
+            {isAnniversaryProduct(product) && (
+              <div className="mb-4 inline-flex rounded-full border border-amber-300/40 bg-stone-950/70 px-4 py-2 text-xs font-bold uppercase tracking-[0.28em] text-amber-300">
+                Jubileumsöl 30 år
+              </div>
+            )}
             <h1 className="text-5xl font-bold tracking-tight text-white">{product.name}</h1>
             <p className="mt-6 text-lg leading-8 text-stone-200">{product.description}</p>
             {preview && session && (
@@ -166,6 +171,11 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
                 <article key={relatedProduct.id} className="overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-lg">
                   <div className="h-56 bg-cover bg-center" style={{ backgroundImage: `url('${relatedProduct.image}')` }}></div>
                   <div className="space-y-4 p-6">
+                    {isAnniversaryProduct(relatedProduct) && (
+                      <div className="inline-flex rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-amber-800">
+                        Jubileumsöl
+                      </div>
+                    )}
                     <div className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">{relatedProduct.style}</div>
                     <h3 className="text-2xl font-bold text-stone-900">{relatedProduct.name}</h3>
                     <p className="text-sm leading-7 text-stone-600">{relatedProduct.description}</p>

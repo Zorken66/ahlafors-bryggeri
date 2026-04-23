@@ -4,9 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 
 import MediaPickerField from "@/components/admin/MediaPickerField";
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
+import { validateRecipe } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { SiteContent } from "@/lib/content-schema";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 type Recipe = SiteContent["recipes"][number];
 
@@ -27,6 +33,7 @@ const emptyRecipe: Recipe = {
   image: "",
   published: true,
   publishedAt: "",
+  unpublishedAt: "",
   seoTitle: "",
   seoDescription: "",
 };
@@ -34,9 +41,15 @@ const emptyRecipe: Recipe = {
 export default function RecipesManager({
   content,
   onSave,
+  initialSelectedId,
+  initialTab,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialSelectedId?: string;
+  initialTab?: "page" | "recipes";
+  focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.recipes[0]?.id ?? null);
   const [draft, setDraft] = useState<Recipe | null>(null);
@@ -47,6 +60,7 @@ export default function RecipesManager({
 
   const recipes = useMemo(() => content.recipes, [content.recipes]);
   const selected = recipes.find((recipe) => recipe.id === selectedId) ?? null;
+  const qualityIssues = useMemo(() => draft ? validateRecipe(draft) : [], [draft]);
 
   useEffect(() => {
     setDraft(selected ? { ...selected } : null);
@@ -55,6 +69,20 @@ export default function RecipesManager({
   useEffect(() => {
     setPageDraft({ ...content.recipesPage });
   }, [content.recipesPage]);
+
+  useEffect(() => {
+    if (!focusToken) {
+      return;
+    }
+
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+
+    if (initialSelectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [focusToken, initialSelectedId, initialTab]);
 
   async function saveRecipes(nextRecipes: SiteContent["recipes"]) {
     setSaving(true);
@@ -162,17 +190,32 @@ export default function RecipesManager({
       <aside className="rounded-3xl border border-stone-200 bg-white p-4 shadow-lg">
         <button type="button" onClick={() => void handleCreate()} disabled={saving} className="mb-4 w-full rounded-xl bg-amber-700 px-4 py-3 text-sm font-semibold text-white">Nytt recept</button>
         <div className="space-y-3">
-          {recipes.map((recipe) => (
-            <button key={recipe.id} type="button" onClick={() => setSelectedId(recipe.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === recipe.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-stone-900">{recipe.title || "Utan titel"}</span>
-                <span className={`rounded-full px-2 py-1 text-xs font-semibold ${(recipe.published ?? true) ? "bg-green-100 text-green-800" : "bg-stone-200 text-stone-700"}`}>
-                  {(recipe.published ?? true) ? "Publikt" : "Utkast"}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-stone-500">{recipe.difficulty || "Ingen svårighet"}</p>
-            </button>
-          ))}
+          {recipes.map((recipe) => {
+            const publishingStatus = getPublishingStatus(recipe);
+
+            return (
+              <button key={recipe.id} type="button" onClick={() => setSelectedId(recipe.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === recipe.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-stone-900">{recipe.title || "Utan titel"}</span>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <QualityStatusBadge issues={validateRecipe(recipe)} />
+                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                      publishingStatus === "published"
+                        ? "bg-green-100 text-green-800"
+                        : publishingStatus === "scheduled"
+                          ? "bg-sky-100 text-sky-800"
+                          : publishingStatus === "expired"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-stone-200 text-stone-700"
+                    }`}>
+                      {getPublishingStatusLabel(publishingStatus)}
+                    </span>
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-stone-500">{recipe.difficulty || "Ingen svårighet"}</p>
+              </button>
+            );
+          })}
         </div>
       </aside>
 
@@ -187,24 +230,54 @@ export default function RecipesManager({
               </div>
             </div>
 
-            <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
-            <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Beskrivning" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <QualityChecklist title="Receptkvalitet" issues={qualityIssues} />
+
+            <div>
+              <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="title" />
+            </div>
+            <div>
+              <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Beskrivning" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="description" />
+            </div>
             <div className="grid gap-4 md:grid-cols-2">
               <input value={draft.difficulty} onChange={(event) => setDraft((current) => current ? { ...current, difficulty: event.target.value } : current)} placeholder="Svårighetsgrad" className="rounded-xl border border-stone-300 px-4 py-3" />
               <input value={draft.time} onChange={(event) => setDraft((current) => current ? { ...current, time: event.target.value } : current)} placeholder="Tid" className="rounded-xl border border-stone-300 px-4 py-3" />
               <input value={draft.servings} onChange={(event) => setDraft((current) => current ? { ...current, servings: event.target.value } : current)} placeholder="Portioner" className="rounded-xl border border-stone-300 px-4 py-3" />
               <input value={draft.pairing} onChange={(event) => setDraft((current) => current ? { ...current, pairing: event.target.value } : current)} placeholder="Passar med" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input type="date" value={draft.publishedAt ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, publishedAt: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3" />
               <div className="md:col-span-2">
                 <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Receptbild" />
+                <FieldIssueHint issues={qualityIssues} field="image" />
               </div>
-              <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoTitle" />
+              </div>
+              <div>
+                <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoDescription" />
+              </div>
             </div>
-            <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, ingredients: splitLines(event.target.value) } : current)} placeholder="Ingredienser, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
-            <textarea value={draft.instructions.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, instructions: splitLines(event.target.value) } : current)} placeholder="Instruktioner, en per rad" rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <div>
+              <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, ingredients: splitLines(event.target.value) } : current)} placeholder="Ingredienser, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="ingredients" />
+            </div>
+            <div>
+              <textarea value={draft.instructions.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, instructions: splitLines(event.target.value) } : current)} placeholder="Instruktioner, en per rad" rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="instructions" />
+            </div>
+            <FieldIssueHint issues={qualityIssues} field="pairing" />
 
-            <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.published ?? true} onChange={(event) => setDraft((current) => current ? { ...current, published: event.target.checked } : current)} /> Publicerad</label>
+            <PublishingFields
+              value={draft}
+              qualityIssues={qualityIssues}
+              onChange={(nextValue) => setDraft((current) => current ? {
+                ...current,
+                published: nextValue.published,
+                publishedAt: nextValue.publishedAt ?? "",
+                unpublishedAt: nextValue.unpublishedAt ?? "",
+              } : current)}
+            />
 
             {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
           </div>

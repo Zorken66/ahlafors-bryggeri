@@ -126,6 +126,91 @@ export default function AboutSectionManager({
         <textarea value={draft.distributionParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, distributionParagraphs: splitLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
+      <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
+        <h3 className="text-lg font-bold text-stone-900">Styrelse</h3>
+        <p className="mt-1 text-sm text-stone-600">Information om ordförande, ledamöter och revisor.</p>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Rubrik</span>
+            <input value={draft.boardTitle} onChange={(event) => setDraft((current) => ({ ...current, boardTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Ingress</span>
+            <input value={draft.boardIntro} onChange={(event) => setDraft((current) => ({ ...current, boardIntro: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+        </div>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Ordförande - titel</span>
+            <input value={draft.chairTitle} onChange={(event) => setDraft((current) => ({ ...current, chairTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Ordförande - namn</span>
+            <input value={draft.chairName} onChange={(event) => setDraft((current) => ({ ...current, chairName: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+        </div>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Ledamöter - rubrik</span>
+            <input value={draft.boardMembersTitle} onChange={(event) => setDraft((current) => ({ ...current, boardMembersTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Revisor - titel</span>
+            <input value={draft.auditorTitle} onChange={(event) => setDraft((current) => ({ ...current, auditorTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+        </div>
+
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Ledamöter, en per rad</span>
+          <textarea value={draft.boardMembers.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, boardMembers: splitLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Revisor - namn</span>
+          <input value={draft.auditorName} onChange={(event) => setDraft((current) => ({ ...current, auditorName: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+      </div>
+
+      <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
+        <h3 className="text-lg font-bold text-stone-900">Orten Alafors</h3>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Rubrik</span>
+            <input value={draft.alaforsTitle} onChange={(event) => setDraft((current) => ({ ...current, alaforsTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+          <label className="block">
+            <span className="mb-2 block text-sm font-semibold text-stone-700">Historierubrik</span>
+            <input value={draft.alaforsHistoryTitle} onChange={(event) => setDraft((current) => ({ ...current, alaforsHistoryTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </label>
+        </div>
+
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Inledning, en per rad</span>
+          <textarea value={draft.alaforsParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsParagraphs: splitLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Historia, en per rad</span>
+          <textarea value={draft.alaforsHistoryParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsHistoryParagraphs: splitLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+      </div>
+
+      <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
+        <h3 className="text-lg font-bold text-stone-900">Spinnerifabriken</h3>
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Rubrik</span>
+          <input value={draft.spinnerTitle} onChange={(event) => setDraft((current) => ({ ...current, spinnerTitle: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+
+        <label className="mt-4 block">
+          <span className="mb-2 block text-sm font-semibold text-stone-700">Stycken, en per rad</span>
+          <textarea value={draft.spinnerParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, spinnerParagraphs: splitLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        </label>
+      </div>
+
       {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
     </div>
   );

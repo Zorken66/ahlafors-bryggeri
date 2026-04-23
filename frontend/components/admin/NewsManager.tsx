@@ -3,9 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 
 import MediaPickerField from "@/components/admin/MediaPickerField";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import { validateNewsItem } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { SiteContent } from "@/lib/content-schema";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 type NewsItem = SiteContent["news"][number];
 
@@ -19,6 +25,7 @@ const emptyNews: NewsItem = {
   featured: false,
   published: true,
   publishedAt: "",
+  unpublishedAt: "",
   seoTitle: "",
   seoDescription: "",
 };
@@ -26,9 +33,13 @@ const emptyNews: NewsItem = {
 export default function NewsManager({
   content,
   onSave,
+  initialSelectedId,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialSelectedId?: string;
+  focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.news[0]?.id ?? null);
   const [draft, setDraft] = useState<NewsItem | null>(null);
@@ -37,10 +48,17 @@ export default function NewsManager({
 
   const items = useMemo(() => content.news, [content.news]);
   const selected = items.find((item) => item.id === selectedId) ?? null;
+  const qualityIssues = useMemo(() => draft ? validateNewsItem(draft) : [], [draft]);
 
   useEffect(() => {
     setDraft(selected ? { ...selected } : null);
   }, [selected]);
+
+  useEffect(() => {
+    if (focusToken && initialSelectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [focusToken, initialSelectedId]);
 
   async function saveNews(nextNews: SiteContent["news"]) {
     setSaving(true);
@@ -85,17 +103,32 @@ export default function NewsManager({
       <aside className="rounded-3xl border border-stone-200 bg-white p-4 shadow-lg">
         <button type="button" onClick={() => void handleCreate()} disabled={saving} className="mb-4 w-full rounded-xl bg-amber-700 px-4 py-3 text-sm font-semibold text-white">Ny nyhet</button>
         <div className="space-y-3">
-          {items.map((item) => (
-            <button key={item.id} type="button" onClick={() => setSelectedId(item.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === item.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-stone-900">{item.title || "Utan titel"}</span>
-                <span className={`rounded-full px-2 py-1 text-xs font-semibold ${(item.published ?? true) ? "bg-green-100 text-green-800" : "bg-stone-200 text-stone-700"}`}>
-                  {(item.published ?? true) ? "Publik" : "Utkast"}
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-stone-500">{item.date || "Saknar datum"}</p>
-            </button>
-          ))}
+          {items.map((item) => {
+            const publishingStatus = getPublishingStatus(item);
+
+            return (
+              <button key={item.id} type="button" onClick={() => setSelectedId(item.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === item.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-stone-900">{item.title || "Utan titel"}</span>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <QualityStatusBadge issues={validateNewsItem(item)} />
+                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                      publishingStatus === "published"
+                        ? "bg-green-100 text-green-800"
+                        : publishingStatus === "scheduled"
+                          ? "bg-sky-100 text-sky-800"
+                          : publishingStatus === "expired"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-stone-200 text-stone-700"
+                    }`}>
+                      {getPublishingStatusLabel(publishingStatus)}
+                    </span>
+                  </div>
+                </div>
+                <p className="mt-2 text-xs text-stone-500">{item.date || "Saknar datum"}</p>
+              </button>
+            );
+          })}
         </div>
       </aside>
 
@@ -110,7 +143,12 @@ export default function NewsManager({
               </div>
             </div>
 
-            <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <QualityChecklist title="Nyhetskvalitet" issues={qualityIssues} />
+
+            <div>
+              <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="title" />
+            </div>
             <RichTextEditor
               label="Ingress"
               value={draft.excerpt}
@@ -118,12 +156,19 @@ export default function NewsManager({
               placeholder="Skriv ingress med länkar, listor eller enklare formatering"
               minHeightClassName="min-h-[140px]"
             />
+            <FieldIssueHint issues={qualityIssues} field="excerpt" />
             <div className="grid gap-4 md:grid-cols-2">
-              <input type="date" value={draft.date} onChange={(event) => setDraft((current) => current ? { ...current, date: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input type="date" value={draft.publishedAt ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, publishedAt: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.link} onChange={(event) => setDraft((current) => current ? { ...current, link: event.target.value } : current)} placeholder="Länk" className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input type="date" value={draft.date} onChange={(event) => setDraft((current) => current ? { ...current, date: event.target.value } : current)} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="date" />
+              </div>
+              <div>
+                <input value={draft.link} onChange={(event) => setDraft((current) => current ? { ...current, link: event.target.value } : current)} placeholder="Länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="link" />
+              </div>
               <div className="md:col-span-2">
                 <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Nyhetsbild" />
+                <FieldIssueHint issues={qualityIssues} field="image" />
               </div>
               <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
               <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
@@ -131,8 +176,18 @@ export default function NewsManager({
 
             <div className="flex gap-6">
               <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.featured} onChange={(event) => setDraft((current) => current ? { ...current, featured: event.target.checked } : current)} /> Utvald</label>
-              <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.published ?? true} onChange={(event) => setDraft((current) => current ? { ...current, published: event.target.checked } : current)} /> Publicerad</label>
             </div>
+
+            <PublishingFields
+              value={draft}
+              qualityIssues={qualityIssues}
+              onChange={(nextValue) => setDraft((current) => current ? {
+                ...current,
+                published: nextValue.published,
+                publishedAt: nextValue.publishedAt ?? "",
+                unpublishedAt: nextValue.unpublishedAt ?? "",
+              } : current)}
+            />
 
             {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
           </div>

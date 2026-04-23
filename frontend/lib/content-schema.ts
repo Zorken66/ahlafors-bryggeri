@@ -1,7 +1,8 @@
 import { normalizeHeroOverlayOpacity } from "@/lib/hero-overlay";
+import { normalizePublishingFields } from "@/lib/publishing";
 
 export type CmsRole = "superadmin" | "editor" | "blog_editor" | "contact_editor";
-export type HomepageSectionId = "hero" | "about" | "products" | "news" | "services" | "cta";
+export type HomepageSectionId = "hero" | "anniversary" | "about" | "products" | "news" | "services" | "cta";
 
 export type RullerietEvent = {
   id: string;
@@ -16,6 +17,8 @@ export type RullerietEvent = {
   ticketUrl?: string;
   featured?: boolean;
   published?: boolean;
+  publishedAt?: string;
+  unpublishedAt?: string;
 };
 
 export type RullerietPost = {
@@ -26,6 +29,7 @@ export type RullerietPost = {
   content: string;
   image: string;
   publishedAt: string;
+  unpublishedAt?: string;
   featured: boolean;
   published: boolean;
   seoTitle?: string;
@@ -41,6 +45,22 @@ export type ProductCategory = {
   id: string;
   name: string;
   icon?: string;
+};
+
+export type FooterLink = {
+  label: string;
+  href: string;
+};
+
+export type FooterSocialLink = {
+  platform: string;
+  url: string;
+};
+
+export type RedirectEntry = {
+  source: string;
+  destination: string;
+  permanent: boolean;
 };
 
 export type ProductEntry = {
@@ -60,6 +80,7 @@ export type ProductEntry = {
   featured: boolean;
   published?: boolean;
   publishedAt?: string;
+  unpublishedAt?: string;
   seoTitle?: string;
   seoDescription?: string;
   links?: ProductLink[];
@@ -77,6 +98,21 @@ export type SiteContent = {
     ogImage?: string;
     productCategories?: ProductCategory[];
     featuredProductIds?: string[];
+    footer: {
+      brandHeading: string;
+      brandText: string;
+      navigationTitle: string;
+      navigationLinks: FooterLink[];
+      contactTitle: string;
+      contactLines: string[];
+      contactLinkLabel: string;
+      contactLinkHref: string;
+      socialTitle: string;
+      socialLinks: FooterSocialLink[];
+      legalText: string;
+      disclaimerText: string;
+    };
+    redirects: RedirectEntry[];
   };
   homepage: {
     sectionOrder: Array<{
@@ -94,6 +130,17 @@ export type SiteContent = {
     heroPrimaryCtaLink: string;
     heroSecondaryCtaLabel: string;
     heroSecondaryCtaLink: string;
+    anniversaryEyebrow: string;
+    anniversaryBadge: string;
+    anniversaryTitle: string;
+    anniversaryLead: string;
+    anniversaryBody: string;
+    anniversaryImage: string;
+    anniversaryHighlights: string[];
+    anniversaryPrimaryCtaLabel: string;
+    anniversaryPrimaryCtaLink: string;
+    anniversarySecondaryCtaLabel: string;
+    anniversarySecondaryCtaLink: string;
     productsTitle: string;
     productsIntro: string;
     productsCtaLabel: string;
@@ -133,6 +180,20 @@ export type SiteContent = {
     craftLead: string;
     ingredients: string[];
     distributionParagraphs: string[];
+    boardTitle: string;
+    boardIntro: string;
+    chairTitle: string;
+    chairName: string;
+    boardMembersTitle: string;
+    boardMembers: string[];
+    auditorTitle: string;
+    auditorName: string;
+    alaforsTitle: string;
+    alaforsParagraphs: string[];
+    alaforsHistoryTitle: string;
+    alaforsHistoryParagraphs: string[];
+    spinnerTitle: string;
+    spinnerParagraphs: string[];
     locationTitle: string;
     locationLead: string;
     locationSublead: string;
@@ -180,6 +241,7 @@ export type SiteContent = {
     featured: boolean;
     published?: boolean;
     publishedAt?: string;
+    unpublishedAt?: string;
     seoTitle?: string;
     seoDescription?: string;
   }>;
@@ -188,11 +250,15 @@ export type SiteContent = {
     title: string;
     shortDescription: string;
     description: string;
+    bodyParagraphs?: string[];
     details: string[];
     icon: string;
     link: string;
+    image?: string;
+    imageCaption?: string;
     published?: boolean;
     publishedAt?: string;
+    unpublishedAt?: string;
     seoTitle?: string;
     seoDescription?: string;
   }>;
@@ -224,6 +290,7 @@ export type SiteContent = {
     image: string;
     published?: boolean;
     publishedAt?: string;
+    unpublishedAt?: string;
     seoTitle?: string;
     seoDescription?: string;
   }>;
@@ -290,6 +357,26 @@ function isStringArray(value: unknown): value is string[] {
   return Array.isArray(value) && value.every((item) => typeof item === "string");
 }
 
+function isFooterLinkArray(value: unknown): value is FooterLink[] {
+  return Array.isArray(value)
+    && value.every((item) => !!item && typeof item === "object" && typeof (item as FooterLink).label === "string" && typeof (item as FooterLink).href === "string");
+}
+
+function isFooterSocialLinkArray(value: unknown): value is FooterSocialLink[] {
+  return Array.isArray(value)
+    && value.every((item) => !!item && typeof item === "object" && typeof (item as FooterSocialLink).platform === "string" && typeof (item as FooterSocialLink).url === "string");
+}
+
+function isRedirectEntryArray(value: unknown): value is RedirectEntry[] {
+  return Array.isArray(value)
+    && value.every((item) =>
+      !!item
+      && typeof item === "object"
+      && typeof (item as RedirectEntry).source === "string"
+      && typeof (item as RedirectEntry).destination === "string"
+      && typeof (item as RedirectEntry).permanent === "boolean");
+}
+
 function isRullerietPostArray(value: unknown): value is RullerietPost[] {
   return Array.isArray(value) && value.every((item) => {
     if (!item || typeof item !== "object") {
@@ -304,6 +391,7 @@ function isRullerietPostArray(value: unknown): value is RullerietPost[] {
       && typeof candidate.content === "string"
       && typeof candidate.image === "string"
       && typeof candidate.publishedAt === "string"
+      && (candidate.unpublishedAt === undefined || typeof candidate.unpublishedAt === "string")
       && typeof candidate.featured === "boolean"
       && typeof candidate.published === "boolean";
   });
@@ -327,7 +415,9 @@ function isRullerietEventArray(value: unknown): value is RullerietEvent[] {
       && (candidate.location === undefined || typeof candidate.location === "string")
       && (candidate.ticketUrl === undefined || typeof candidate.ticketUrl === "string")
       && (candidate.featured === undefined || typeof candidate.featured === "boolean")
-      && (candidate.published === undefined || typeof candidate.published === "boolean");
+      && (candidate.published === undefined || typeof candidate.published === "boolean")
+      && (candidate.publishedAt === undefined || typeof candidate.publishedAt === "string")
+      && (candidate.unpublishedAt === undefined || typeof candidate.unpublishedAt === "string");
   });
 }
 
@@ -363,6 +453,8 @@ function normalizeRullerietEvents(events: unknown): RullerietEvent[] {
         ticketUrl: typeof event.ticketUrl === "string" && event.ticketUrl.trim() ? event.ticketUrl : undefined,
         featured: typeof event.featured === "boolean" ? event.featured : false,
         published: typeof event.published === "boolean" ? event.published : true,
+        publishedAt: typeof event.publishedAt === "string" && event.publishedAt.trim() ? event.publishedAt.trim() : undefined,
+        unpublishedAt: typeof event.unpublishedAt === "string" && event.unpublishedAt.trim() ? event.unpublishedAt.trim() : undefined,
       };
     });
 }
@@ -370,11 +462,57 @@ function normalizeRullerietEvents(events: unknown): RullerietEvent[] {
 export function normalizeSiteContent(content: SiteContent): SiteContent {
   const site = {
     ...content.site,
+    footer: {
+      brandHeading: content.site.footer?.brandHeading || content.site.companyName || "Ahlafors Bryggerier",
+      brandText: content.site.footer?.brandText || "Hantverk i varje droppe sedan 1996. Mikrobryggeri i hjärtat av den historiska spinnerifabriken i Alafors.",
+      navigationTitle: content.site.footer?.navigationTitle || "Navigation",
+      navigationLinks: isFooterLinkArray(content.site.footer?.navigationLinks)
+        ? content.site.footer.navigationLinks
+        : [
+            { label: "Produkter", href: "/produkter" },
+            { label: "Rulleriet", href: "/rulleriet" },
+            { label: "Recept", href: "/recept" },
+            { label: "Tjänster", href: "/tjanster" },
+            { label: "Om oss", href: "/om-oss" },
+            { label: "Kontakt", href: "/kontakt" },
+          ],
+      contactTitle: content.site.footer?.contactTitle || "Kontakt",
+      contactLines: isStringArray(content.site.footer?.contactLines)
+        ? content.site.footer.contactLines
+        : ["Spinnerigatan", "449 41 Alafors", "Ale kommun"],
+      contactLinkLabel: content.site.footer?.contactLinkLabel || "Kontakta oss",
+      contactLinkHref: content.site.footer?.contactLinkHref || "/kontakt",
+      socialTitle: content.site.footer?.socialTitle || "Följ oss",
+      socialLinks: isFooterSocialLinkArray(content.site.footer?.socialLinks)
+        ? content.site.footer.socialLinks
+        : [
+            { platform: "Facebook", url: "https://www.facebook.com/AhlaforsBryggerier/" },
+            { platform: "Instagram", url: "https://www.instagram.com/ahlaforsbryggerier/" },
+          ],
+      legalText: content.site.footer?.legalText || `© ${new Date().getFullYear()} ${content.site.companyName || "Ahlafors Bryggerier"} AB. Alla rättigheter förbehållna.`,
+      disclaimerText: content.site.footer?.disclaimerText || "Njut ansvarsfullt. Våra produkter innehåller alkohol.",
+    },
+    redirects: isRedirectEntryArray(content.site.redirects)
+      ? content.site.redirects
+      : [
+          { source: "/bryggeriet", destination: "/om-oss", permanent: true },
+          { source: "/styrelse", destination: "/om-oss#styrelse", permanent: true },
+          { source: "/orten-alafors", destination: "/om-oss#alafors", permanent: true },
+          { source: "/ortenalafors", destination: "/om-oss#alafors", permanent: true },
+          { source: "/spinnerifabrik", destination: "/om-oss#spinneriet", permanent: true },
+          { source: "/spinnerifabriken", destination: "/om-oss#spinneriet", permanent: true },
+          { source: "/profileringsol", destination: "/tjanster#profileringsol", permanent: true },
+          { source: "/bar-restaurangol", destination: "/tjanster#bar-restaurangol", permanent: true },
+          { source: "/festutrustning", destination: "/tjanster#festutrustning", permanent: true },
+          { source: "/presentkort", destination: "/tjanster#presentkort-merchandise", permanent: true },
+          { source: "/presentkort-merchandise", destination: "/tjanster#presentkort-merchandise", permanent: true },
+        ],
   };
 
   const homepage = content.homepage ?? {
     sectionOrder: [
       { id: "hero", enabled: true },
+      { id: "anniversary", enabled: true },
       { id: "about", enabled: true },
       { id: "products", enabled: true },
       { id: "news", enabled: true },
@@ -392,6 +530,17 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
     heroPrimaryCtaLink: "/produkter",
     heroSecondaryCtaLabel: "Besök Rulleriet",
     heroSecondaryCtaLink: "/rulleriet",
+    anniversaryEyebrow: "Jubileumsår 2026",
+    anniversaryBadge: "30 år",
+    anniversaryTitle: "Tre decennier av lokalt brygghantverk",
+    anniversaryLead: "Ahlafors Bryggerier firar 30 år med jubileumsöl, kvällar i Rulleriet och samma småskaliga kärlek till hantverket som när allt började 1996.",
+    anniversaryBody: "Från det historiska spinneriet i Alafors fortsätter vi att brygga öl och cider med lokal förankring, klassiska metoder och nyfikenhet inför nästa kapitel.",
+    anniversaryImage: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1974",
+    anniversaryHighlights: ["Grundat 1996 i Alafors", "30 år av hantverk och gemenskap", "Fira med jubileumsöl och event i Rulleriet"],
+    anniversaryPrimaryCtaLabel: "Utforska jubileumsölen",
+    anniversaryPrimaryCtaLink: "/produkter/jubileums-ipa",
+    anniversarySecondaryCtaLabel: "Se kommande event",
+    anniversarySecondaryCtaLink: "/rulleriet",
     productsTitle: "Våra produkter",
     productsIntro: "Varje produkt är ett bevis på vårt engagemang för hantverket och kvaliteten",
     productsCtaLabel: "Se alla produkter",
@@ -416,6 +565,7 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
 
   const defaultSectionOrder: Array<{ id: HomepageSectionId; enabled: boolean }> = [
     { id: "hero", enabled: true },
+    { id: "anniversary", enabled: true },
     { id: "about", enabled: true },
     { id: "products", enabled: true },
     { id: "news", enabled: true },
@@ -439,6 +589,19 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
     homepage: {
       ...homepage,
       heroOverlayOpacity: normalizeHeroOverlayOpacity(homepage.heroOverlayOpacity, 80),
+      anniversaryEyebrow: homepage.anniversaryEyebrow || "Jubileumsår 2026",
+      anniversaryBadge: homepage.anniversaryBadge || "30 år",
+      anniversaryTitle: homepage.anniversaryTitle || "Tre decennier av lokalt brygghantverk",
+      anniversaryLead: homepage.anniversaryLead || "Ahlafors Bryggerier firar 30 år med jubileumsöl, kvällar i Rulleriet och samma småskaliga kärlek till hantverket som när allt började 1996.",
+      anniversaryBody: homepage.anniversaryBody || "Från det historiska spinneriet i Alafors fortsätter vi att brygga öl och cider med lokal förankring, klassiska metoder och nyfikenhet inför nästa kapitel.",
+      anniversaryImage: homepage.anniversaryImage || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?q=80&w=1974",
+      anniversaryHighlights: isStringArray(homepage.anniversaryHighlights)
+        ? homepage.anniversaryHighlights
+        : ["Grundat 1996 i Alafors", "30 år av hantverk och gemenskap", "Fira med jubileumsöl och event i Rulleriet"],
+      anniversaryPrimaryCtaLabel: homepage.anniversaryPrimaryCtaLabel || "Utforska jubileumsölen",
+      anniversaryPrimaryCtaLink: homepage.anniversaryPrimaryCtaLink || "/produkter/jubileums-ipa",
+      anniversarySecondaryCtaLabel: homepage.anniversarySecondaryCtaLabel || "Se kommande event",
+      anniversarySecondaryCtaLink: homepage.anniversarySecondaryCtaLink || "/rulleriet",
       sectionOrder: normalizedSectionOrder,
       ctaCards: Array.isArray(homepage.ctaCards)
         ? homepage.ctaCards.map((card, index) => ({
@@ -451,7 +614,35 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
     about: {
       ...content.about,
       pageHeroOverlayOpacity: normalizeHeroOverlayOpacity(content.about.pageHeroOverlayOpacity, 80),
+      boardTitle: content.about.boardTitle || "Styrelse",
+      boardIntro: content.about.boardIntro || "Styrelsen ansvarar för bryggeriets långsiktiga riktning, ekonomi och förvaltning.",
+      chairTitle: content.about.chairTitle || "Ordförande",
+      chairName: content.about.chairName || "",
+      boardMembersTitle: content.about.boardMembersTitle || "Ledamöter",
+      boardMembers: isStringArray(content.about.boardMembers) ? content.about.boardMembers : [],
+      auditorTitle: content.about.auditorTitle || "Revisor",
+      auditorName: content.about.auditorName || "",
+      alaforsTitle: content.about.alaforsTitle || "Orten Alafors",
+      alaforsParagraphs: isStringArray(content.about.alaforsParagraphs) ? content.about.alaforsParagraphs : [],
+      alaforsHistoryTitle: content.about.alaforsHistoryTitle || "Historia Alafors",
+      alaforsHistoryParagraphs: isStringArray(content.about.alaforsHistoryParagraphs) ? content.about.alaforsHistoryParagraphs : [],
+      spinnerTitle: content.about.spinnerTitle || "Spinnerifabriken",
+      spinnerParagraphs: isStringArray(content.about.spinnerParagraphs) ? content.about.spinnerParagraphs : [],
     },
+    products: Array.isArray(content.products)
+      ? content.products.map((product) => normalizePublishingFields(product))
+      : [],
+    news: Array.isArray(content.news)
+      ? content.news.map((item) => normalizePublishingFields(item))
+      : [],
+    services: Array.isArray(content.services)
+      ? content.services.map((service) => ({
+        ...normalizePublishingFields(service),
+        bodyParagraphs: isStringArray(service.bodyParagraphs) ? service.bodyParagraphs : [],
+        image: service.image || "",
+        imageCaption: service.imageCaption || "",
+      }))
+      : [],
     productsPage: {
       heroTitle: content.productsPage?.heroTitle || "Våra Produkter",
       heroSubtitle: content.productsPage?.heroSubtitle || "Helmaltsöl bryggt med kärlek efter gamla traditioner",
@@ -505,6 +696,9 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
       ctaSecondaryLabel: content.servicesPage?.ctaSecondaryLabel || "Se våra produkter",
       ctaSecondaryLink: content.servicesPage?.ctaSecondaryLink || "/produkter",
     },
+    recipes: Array.isArray(content.recipes)
+      ? content.recipes.map((recipe) => normalizePublishingFields(recipe))
+      : [],
     recipesPage: {
       heroTitle: content.recipesPage?.heroTitle || "Recept",
       heroSubtitle: content.recipesPage?.heroSubtitle || "Spännande dryckesrecept och maträtter med våra öl",
@@ -526,6 +720,9 @@ export function normalizeSiteContent(content: SiteContent): SiteContent {
       ...content.rulleriet,
       heroOverlayOpacity: normalizeHeroOverlayOpacity(content.rulleriet.heroOverlayOpacity, 60),
       events: normalizeRullerietEvents(content.rulleriet.events),
+      blogPosts: Array.isArray(content.rulleriet.blogPosts)
+        ? content.rulleriet.blogPosts.map((post) => normalizePublishingFields(post))
+        : [],
     },
     contact: {
       ...content.contact,
@@ -550,13 +747,26 @@ export function assertSiteContent(value: unknown): asserts value is SiteContent 
   }
 
   if (
+    !candidate.site.footer
+    || !isFooterLinkArray(candidate.site.footer.navigationLinks)
+    || !isStringArray(candidate.site.footer.contactLines)
+    || !isFooterSocialLinkArray(candidate.site.footer.socialLinks)
+  ) {
+    throw new Error("site.footer har ogiltigt format.");
+  }
+
+  if (!isRedirectEntryArray(candidate.site.redirects)) {
+    throw new Error("site.redirects har ogiltigt format.");
+  }
+
+  if (
     !Array.isArray(candidate.homepage.sectionOrder)
     || candidate.homepage.sectionOrder.some((section) => {
       if (!section || typeof section !== "object") {
         return true;
       }
       const typed = section as { id?: unknown; enabled?: unknown };
-      return !["hero", "about", "products", "news", "services", "cta"].includes(String(typed.id))
+      return !["hero", "anniversary", "about", "products", "news", "services", "cta"].includes(String(typed.id))
         || typeof typed.enabled !== "boolean";
     })
     || !Array.isArray(candidate.homepage.ctaCards)
@@ -565,7 +775,14 @@ export function assertSiteContent(value: unknown): asserts value is SiteContent 
     throw new Error("homepage-sektionen har ogiltigt format.");
   }
 
-  if (!isStringArray(candidate.about.homepageParagraphs) || !Array.isArray(candidate.about.stats)) {
+  if (
+    !isStringArray(candidate.about.homepageParagraphs)
+    || !Array.isArray(candidate.about.stats)
+    || !isStringArray(candidate.about.boardMembers)
+    || !isStringArray(candidate.about.alaforsParagraphs)
+    || !isStringArray(candidate.about.alaforsHistoryParagraphs)
+    || !isStringArray(candidate.about.spinnerParagraphs)
+  ) {
     throw new Error("about-sektionen har ogiltigt format.");
   }
 

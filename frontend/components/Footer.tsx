@@ -1,67 +1,107 @@
 import Link from "next/link";
 
-export default function Footer() {
+import { readSiteContent } from "@/lib/content-store";
+
+function isExternalHref(href: string) {
+  return /^https?:\/\//.test(href);
+}
+
+function SocialIcon({ platform }: { platform: string }) {
+  switch (platform.toLowerCase()) {
+    case "facebook":
+      return (
+        <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.378 14.192 5 15.115 5H18V0h-3.808C10.596 0 9 1.583 9 4.615V8z" />
+        </svg>
+      );
+    case "instagram":
+      return (
+        <svg className="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92C2.174 15.584 2.163 15.205 2.163 12c0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98C.014 8.333 0 8.741 0 12s.014 3.668.072 4.948c.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072s3.668-.014 4.948-.072c4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948s-.014-3.667-.072-4.947c-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838A6.162 6.162 0 1 0 12 18a6.162 6.162 0 0 0 0-12.324zm0 10.162A4 4 0 1 1 12 8a4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z" />
+        </svg>
+      );
+    default:
+      return <span className="text-sm font-semibold uppercase tracking-[0.2em]">{platform}</span>;
+  }
+}
+
+export default async function Footer() {
+  const { site } = await readSiteContent();
+  const footer = site.footer;
+
   return (
     <footer className="bg-stone-900 text-stone-300">
       <div className="container-custom section-padding">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-          {/* Om Bryggeriet */}
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4 md:gap-12">
           <div>
-            <h3 className="text-amber-500 font-serif text-xl font-bold mb-4">Ahlafors Bryggerier</h3>
-            <p className="text-sm leading-relaxed">
-              Hantverk i varje droppe sedan 1996. Mikrobryggeri i hjärtat av den historiska spinnerifabriken i Alafors.
-            </p>
+            <h3 className="mb-4 font-serif text-xl font-bold text-amber-500">{footer.brandHeading}</h3>
+            <p className="text-sm leading-relaxed">{footer.brandText}</p>
           </div>
 
-          {/* Snabblänkar */}
           <div>
-            <h4 className="text-white font-semibold mb-4 uppercase tracking-wider text-sm">Navigation</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{footer.navigationTitle}</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link href="/produkter" className="hover:text-amber-500 transition-colors">Produkter</Link></li>
-              <li><Link href="/rulleriet" className="hover:text-amber-500 transition-colors">Rulleriet</Link></li>
-              <li><Link href="/recept" className="hover:text-amber-500 transition-colors">Recept</Link></li>
-              <li><Link href="/tjanster" className="hover:text-amber-500 transition-colors">Tjänster</Link></li>
-              <li><Link href="/om-oss" className="hover:text-amber-500 transition-colors">Om oss</Link></li>
-              <li><Link href="/kontakt" className="hover:text-amber-500 transition-colors">Kontakt</Link></li>
+              {footer.navigationLinks.map((link) => (
+                <li key={`${link.label}-${link.href}`}>
+                  {isExternalHref(link.href) ? (
+                    <a href={link.href} className="transition-colors hover:text-amber-500" target="_blank" rel="noopener noreferrer">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href} className="transition-colors hover:text-amber-500">
+                      {link.label}
+                    </Link>
+                  )}
+                </li>
+              ))}
             </ul>
           </div>
 
-          {/* Kontakt */}
           <div>
-            <h4 className="text-white font-semibold mb-4 uppercase tracking-wider text-sm">Kontakt</h4>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{footer.contactTitle}</h4>
             <ul className="space-y-2 text-sm">
-              <li>Spinnerigatan</li>
-              <li>449 41 Alafors</li>
-              <li>Ale kommun</li>
-              <li className="pt-2">
-                <Link href="/kontakt" className="hover:text-amber-500 transition-colors">
-                  Kontakta oss
-                </Link>
-              </li>
+              {footer.contactLines.map((line, index) => (
+                <li key={`${line}-${index}`}>{line}</li>
+              ))}
+              {footer.contactLinkLabel && footer.contactLinkHref ? (
+                <li className="pt-2">
+                  {isExternalHref(footer.contactLinkHref) ? (
+                    <a href={footer.contactLinkHref} className="transition-colors hover:text-amber-500" target="_blank" rel="noopener noreferrer">
+                      {footer.contactLinkLabel}
+                    </a>
+                  ) : (
+                    <Link href={footer.contactLinkHref} className="transition-colors hover:text-amber-500">
+                      {footer.contactLinkLabel}
+                    </Link>
+                  )}
+                </li>
+              ) : null}
             </ul>
           </div>
 
-          {/* Sociala Medier */}
           <div>
-            <h4 className="text-white font-semibold mb-4 uppercase tracking-wider text-sm">Följ oss</h4>
-            <div className="flex space-x-4">
-              <a href="https://www.facebook.com/AhlaforsBryggerier/" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors" aria-label="Facebook">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/>
-                </svg>
-              </a>
-              <a href="https://www.instagram.com/ahlaforsbryggerier/" target="_blank" rel="noopener noreferrer" className="hover:text-amber-500 transition-colors" aria-label="Instagram">
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
-                </svg>
-              </a>
+            <h4 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">{footer.socialTitle}</h4>
+            <div className="flex flex-wrap gap-4">
+              {footer.socialLinks.map((link) => (
+                <a
+                  key={`${link.platform}-${link.url}`}
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="transition-colors hover:text-amber-500"
+                  aria-label={link.platform}
+                  title={link.platform}
+                >
+                  <SocialIcon platform={link.platform} />
+                </a>
+              ))}
             </div>
           </div>
         </div>
 
-        <div className="border-t border-stone-700 mt-12 pt-8 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Ahlafors Bryggerier AB. Alla rättigheter förbehållna.</p>
-          <p className="mt-2 text-stone-400">Njut ansvarsfullt. Våra produkter innehåller alkohol.</p>
+        <div className="mt-12 border-t border-stone-700 pt-8 text-center text-sm">
+          <p>{footer.legalText}</p>
+          <p className="mt-2 text-stone-400">{footer.disclaimerText}</p>
         </div>
       </div>
     </footer>

@@ -4,9 +4,15 @@ import { useEffect, useMemo, useState } from "react";
 
 import type { SiteContent } from "@/lib/content-schema";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import MediaPickerField from "@/components/admin/MediaPickerField";
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
+import { validateService } from "@/lib/content-quality";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 type Service = SiteContent["services"][number];
 
@@ -19,11 +25,15 @@ const emptyService: Service = {
   title: "",
   shortDescription: "",
   description: "",
+  bodyParagraphs: [],
   details: [],
   icon: "",
   link: "",
+  image: "",
+  imageCaption: "",
   published: true,
   publishedAt: "",
+  unpublishedAt: "",
   seoTitle: "",
   seoDescription: "",
 };
@@ -31,9 +41,15 @@ const emptyService: Service = {
 export default function ServicesManager({
   content,
   onSave,
+  initialSelectedId,
+  initialTab,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialSelectedId?: string;
+  initialTab?: "page" | "services";
+  focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.services[0]?.id ?? null);
   const [draft, setDraft] = useState<Service | null>(null);
@@ -44,6 +60,7 @@ export default function ServicesManager({
 
   const services = useMemo(() => content.services, [content.services]);
   const selected = services.find((service) => service.id === selectedId) ?? null;
+  const qualityIssues = useMemo(() => draft ? validateService(draft) : [], [draft]);
 
   useEffect(() => {
     setDraft(selected ? { ...selected } : null);
@@ -52,6 +69,20 @@ export default function ServicesManager({
   useEffect(() => {
     setPageDraft({ ...content.servicesPage });
   }, [content.servicesPage]);
+
+  useEffect(() => {
+    if (!focusToken) {
+      return;
+    }
+
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+
+    if (initialSelectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [focusToken, initialSelectedId, initialTab]);
 
   async function saveServices(nextServices: SiteContent["services"]) {
     setSaving(true);
@@ -156,16 +187,31 @@ export default function ServicesManager({
           Ny tjänst
         </button>
         <div className="space-y-3">
-          {services.map((service) => (
-            <button key={service.id} type="button" onClick={() => setSelectedId(service.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === service.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
-              <div className="flex items-center justify-between gap-2">
-                <span className="font-semibold text-stone-900">{service.title || "Utan titel"}</span>
-                <span className={`rounded-full px-2 py-1 text-xs font-semibold ${(service.published ?? true) ? "bg-green-100 text-green-800" : "bg-stone-200 text-stone-700"}`}>
-                  {(service.published ?? true) ? "Publik" : "Utkast"}
-                </span>
-              </div>
-            </button>
-          ))}
+          {services.map((service) => {
+            const publishingStatus = getPublishingStatus(service);
+
+            return (
+              <button key={service.id} type="button" onClick={() => setSelectedId(service.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === service.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
+                <div className="flex items-center justify-between gap-2">
+                  <span className="font-semibold text-stone-900">{service.title || "Utan titel"}</span>
+                  <div className="flex flex-wrap items-center justify-end gap-2">
+                    <QualityStatusBadge issues={validateService(service)} />
+                    <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                      publishingStatus === "published"
+                        ? "bg-green-100 text-green-800"
+                        : publishingStatus === "scheduled"
+                          ? "bg-sky-100 text-sky-800"
+                          : publishingStatus === "expired"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-stone-200 text-stone-700"
+                    }`}>
+                      {getPublishingStatusLabel(publishingStatus)}
+                    </span>
+                  </div>
+                </div>
+              </button>
+            );
+          })}
         </div>
       </aside>
 
@@ -180,23 +226,56 @@ export default function ServicesManager({
               </div>
             </div>
 
+            <QualityChecklist title="Tjänstekvalitet" issues={qualityIssues} />
+
             <div className="grid gap-4 md:grid-cols-2">
-              <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input value={draft.title} onChange={(event) => setDraft((current) => current ? { ...current, title: event.target.value } : current)} placeholder="Titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="title" />
+              </div>
               <input value={draft.icon} onChange={(event) => setDraft((current) => current ? { ...current, icon: event.target.value } : current)} placeholder="Ikon" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.link} onChange={(event) => setDraft((current) => current ? { ...current, link: event.target.value } : current)} placeholder="Länk" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input type="date" value={draft.publishedAt ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, publishedAt: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input value={draft.link} onChange={(event) => setDraft((current) => current ? { ...current, link: event.target.value } : current)} placeholder="Länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="link" />
+              </div>
             </div>
 
-            <textarea value={draft.shortDescription} onChange={(event) => setDraft((current) => current ? { ...current, shortDescription: event.target.value } : current)} placeholder="Kort beskrivning" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <div>
+              <textarea value={draft.shortDescription} onChange={(event) => setDraft((current) => current ? { ...current, shortDescription: event.target.value } : current)} placeholder="Kort beskrivning" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="shortDescription" />
+            </div>
             <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Lång beskrivning" rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <textarea value={(draft.bodyParagraphs ?? []).join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, bodyParagraphs: splitLines(event.target.value) } : current)} placeholder="Brödtext, en paragraf per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
             <textarea value={draft.details.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, details: splitLines(event.target.value) } : current)} placeholder="Detaljer, en per rad" rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <div className="grid gap-4 md:grid-cols-2">
+              <MediaPickerField value={draft.image ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Tjänstebild" />
+              <div>
+                <label className="mb-2 block text-sm font-semibold text-stone-700">Bildtext</label>
+                <input value={draft.imageCaption ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, imageCaption: event.target.value } : current)} placeholder="Bildtext" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              </div>
+            </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoTitle" />
+              </div>
+              <div>
+                <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoDescription" />
+              </div>
             </div>
 
-            <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.published ?? true} onChange={(event) => setDraft((current) => current ? { ...current, published: event.target.checked } : current)} /> Publicerad</label>
+            <PublishingFields
+              value={draft}
+              qualityIssues={qualityIssues}
+              onChange={(nextValue) => setDraft((current) => current ? {
+                ...current,
+                published: nextValue.published,
+                publishedAt: nextValue.publishedAt ?? "",
+                unpublishedAt: nextValue.unpublishedAt ?? "",
+              } : current)}
+            />
 
             {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
           </div>

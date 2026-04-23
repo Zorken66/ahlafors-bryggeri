@@ -1,6 +1,7 @@
 import Link from "next/link";
 import ProductImageFrame from "@/components/ProductImageFrame";
 import type { SiteContent } from "@/lib/content-schema";
+import { isAnniversaryProduct } from "@/lib/product-utils";
 
 export default function FeaturedProducts({
   products,
@@ -37,9 +38,19 @@ export default function FeaturedProducts({
                 <div className="absolute top-4 right-4 bg-amber-600 text-white px-3 py-1 text-sm font-bold">
                   {product.alcohol}
                 </div>
+                {isAnniversaryProduct(product) && (
+                  <div className="absolute top-4 left-4 rounded-full border border-amber-300/60 bg-stone-950/85 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.25em] text-amber-300 shadow-lg">
+                    30 år
+                  </div>
+                )}
               </div>
 
               <div className="p-6">
+                {isAnniversaryProduct(product) && (
+                  <div className="mb-3 inline-flex rounded-full bg-amber-100 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.22em] text-amber-800">
+                    Jubileumsöl
+                  </div>
+                )}
                 <div className="text-xs uppercase tracking-wider text-copper font-semibold mb-2">
                   {product.style}
                 </div>

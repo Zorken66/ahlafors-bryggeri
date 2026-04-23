@@ -10,6 +10,10 @@ param(
     [switch]$SkipRestart
 )
 
+# This script deploys code only.
+# It must not overwrite CMS content in the production database.
+# Use promote-content-vps.ps1 for explicit content promotion.
+
 $ErrorActionPreference = "Stop"
 
 $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -79,7 +83,7 @@ Assert-Path $KeyPath
 Push-Location $repoRoot
 try {
     Invoke-Step "Preparing remote directories" {
-        Invoke-Ssh "mkdir -p '$currentRoot' '$sharedRoot/uploads' '$currentRoot/frontend'"
+        Invoke-Ssh "mkdir -p '$currentRoot' '$sharedRoot/uploads' '$currentRoot/frontend' '$currentRoot/docs/deploy'"
     }
 
     Invoke-Step "Clearing previous release files" {
@@ -87,15 +91,15 @@ try {
     }
 
     Invoke-Step "Recreating release directories" {
-        Invoke-Ssh "mkdir -p '$currentRoot/frontend'"
+        Invoke-Ssh "mkdir -p '$currentRoot/frontend' '$currentRoot/docs/deploy'"
     }
 
     Invoke-Step "Uploading root files" {
         Upload-FileIfPresent (Join-Path $repoRoot "package.json") "$currentRoot/package.json"
         Upload-FileIfPresent (Join-Path $repoRoot "package-lock.json") "$currentRoot/package-lock.json"
-        Upload-FileIfPresent (Join-Path $repoRoot "DEPLOY.md") "$currentRoot/DEPLOY.md"
-        Upload-FileIfPresent (Join-Path $repoRoot "DEPLOYMENT.md") "$currentRoot/DEPLOYMENT.md"
-        Upload-FileIfPresent (Join-Path $repoRoot "PRODUCTION-CUTOVER.md") "$currentRoot/PRODUCTION-CUTOVER.md"
+        Upload-FileIfPresent (Join-Path $repoRoot "docs/deploy/DEPLOY.md") "$currentRoot/docs/deploy/DEPLOY.md"
+        Upload-FileIfPresent (Join-Path $repoRoot "docs/deploy/DEPLOYMENT.md") "$currentRoot/docs/deploy/DEPLOYMENT.md"
+        Upload-FileIfPresent (Join-Path $repoRoot "docs/deploy/PRODUCTION-CUTOVER.md") "$currentRoot/docs/deploy/PRODUCTION-CUTOVER.md"
     }
 
     Invoke-Step "Uploading frontend files" {
@@ -119,7 +123,7 @@ try {
     }
 
     Invoke-Step "Linking shared environment and uploads" {
-        Invoke-Ssh "mkdir -p '$currentRoot/frontend/public' && ln -sfn '$sharedRoot/uploads' '$currentRoot/frontend/public/uploads' && if [ -f '$sharedRoot/.env.local' ]; then ln -sfn '$sharedRoot/.env.local' '$currentRoot/frontend/.env.local'; fi"
+        Invoke-Ssh "mkdir -p '$currentRoot/frontend/public' && rm -rf '$currentRoot/frontend/public/uploads' && ln -sfn '$sharedRoot/uploads' '$currentRoot/frontend/public/uploads' && if [ -f '$sharedRoot/.env.local' ]; then ln -sfn '$sharedRoot/.env.local' '$currentRoot/frontend/.env.local'; fi"
     }
 
     if (-not $SkipInstall) {

@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import MediaPickerField from "@/components/admin/MediaPickerField";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import { validateHomepage } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { HomepageSectionId, SiteContent } from "@/lib/content-schema";
 
@@ -13,6 +16,7 @@ function splitLines(value: string) {
 
 const sectionLabels: Record<HomepageSectionId, string> = {
   hero: "Hero",
+  anniversary: "Jubileum",
   about: "Om oss",
   products: "Produkter",
   news: "Nyheter",
@@ -30,6 +34,7 @@ export default function HomepageSectionManager({
   const [draft, setDraft] = useState(content.homepage);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const qualityIssues = validateHomepage(draft);
 
   useEffect(() => {
     setDraft(content.homepage);
@@ -80,6 +85,8 @@ export default function HomepageSectionManager({
         </button>
       </div>
 
+      <QualityChecklist title="Kvalitet på förstasidan" issues={qualityIssues} />
+
       <section className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
         <h3 className="text-lg font-bold text-stone-900">Blockordning</h3>
         <p className="mt-1 text-sm text-stone-600">Välj vilka block som visas på startsidan och i vilken ordning.</p>
@@ -122,6 +129,7 @@ export default function HomepageSectionManager({
           <input value={draft.heroTagline} onChange={(e) => setDraft((current) => ({ ...current, heroTagline: e.target.value }))} placeholder="Tagline" className="rounded-xl border border-stone-300 px-4 py-3" />
           <div className="md:col-span-2">
             <input value={draft.heroTitle} onChange={(e) => setDraft((current) => ({ ...current, heroTitle: e.target.value }))} placeholder="Hero-rubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="heroTitle" />
           </div>
           <div className="md:col-span-2">
             <textarea value={draft.heroLead} onChange={(e) => setDraft((current) => ({ ...current, heroLead: e.target.value }))} placeholder="Hero-underrubrik" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
@@ -131,27 +139,72 @@ export default function HomepageSectionManager({
           </div>
           <div className="md:col-span-2">
             <MediaPickerField value={draft.heroBackgroundImage} onChange={(value) => setDraft((current) => ({ ...current, heroBackgroundImage: value }))} label="Hero-bakgrund" />
+            <FieldIssueHint issues={qualityIssues} field="heroBackgroundImage" />
           </div>
           <div className="md:col-span-2">
             <HeroOverlayField value={draft.heroOverlayOpacity} onChange={(value) => setDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
           </div>
           <input value={draft.heroPrimaryCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, heroPrimaryCtaLabel: e.target.value }))} placeholder="Primär knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.heroPrimaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, heroPrimaryCtaLink: e.target.value }))} placeholder="Primär knapplänk" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.heroPrimaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, heroPrimaryCtaLink: e.target.value }))} placeholder="Primär knapplänk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="heroPrimaryCtaLink" />
+          </div>
           <input value={draft.heroSecondaryCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, heroSecondaryCtaLabel: e.target.value }))} placeholder="Sekundär knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.heroSecondaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, heroSecondaryCtaLink: e.target.value }))} placeholder="Sekundär knapplänk" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.heroSecondaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, heroSecondaryCtaLink: e.target.value }))} placeholder="Sekundär knapplänk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="heroSecondaryCtaLink" />
+          </div>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
+        <h3 className="text-lg font-bold text-stone-900">Jubileumsblock</h3>
+        <p className="mt-1 text-sm text-stone-600">Eget block för jubileum, kampanj eller annan större berättelse på startsidan.</p>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <input value={draft.anniversaryEyebrow} onChange={(e) => setDraft((current) => ({ ...current, anniversaryEyebrow: e.target.value }))} placeholder="Eyebrow" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <input value={draft.anniversaryBadge} onChange={(e) => setDraft((current) => ({ ...current, anniversaryBadge: e.target.value }))} placeholder="Badge, t.ex. 30 år" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div className="md:col-span-2">
+            <input value={draft.anniversaryTitle} onChange={(e) => setDraft((current) => ({ ...current, anniversaryTitle: e.target.value }))} placeholder="Jubileumsrubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </div>
+          <div className="md:col-span-2">
+            <textarea value={draft.anniversaryLead} onChange={(e) => setDraft((current) => ({ ...current, anniversaryLead: e.target.value }))} placeholder="Jubileumsingress" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </div>
+          <div className="md:col-span-2">
+            <textarea value={draft.anniversaryBody} onChange={(e) => setDraft((current) => ({ ...current, anniversaryBody: e.target.value }))} placeholder="Brödtext" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </div>
+          <div className="md:col-span-2">
+            <MediaPickerField value={draft.anniversaryImage} onChange={(value) => setDraft((current) => ({ ...current, anniversaryImage: value }))} label="Jubileumsbild" />
+            <FieldIssueHint issues={qualityIssues} field="anniversaryImage" />
+          </div>
+          <div className="md:col-span-2">
+            <textarea value={draft.anniversaryHighlights.join("\n")} onChange={(e) => setDraft((current) => ({ ...current, anniversaryHighlights: splitLines(e.target.value) }))} placeholder="Höjdpunkter, en per rad" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          </div>
+          <input value={draft.anniversaryPrimaryCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, anniversaryPrimaryCtaLabel: e.target.value }))} placeholder="Primär knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <input value={draft.anniversaryPrimaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, anniversaryPrimaryCtaLink: e.target.value }))} placeholder="Primär knapplänk" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <input value={draft.anniversarySecondaryCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, anniversarySecondaryCtaLabel: e.target.value }))} placeholder="Sekundär knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <input value={draft.anniversarySecondaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, anniversarySecondaryCtaLink: e.target.value }))} placeholder="Sekundär knapplänk" className="rounded-xl border border-stone-300 px-4 py-3" />
         </div>
       </section>
 
       <section className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
         <h3 className="text-lg font-bold text-stone-900">Startsidans block</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <input value={draft.productsTitle} onChange={(e) => setDraft((current) => ({ ...current, productsTitle: e.target.value }))} placeholder="Produktrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.productsTitle} onChange={(e) => setDraft((current) => ({ ...current, productsTitle: e.target.value }))} placeholder="Produktrubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="productsTitle" />
+          </div>
           <input value={draft.productsCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, productsCtaLabel: e.target.value }))} placeholder="Produktknapp" className="rounded-xl border border-stone-300 px-4 py-3" />
           <textarea value={draft.productsIntro} onChange={(e) => setDraft((current) => ({ ...current, productsIntro: e.target.value }))} placeholder="Produktintro" rows={3} className="md:col-span-2 w-full rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.newsTitle} onChange={(e) => setDraft((current) => ({ ...current, newsTitle: e.target.value }))} placeholder="Nyhetsrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.newsTitle} onChange={(e) => setDraft((current) => ({ ...current, newsTitle: e.target.value }))} placeholder="Nyhetsrubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="newsTitle" />
+          </div>
           <input value={draft.newsCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, newsCtaLabel: e.target.value }))} placeholder="Nyhetsknapp" className="rounded-xl border border-stone-300 px-4 py-3" />
           <textarea value={draft.newsIntro} onChange={(e) => setDraft((current) => ({ ...current, newsIntro: e.target.value }))} placeholder="Nyhetsintro" rows={3} className="md:col-span-2 w-full rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.servicesTitle} onChange={(e) => setDraft((current) => ({ ...current, servicesTitle: e.target.value }))} placeholder="Tjänsterubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.servicesTitle} onChange={(e) => setDraft((current) => ({ ...current, servicesTitle: e.target.value }))} placeholder="Tjänsterubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="servicesTitle" />
+          </div>
           <input value={draft.servicesIntro} onChange={(e) => setDraft((current) => ({ ...current, servicesIntro: e.target.value }))} placeholder="Tjänsteintro" className="rounded-xl border border-stone-300 px-4 py-3" />
         </div>
       </section>
@@ -159,15 +212,24 @@ export default function HomepageSectionManager({
       <section className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
         <h3 className="text-lg font-bold text-stone-900">Nedre CTA</h3>
         <div className="mt-4 grid gap-4 md:grid-cols-2">
-          <input value={draft.ctaTitle} onChange={(e) => setDraft((current) => ({ ...current, ctaTitle: e.target.value }))} placeholder="CTA-rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.ctaTitle} onChange={(e) => setDraft((current) => ({ ...current, ctaTitle: e.target.value }))} placeholder="CTA-rubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="ctaTitle" />
+          </div>
           <input value={draft.ctaLead} onChange={(e) => setDraft((current) => ({ ...current, ctaLead: e.target.value }))} placeholder="CTA-ingress" className="rounded-xl border border-stone-300 px-4 py-3" />
           <div className="md:col-span-2">
             <textarea value={draft.ctaBody} onChange={(e) => setDraft((current) => ({ ...current, ctaBody: e.target.value }))} placeholder="CTA-brödtext" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </div>
           <input value={draft.ctaPrimaryLabel} onChange={(e) => setDraft((current) => ({ ...current, ctaPrimaryLabel: e.target.value }))} placeholder="Primär CTA-knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.ctaPrimaryLink} onChange={(e) => setDraft((current) => ({ ...current, ctaPrimaryLink: e.target.value }))} placeholder="Primär CTA-länk" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.ctaPrimaryLink} onChange={(e) => setDraft((current) => ({ ...current, ctaPrimaryLink: e.target.value }))} placeholder="Primär CTA-länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="ctaPrimaryLink" />
+          </div>
           <input value={draft.ctaSecondaryLabel} onChange={(e) => setDraft((current) => ({ ...current, ctaSecondaryLabel: e.target.value }))} placeholder="Sekundär CTA-knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
-          <input value={draft.ctaSecondaryLink} onChange={(e) => setDraft((current) => ({ ...current, ctaSecondaryLink: e.target.value }))} placeholder="Sekundär CTA-länk" className="rounded-xl border border-stone-300 px-4 py-3" />
+          <div>
+            <input value={draft.ctaSecondaryLink} onChange={(e) => setDraft((current) => ({ ...current, ctaSecondaryLink: e.target.value }))} placeholder="Sekundär CTA-länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <FieldIssueHint issues={qualityIssues} field="ctaSecondaryLink" />
+          </div>
         </div>
 
         <div className="mt-5 grid gap-4 lg:grid-cols-3">

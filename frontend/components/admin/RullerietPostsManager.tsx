@@ -3,9 +3,15 @@
 import { useEffect, useMemo, useState } from "react";
 
 import MediaPickerField from "@/components/admin/MediaPickerField";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import { validateRullerietPost } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { RullerietPost, SiteContent } from "@/lib/content-schema";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 type DraftPost = RullerietPost;
 
@@ -17,6 +23,7 @@ const emptyPost: DraftPost = {
   content: "",
   image: "",
   publishedAt: "",
+  unpublishedAt: "",
   featured: false,
   published: true,
 };
@@ -37,9 +44,13 @@ function slugify(value: string) {
 export default function RullerietPostsManager({
   content,
   onSave,
+  initialSelectedId,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialSelectedId?: string;
+  focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.rulleriet.blogPosts[0]?.id ?? null);
   const [draft, setDraft] = useState<DraftPost | null>(null);
@@ -50,12 +61,19 @@ export default function RullerietPostsManager({
     () => [...content.rulleriet.blogPosts].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
     [content.rulleriet.blogPosts],
   );
+  const qualityIssues = useMemo(() => draft ? validateRullerietPost(draft) : [], [draft]);
 
   const selectedPost = posts.find((post) => post.id === selectedId) ?? null;
 
   useEffect(() => {
     setDraft(selectedPost ? { ...selectedPost } : null);
   }, [selectedPost]);
+
+  useEffect(() => {
+    if (focusToken && initialSelectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [focusToken, initialSelectedId]);
 
   async function updatePosts(nextPosts: RullerietPost[]) {
     setSaving(true);
@@ -155,26 +173,41 @@ export default function RullerietPostsManager({
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="rounded-3xl border border-stone-200 bg-white p-4 shadow-lg">
           <div className="space-y-3">
-            {posts.map((post) => (
-              <button
-                key={post.id}
-                type="button"
-                onClick={() => setSelectedId(post.id)}
-                className={`w-full rounded-2xl border p-4 text-left transition ${
-                  selectedId === post.id
-                    ? "border-amber-700 bg-amber-50"
-                    : "border-stone-200 bg-stone-50 hover:bg-stone-100"
-                }`}
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <span className="line-clamp-2 font-semibold text-stone-900">{post.title || "Utan titel"}</span>
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold ${post.published ? "bg-green-100 text-green-800" : "bg-stone-200 text-stone-700"}`}>
-                    {post.published ? "Publik" : "Utkast"}
-                  </span>
-                </div>
-                <p className="mt-2 text-xs text-stone-500">{post.publishedAt || "Saknar datum"}</p>
-              </button>
-            ))}
+            {posts.map((post) => {
+              const publishingStatus = getPublishingStatus(post);
+
+              return (
+                <button
+                  key={post.id}
+                  type="button"
+                  onClick={() => setSelectedId(post.id)}
+                  className={`w-full rounded-2xl border p-4 text-left transition ${
+                    selectedId === post.id
+                      ? "border-amber-700 bg-amber-50"
+                      : "border-stone-200 bg-stone-50 hover:bg-stone-100"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="line-clamp-2 font-semibold text-stone-900">{post.title || "Utan titel"}</span>
+                    <div className="flex flex-wrap items-center justify-end gap-2">
+                      <QualityStatusBadge issues={validateRullerietPost(post)} />
+                      <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                        publishingStatus === "published"
+                          ? "bg-green-100 text-green-800"
+                          : publishingStatus === "scheduled"
+                            ? "bg-sky-100 text-sky-800"
+                            : publishingStatus === "expired"
+                              ? "bg-amber-100 text-amber-800"
+                              : "bg-stone-200 text-stone-700"
+                      }`}>
+                        {getPublishingStatusLabel(publishingStatus)}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="mt-2 text-xs text-stone-500">{post.publishedAt || "Saknar datum"}</p>
+                </button>
+              );
+            })}
             {posts.length === 0 && <p className="text-sm text-stone-500">Inga inlägg ännu.</p>}
           </div>
         </aside>
@@ -204,6 +237,8 @@ export default function RullerietPostsManager({
                 </div>
               </div>
 
+              <QualityChecklist title="Inläggskvalitet" issues={qualityIssues} />
+
               <label className="block">
                 <span className="mb-2 block text-sm font-semibold text-stone-700">Titel</span>
                 <input
@@ -212,6 +247,7 @@ export default function RullerietPostsManager({
                   onChange={(event) => handleFieldChange("title", event.target.value)}
                   className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
                 />
+                <FieldIssueHint issues={qualityIssues} field="title" />
               </label>
 
               <div className="grid gap-4 md:grid-cols-2">
@@ -223,15 +259,7 @@ export default function RullerietPostsManager({
                     onChange={(event) => handleFieldChange("slug", slugify(event.target.value))}
                     className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
                   />
-                </label>
-                <label className="block">
-                  <span className="mb-2 block text-sm font-semibold text-stone-700">Publiceringsdatum</span>
-                  <input
-                    type="date"
-                    value={draft?.publishedAt ?? ""}
-                    onChange={(event) => handleFieldChange("publishedAt", event.target.value)}
-                    className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
-                  />
+                  <FieldIssueHint issues={qualityIssues} field="slug" />
                 </label>
               </div>
 
@@ -240,6 +268,7 @@ export default function RullerietPostsManager({
                 value={draft?.image ?? ""}
                 onChange={(value) => handleFieldChange("image", value)}
               />
+              <FieldIssueHint issues={qualityIssues} field="image" />
 
               <RichTextEditor
                 label="Ingress"
@@ -248,6 +277,7 @@ export default function RullerietPostsManager({
                 placeholder="Skriv en ingress med länkar eller enklare formatering"
                 minHeightClassName="min-h-[140px]"
               />
+              <FieldIssueHint issues={qualityIssues} field="excerpt" />
 
               <RichTextEditor
                 label="Innehåll"
@@ -257,6 +287,7 @@ export default function RullerietPostsManager({
                 minHeightClassName="min-h-[320px]"
                 helperText="Du kan lägga till länkar, listor, rubriker och citat."
               />
+              <FieldIssueHint issues={qualityIssues} field="content" />
 
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
@@ -267,6 +298,7 @@ export default function RullerietPostsManager({
                     onChange={(event) => handleFieldChange("seoTitle", event.target.value)}
                     className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
                   />
+                  <FieldIssueHint issues={qualityIssues} field="seoTitle" />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-sm font-semibold text-stone-700">SEO-beskrivning</span>
@@ -276,18 +308,11 @@ export default function RullerietPostsManager({
                     onChange={(event) => handleFieldChange("seoDescription", event.target.value)}
                     className="w-full rounded-xl border border-stone-300 px-4 py-3 outline-none transition focus:border-amber-600"
                   />
+                  <FieldIssueHint issues={qualityIssues} field="seoDescription" />
                 </label>
               </div>
 
               <div className="flex flex-wrap gap-6">
-                <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700">
-                  <input
-                    type="checkbox"
-                    checked={draft?.published ?? false}
-                    onChange={(event) => handleFieldChange("published", event.target.checked)}
-                  />
-                  Publicerad
-                </label>
                 <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700">
                   <input
                     type="checkbox"
@@ -297,6 +322,17 @@ export default function RullerietPostsManager({
                   Utvald
                 </label>
               </div>
+
+              <PublishingFields
+                value={draft ?? emptyPost}
+                qualityIssues={qualityIssues}
+                onChange={(nextValue) => {
+                  handleFieldChange("published", nextValue.published ?? true);
+                  handleFieldChange("publishedAt", nextValue.publishedAt ?? "");
+                  handleFieldChange("unpublishedAt", nextValue.unpublishedAt ?? "");
+                }}
+              />
+              <FieldIssueHint issues={qualityIssues} field="publishedAt" />
 
               {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
             </div>

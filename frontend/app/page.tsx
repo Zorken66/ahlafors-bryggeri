@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 import Hero from "@/components/Hero";
+import AnniversarySection from "@/components/AnniversarySection";
 import About from "@/components/About";
 import FeaturedProducts from "@/components/FeaturedProducts";
 import NewsSection from "@/components/NewsSection";
@@ -20,6 +21,7 @@ export default async function Home() {
 
   const sections: Record<HomepageSectionId, ReactNode> = {
     hero: <Hero homepage={content.homepage} />,
+    anniversary: <AnniversarySection homepage={content.homepage} />,
     about: <About about={content.about} />,
     products: (
       <FeaturedProducts

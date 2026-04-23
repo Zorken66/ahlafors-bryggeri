@@ -90,7 +90,7 @@ curl -I http://127.0.0.1:3002/api/health
 
 ## Relaterade filer i repo
 
-- [DEPLOY.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/DEPLOY.md:1)
-- [DEPLOYMENT.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/DEPLOYMENT.md:1)
-- [PRODUCTION-CUTOVER.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/PRODUCTION-CUTOVER.md:1)
+- [DEPLOY.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/DEPLOY.md:1)
+- [DEPLOYMENT.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/DEPLOYMENT.md:1)
+- [PRODUCTION-CUTOVER.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/PRODUCTION-CUTOVER.md:1)
 - [deploy-vps.ps1](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/deploy-vps.ps1:1)

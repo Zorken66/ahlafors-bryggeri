@@ -3,11 +3,17 @@
 import { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
 import MediaPickerField from "@/components/admin/MediaPickerField";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
+import { validateProduct } from "@/lib/content-quality";
 import type { ProductEntry, ProductLink, SiteContent } from "@/lib/content-schema";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 import { getProductCategories, slugifyProduct } from "@/lib/product-utils";
 
 type Product = ProductEntry;
@@ -29,6 +35,7 @@ const emptyProduct: Product = {
   featured: false,
   published: true,
   publishedAt: "",
+  unpublishedAt: "",
   seoTitle: "",
   seoDescription: "",
   links: [],
@@ -48,9 +55,15 @@ function splitLines(value: string) {
 export default function ProductsManager({
   content,
   onSave,
+  initialSelectedId,
+  initialTab,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialSelectedId?: string;
+  initialTab?: "page" | "settings" | "products";
+  focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.products[0]?.id ?? null);
   const [draft, setDraft] = useState<Product | null>(null);
@@ -66,6 +79,7 @@ export default function ProductsManager({
 
   const products = useMemo(() => content.products, [content.products]);
   const selected = products.find((product) => product.id === selectedId) ?? null;
+  const qualityIssues = useMemo(() => draft ? validateProduct(draft) : [], [draft]);
 
   useEffect(() => {
     setDraft(selected ? { ...selected } : null);
@@ -85,6 +99,20 @@ export default function ProductsManager({
   useEffect(() => {
     setDetailPageDraft({ ...content.productDetailPage });
   }, [content.productDetailPage]);
+
+  useEffect(() => {
+    if (!focusToken) {
+      return;
+    }
+
+    if (initialTab) {
+      setActiveTab(initialTab);
+    }
+
+    if (initialSelectedId) {
+      setSelectedId(initialSelectedId);
+    }
+  }, [focusToken, initialSelectedId, initialTab]);
 
   async function saveProducts(nextProducts: SiteContent["products"]) {
     setSaving(true);
@@ -349,15 +377,32 @@ export default function ProductsManager({
           </button>
           <div className="space-y-3">
             {products.map((product) => (
-              <button key={product.id} type="button" onClick={() => setSelectedId(product.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === product.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-semibold text-stone-900">{product.name || "Utan namn"}</span>
-                  <span className={`rounded-full px-2 py-1 text-xs font-semibold ${(product.published ?? true) ? "bg-green-100 text-green-800" : "bg-stone-200 text-stone-700"}`}>
-                    {(product.published ?? true) ? "Publik" : "Utkast"}
-                  </span>
-                </div>
-                <p className="mt-2 text-xs text-stone-500">{product.category || "Ingen kategori"}</p>
-              </button>
+              (() => {
+                const publishingStatus = getPublishingStatus(product);
+
+                return (
+                  <button key={product.id} type="button" onClick={() => setSelectedId(product.id)} className={`w-full rounded-2xl border p-4 text-left ${selectedId === product.id ? "border-amber-700 bg-amber-50" : "border-stone-200 bg-stone-50"}`}>
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-semibold text-stone-900">{product.name || "Utan namn"}</span>
+                      <div className="flex flex-wrap items-center justify-end gap-2">
+                        <QualityStatusBadge issues={validateProduct(product)} />
+                        <span className={`rounded-full px-2 py-1 text-xs font-semibold ${
+                          publishingStatus === "published"
+                            ? "bg-green-100 text-green-800"
+                            : publishingStatus === "scheduled"
+                              ? "bg-sky-100 text-sky-800"
+                              : publishingStatus === "expired"
+                                ? "bg-amber-100 text-amber-800"
+                                : "bg-stone-200 text-stone-700"
+                        }`}>
+                          {getPublishingStatusLabel(publishingStatus)}
+                        </span>
+                      </div>
+                    </div>
+                    <p className="mt-2 text-xs text-stone-500">{product.category || "Ingen kategori"}</p>
+                  </button>
+                );
+              })()
             ))}
           </div>
         </aside>
@@ -376,14 +421,22 @@ export default function ProductsManager({
               </div>
             </div>
 
+            <QualityChecklist title="Produktkvalitet" issues={qualityIssues} />
+
             <div className="grid gap-4 md:grid-cols-2">
-              <input value={draft.name} onChange={(event) => setDraft((current) => current ? { ...current, name: event.target.value } : current)} placeholder="Namn" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input
-                value={draft.slug ?? ""}
-                onChange={(event) => setDraft((current) => current ? { ...current, slug: slugifyProduct(event.target.value) } : current)}
-                placeholder="Slug"
-                className="rounded-xl border border-stone-300 px-4 py-3"
-              />
+              <div>
+                <input value={draft.name} onChange={(event) => setDraft((current) => current ? { ...current, name: event.target.value } : current)} placeholder="Namn" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="name" />
+              </div>
+              <div>
+                <input
+                  value={draft.slug ?? ""}
+                  onChange={(event) => setDraft((current) => current ? { ...current, slug: slugifyProduct(event.target.value) } : current)}
+                  placeholder="Slug"
+                  className="w-full rounded-xl border border-stone-300 px-4 py-3"
+                />
+                <FieldIssueHint issues={qualityIssues} field="slug" />
+              </div>
               <select value={draft.category} onChange={(event) => setDraft((current) => current ? { ...current, category: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3">
                 {settingsDraft.productCategories.map((category) => (
                   <option key={category.id} value={category.id}>{category.name}</option>
@@ -395,9 +448,15 @@ export default function ProductsManager({
               <input value={draft.volume} onChange={(event) => setDraft((current) => current ? { ...current, volume: event.target.value } : current)} placeholder="Volym" className="rounded-xl border border-stone-300 px-4 py-3" />
             </div>
 
-            <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Produktbild" />
+            <div>
+              <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Produktbild" />
+              <FieldIssueHint issues={qualityIssues} field="image" />
+            </div>
             <MediaPickerField value={draft.ogImage ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, ogImage: value } : current)} label="Open Graph-bild" />
-            <input value={draft.systembolaget} onChange={(event) => setDraft((current) => current ? { ...current, systembolaget: event.target.value } : current)} placeholder="Systembolaget-länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <div>
+              <input value={draft.systembolaget} onChange={(event) => setDraft((current) => current ? { ...current, systembolaget: event.target.value } : current)} placeholder="Systembolaget-länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="systembolaget" />
+            </div>
 
             <div className="space-y-3 rounded-2xl border border-stone-200 bg-stone-50 p-4">
               <div className="flex items-center justify-between gap-4">
@@ -453,7 +512,10 @@ export default function ProductsManager({
                 <p className="text-sm text-stone-500">Inga extra länkar ännu.</p>
               )}
             </div>
-            <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Kort beskrivning" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <div>
+              <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Kort beskrivning" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <FieldIssueHint issues={qualityIssues} field="description" />
+            </div>
             <textarea value={draft.fullDescription} onChange={(event) => setDraft((current) => current ? { ...current, fullDescription: event.target.value } : current)} placeholder="Full beskrivning" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
 
             <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
@@ -478,15 +540,33 @@ export default function ProductsManager({
             </div>
 
             <div className="grid gap-4 md:grid-cols-2">
-              <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input type="date" value={draft.publishedAt ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, publishedAt: event.target.value } : current)} className="rounded-xl border border-stone-300 px-4 py-3" />
-              <input value={draft.artikelnummer ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, artikelnummer: event.target.value } : current)} placeholder="Artikelnummer" className="rounded-xl border border-stone-300 px-4 py-3" />
+              <div>
+                <input value={draft.seoTitle ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoTitle: event.target.value } : current)} placeholder="SEO-titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoTitle" />
+              </div>
+              <div>
+                <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, seoDescription: event.target.value } : current)} placeholder="SEO-beskrivning" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="seoDescription" />
+              </div>
+              <div>
+                <input value={draft.artikelnummer ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, artikelnummer: event.target.value } : current)} placeholder="Artikelnummer" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                <FieldIssueHint issues={qualityIssues} field="artikelnummer" />
+              </div>
             </div>
+
+            <PublishingFields
+              value={draft}
+              qualityIssues={qualityIssues}
+              onChange={(nextValue) => setDraft((current) => current ? {
+                ...current,
+                published: nextValue.published,
+                publishedAt: nextValue.publishedAt ?? "",
+                unpublishedAt: nextValue.unpublishedAt ?? "",
+              } : current)}
+            />
 
             <div className="flex gap-6">
               <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.featured} onChange={(event) => setDraft((current) => current ? { ...current, featured: event.target.checked } : current)} /> Utvald</label>
-              <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700"><input type="checkbox" checked={draft.published ?? true} onChange={(event) => setDraft((current) => current ? { ...current, published: event.target.checked } : current)} /> Publicerad</label>
             </div>
 
             {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}

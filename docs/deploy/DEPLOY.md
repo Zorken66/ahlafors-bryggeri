@@ -80,6 +80,13 @@ Kör från repo-roten:
 powershell -ExecutionPolicy Bypass -File .\deploy-vps.ps1
 ```
 
+Viktigt:
+
+- vanlig `deploy-vps.ps1` deployar bara kod och statiska filer
+- den ska **inte** skriva över `cms_content` i databasen
+- hero-bilder och andra redigeringar som gjorts i CMS i produktion lever i PostgreSQL, inte i `frontend/content/site-content.json`
+- om `site-content.json` skrivs in i produktionsdatabasen kommer liveinnehåll som hero-bilder, CTA och andra CMS-redigeringar att återgå till filens värden
+
 Deployscriptet gör detta:
 
 1. packar repot utan `node_modules`, `.next` och lokala `.env`-filer
@@ -91,6 +98,24 @@ Deployscriptet gör detta:
 7. kör `npm run build --workspace=frontend`
 8. startar eller reloadar PM2-processen `ahlafors-bryggerier`
 9. kör smoke test mot `http://127.0.0.1:3002/api/health`
+
+## Innehållspromotion
+
+Om innehåll uttryckligen ska flyttas till VPS:en används ett separat script:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\promote-content-vps.ps1 -Force
+```
+
+Det scriptet:
+
+- läser `frontend/content/site-content.json`
+- skriver in innehållet i VPS:ens `cms_content`
+- ska bara köras när man medvetet vill promota innehåll
+
+Använd inte det scriptet som del av vanlig koddeploy.
+
+Se även [CONTENT-PROMOTION.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/CONTENT-PROMOTION.md:1).
 
 ## Intern verifiering före DNS-flytt
 
@@ -114,4 +139,4 @@ När appen är verifierad internt återstår:
 3. hämta certifikat via `certbot`
 4. testa `https://ahlaforsbryggerier.se`
 
-Se även [PRODUCTION-CUTOVER.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/PRODUCTION-CUTOVER.md:1).
+Se även [PRODUCTION-CUTOVER.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/PRODUCTION-CUTOVER.md:1).

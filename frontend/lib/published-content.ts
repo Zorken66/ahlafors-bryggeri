@@ -1,20 +1,8 @@
 import type { SiteContent } from "@/lib/content-schema";
+import { isPublishedNow, type PublishableFields } from "@/lib/publishing";
 
-type Publishable = {
-  published?: boolean;
-  publishedAt?: string;
-};
-
-function isPublished(item: Publishable) {
-  if (item.published === false) {
-    return false;
-  }
-
-  if (!item.publishedAt) {
-    return true;
-  }
-
-  return new Date(item.publishedAt).getTime() <= Date.now();
+function isPublished(item: PublishableFields) {
+  return isPublishedNow(item);
 }
 
 export function getPublishedProducts(products: SiteContent["products"]) {

@@ -3,10 +3,16 @@
 import { useEffect, useMemo, useState } from "react";
 
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
+import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import MediaPickerField from "@/components/admin/MediaPickerField";
+import PublishingFields from "@/components/admin/PublishingFields";
+import QualityChecklist from "@/components/admin/QualityChecklist";
+import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import RichTextEditor from "@/components/admin/RichTextEditor";
+import { validateRullerietSection } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { RullerietEvent, SiteContent } from "@/lib/content-schema";
+import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
@@ -26,6 +32,8 @@ function createEmptyEvent(): RullerietEvent {
     ticketUrl: "",
     featured: false,
     published: true,
+    publishedAt: "",
+    unpublishedAt: "",
   };
 }
 
@@ -36,19 +44,53 @@ function sortEvents(events: RullerietEvent[]) {
 export default function RullerietSectionManager({
   content,
   onSave,
+  initialFocusEventAnchorId,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialFocusEventAnchorId?: string;
+  focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.rulleriet);
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
+  const [highlightedEventAnchorId, setHighlightedEventAnchorId] = useState<string | null>(null);
+  const qualityIssues = useMemo(() => validateRullerietSection(draft), [draft]);
 
   useEffect(() => {
     setDraft(content.rulleriet);
   }, [content.rulleriet]);
 
-  const upcomingCount = useMemo(() => draft.events.filter((event) => event.published !== false).length, [draft.events]);
+  useEffect(() => {
+    if (!focusToken || !initialFocusEventAnchorId) {
+      return;
+    }
+
+    setHighlightedEventAnchorId(initialFocusEventAnchorId);
+
+    const scrollTimeout = window.setTimeout(() => {
+      const element = document.getElementById(initialFocusEventAnchorId);
+      element?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 80);
+
+    const clearTimeoutId = window.setTimeout(() => {
+      setHighlightedEventAnchorId((current) => current === initialFocusEventAnchorId ? null : current);
+    }, 4000);
+
+    return () => {
+      window.clearTimeout(scrollTimeout);
+      window.clearTimeout(clearTimeoutId);
+    };
+  }, [focusToken, initialFocusEventAnchorId]);
+
+  const upcomingCount = useMemo(
+    () => draft.events.filter((event) => {
+      const publishingStatus = getPublishingStatus(event);
+      return publishingStatus === "published" || publishingStatus === "scheduled";
+    }).length,
+    [draft.events],
+  );
 
   async function handleSave() {
     setSaving(true);
@@ -67,6 +109,8 @@ export default function RullerietSectionManager({
             location: event.location?.trim() || undefined,
             ticketUrl: event.ticketUrl?.trim() || undefined,
             published: event.published ?? true,
+            publishedAt: event.publishedAt?.trim() || undefined,
+            unpublishedAt: event.unpublishedAt?.trim() || undefined,
             featured: event.featured ?? false,
           })),
         },
@@ -143,11 +187,17 @@ export default function RullerietSectionManager({
         </button>
       </div>
 
+      <QualityChecklist title="Kvalitet på Rulleriet" issues={qualityIssues} />
+
       <div className="grid gap-4 md:grid-cols-2">
-        <input value={draft.heroTitle} onChange={(event) => setDraft((current) => ({ ...current, heroTitle: event.target.value }))} placeholder="Hero-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
+        <div>
+          <input value={draft.heroTitle} onChange={(event) => setDraft((current) => ({ ...current, heroTitle: event.target.value }))} placeholder="Hero-titel" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <FieldIssueHint issues={qualityIssues} field="heroTitle" />
+        </div>
         <input value={draft.heroSubtitle} onChange={(event) => setDraft((current) => ({ ...current, heroSubtitle: event.target.value }))} placeholder="Hero-undertitel" className="rounded-xl border border-stone-300 px-4 py-3" />
         <div className="md:col-span-2">
           <MediaPickerField value={draft.heroImage} onChange={(value) => setDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+          <FieldIssueHint issues={qualityIssues} field="heroImage" />
         </div>
         <div className="md:col-span-2">
           <HeroOverlayField value={draft.heroOverlayOpacity} onChange={(value) => setDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
@@ -156,7 +206,10 @@ export default function RullerietSectionManager({
         <input value={draft.seoDescription ?? ""} onChange={(event) => setDraft((current) => ({ ...current, seoDescription: event.target.value }))} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
       </div>
 
-      <input value={draft.introTitle} onChange={(event) => setDraft((current) => ({ ...current, introTitle: event.target.value }))} placeholder="Intro-rubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+      <div>
+        <input value={draft.introTitle} onChange={(event) => setDraft((current) => ({ ...current, introTitle: event.target.value }))} placeholder="Intro-rubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <FieldIssueHint issues={qualityIssues} field="introTitle" />
+      </div>
       <textarea value={draft.introParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, introParagraphs: splitLines(event.target.value) }))} placeholder="Introstycken, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -188,18 +241,37 @@ export default function RullerietSectionManager({
         </div>
 
         <div className="mt-5 space-y-4">
-          {draft.events.map((event, index) => (
-            <article key={event.id} className="rounded-3xl border border-stone-200 bg-white p-5 shadow-sm">
+          {draft.events.map((event, index) => {
+            const publishingStatus = getPublishingStatus(event);
+            const anchorId = `rulleriet-event-${event.id}`;
+
+            return (
+            <article
+              key={event.id}
+              id={anchorId}
+              className={`rounded-3xl border bg-white p-5 shadow-sm transition ${
+                highlightedEventAnchorId === anchorId
+                  ? "border-amber-500 ring-2 ring-amber-200"
+                  : "border-stone-200"
+              }`}
+            >
               <div className="flex flex-col gap-4 xl:flex-row xl:items-start xl:justify-between">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
                     <h4 className="text-lg font-semibold text-stone-900">{event.title || `Evenemang ${index + 1}`}</h4>
                     {event.featured && <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">Utvalt</span>}
-                    {(event.published ?? true) ? (
-                      <span className="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800">Publicerat</span>
-                    ) : (
-                      <span className="rounded-full bg-stone-200 px-3 py-1 text-xs font-semibold text-stone-700">Utkast</span>
-                    )}
+                    <QualityStatusBadge issues={qualityIssues.filter((issue) => issue.field.startsWith(`event:${event.id}:`))} />
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                      publishingStatus === "published"
+                        ? "bg-green-100 text-green-800"
+                        : publishingStatus === "scheduled"
+                          ? "bg-sky-100 text-sky-800"
+                          : publishingStatus === "expired"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-stone-200 text-stone-700"
+                    }`}>
+                      {getPublishingStatusLabel(publishingStatus)}
+                    </span>
                   </div>
                   <p className="mt-1 text-sm text-stone-500">
                     {event.date || "Datum saknas"} {event.time ? `kl. ${event.time}` : ""}
@@ -219,10 +291,12 @@ export default function RullerietSectionManager({
                 <label className="block">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Datum</span>
                   <input type="date" value={event.date} onChange={(e) => updateEvent(event.id, { date: e.target.value })} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                  <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:date`} />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Starttid</span>
                   <input type="time" value={event.time} onChange={(e) => updateEvent(event.id, { time: e.target.value })} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                  <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:time`} />
                 </label>
                 <label className="block">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Sluttid</span>
@@ -235,6 +309,7 @@ export default function RullerietSectionManager({
                 <label className="block md:col-span-2 xl:col-span-2">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Titel</span>
                   <input value={event.title} onChange={(e) => updateEvent(event.id, { title: e.target.value })} placeholder="AW med quiz" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+                  <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:title`} />
                 </label>
                 <label className="block md:col-span-2 xl:col-span-2">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Mat / foodtruck</span>
@@ -246,6 +321,7 @@ export default function RullerietSectionManager({
                     onChange={(value) => updateEvent(event.id, { image: value })}
                     label="Evenemangsbild"
                   />
+                  <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:image`} />
                 </div>
                 <div className="md:col-span-2 xl:col-span-3">
                   <RichTextEditor
@@ -255,6 +331,7 @@ export default function RullerietSectionManager({
                     placeholder="Beskriv kvällen, vad som händer och varför man ska komma."
                     minHeightClassName="min-h-[180px]"
                   />
+                  <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:description`} />
                 </div>
                 <label className="block md:col-span-2 xl:col-span-1">
                   <span className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-stone-500">Biljettlänk</span>
@@ -267,13 +344,24 @@ export default function RullerietSectionManager({
                   <input type="checkbox" checked={event.featured ?? false} onChange={(e) => updateEvent(event.id, { featured: e.target.checked })} />
                   Utvalt evenemang
                 </label>
-                <label className="inline-flex items-center gap-3 text-sm font-semibold text-stone-700">
-                  <input type="checkbox" checked={event.published ?? true} onChange={(e) => updateEvent(event.id, { published: e.target.checked })} />
-                  Publicerat
-                </label>
+              </div>
+
+              <div className="mt-4">
+                <PublishingFields
+                  value={event}
+                  qualityIssues={qualityIssues.filter((issue) => issue.field.startsWith(`event:${event.id}:`))}
+                  onChange={(nextValue) => updateEvent(event.id, {
+                    published: nextValue.published,
+                    publishedAt: nextValue.publishedAt ?? "",
+                    unpublishedAt: nextValue.unpublishedAt ?? "",
+                  })}
+                />
+                <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:publishedAt`} />
+                <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:unpublishedAt`} />
               </div>
             </article>
-          ))}
+            );
+          })}
 
           {draft.events.length === 0 && (
             <div className="rounded-2xl border border-dashed border-stone-300 bg-white px-6 py-8 text-center text-sm text-stone-500">
