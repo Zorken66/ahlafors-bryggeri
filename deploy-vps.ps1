@@ -20,6 +20,10 @@ $repoRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $currentRoot = "$RemoteRoot/current"
 $sharedRoot = "$RemoteRoot/shared"
 $healthcheckUrl = "http://127.0.0.1:$AppPort/api/health"
+$standaloneServer = "$currentRoot/frontend/.next/standalone/frontend/server.js"
+$runtimeLauncher = "$currentRoot/frontend/start-standalone.sh"
+$runtimeLauncherLocal = Join-Path $env:TEMP "ahlafors-bryggerier-start-standalone.sh"
+$appWorkingDirectory = $currentRoot
 
 function Invoke-Step {
     param(
@@ -136,11 +140,40 @@ try {
         Invoke-Step "Building app" {
             Invoke-Ssh "cd '$currentRoot' && npm run build --workspace=frontend"
         }
+
+        Invoke-Step "Linking runtime assets into standalone output" {
+            Invoke-Ssh "mkdir -p '$currentRoot/frontend/.next/standalone/frontend/.next' && rm -rf '$currentRoot/frontend/.next/standalone/frontend/public' '$currentRoot/frontend/.next/standalone/frontend/content' '$currentRoot/frontend/.next/standalone/frontend/.next/static' && ln -sfn '$currentRoot/frontend/public' '$currentRoot/frontend/.next/standalone/frontend/public' && ln -sfn '$currentRoot/frontend/content' '$currentRoot/frontend/.next/standalone/frontend/content' && ln -sfn '$currentRoot/frontend/.next/static' '$currentRoot/frontend/.next/standalone/frontend/.next/static'"
+        }
+
+        Invoke-Step "Writing standalone launcher" {
+            $runtimeLauncherContent = @'
+#!/usr/bin/env bash
+set -euo pipefail
+while IFS= read -r line || [ -n "$line" ]; do
+    case "$line" in
+        ''|\#*)
+            continue
+            ;;
+        *=*)
+            key=${line%%=*}
+            value=${line#*=}
+            export "$key=$value"
+            ;;
+    esac
+done < '__ENV_FILE__'
+exec node '__SERVER_FILE__'
+'@
+            $runtimeLauncherContent = "cd '__APP_WORKING_DIRECTORY__'" + "`n" + $runtimeLauncherContent
+            $runtimeLauncherContent = $runtimeLauncherContent.Replace("__APP_WORKING_DIRECTORY__", $appWorkingDirectory).Replace("__ENV_FILE__", "$currentRoot/frontend/.env.local").Replace("__SERVER_FILE__", $standaloneServer)
+            [System.IO.File]::WriteAllText($runtimeLauncherLocal, $runtimeLauncherContent.Replace("`r`n", "`n"), [System.Text.Encoding]::ASCII)
+            Upload-FileIfPresent $runtimeLauncherLocal $runtimeLauncher
+            Invoke-Ssh "chmod +x '$runtimeLauncher'"
+        }
     }
 
     if (-not $SkipRestart) {
         Invoke-Step "Reloading PM2 process" {
-            Invoke-Ssh "if pm2 describe '$Pm2Process' >/dev/null 2>&1; then pm2 reload '$Pm2Process' --update-env; else pm2 start /usr/bin/npm --name '$Pm2Process' --cwd '$currentRoot/frontend' -- start -- --hostname 127.0.0.1 --port $AppPort; fi && pm2 save"
+            Invoke-Ssh "if [ ! -f '$standaloneServer' ]; then echo 'Standalone server missing'; exit 1; fi; if [ ! -f '$runtimeLauncher' ]; then echo 'Standalone launcher missing'; exit 1; fi; pm2 delete '$Pm2Process' >/dev/null 2>&1 || true; pm2 start '$runtimeLauncher' --name '$Pm2Process' --cwd '$appWorkingDirectory' && pm2 save"
         }
     }
 
@@ -153,4 +186,7 @@ try {
 }
 finally {
     Pop-Location
+    if (Test-Path $runtimeLauncherLocal) {
+        Remove-Item $runtimeLauncherLocal -Force -ErrorAction SilentlyContinue
+    }
 }

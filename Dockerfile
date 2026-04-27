@@ -20,8 +20,13 @@ ENV HOSTNAME=0.0.0.0
 COPY --from=builder /app/frontend/.next/standalone ./
 COPY --from=builder /app/frontend/.next/static ./frontend/.next/static
 COPY --from=builder /app/frontend/public ./frontend/public
+COPY --from=builder /app/frontend/public/uploads ./default-uploads
 COPY --from=builder /app/frontend/content ./frontend/content
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 EXPOSE 3000
 
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["node", "frontend/server.js"]

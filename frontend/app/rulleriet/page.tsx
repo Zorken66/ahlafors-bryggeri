@@ -1,15 +1,18 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import RichTextContent from "@/components/RichTextContent";
+import { getCmsSession } from "@/lib/cms-auth";
 import { readSiteContent } from "@/lib/content-store";
 import type { RullerietEvent } from "@/lib/content-schema";
+import { formatDateOnly, getDateOnlyDay, isDateTimeInPast } from "@/lib/date-utils";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
 import { richTextToPlainText } from "@/lib/rich-text";
-import { getPublishedRullerietPosts } from "@/lib/rulleriet-posts";
+import { getVisibleRullerietPosts } from "@/lib/rulleriet-posts";
 
-function getVisibleEvents(events: RullerietEvent[]) {
+function getVisibleEvents(events: RullerietEvent[], options?: { preview?: boolean; hasSession?: boolean }) {
   return [...events]
-    .filter((event) => event.published !== false)
+    .filter((event) => options?.preview && options.hasSession ? true : event.published !== false)
     .sort((a, b) => {
       if ((a.featured ?? false) !== (b.featured ?? false)) {
         return a.featured ? -1 : 1;
@@ -19,10 +22,19 @@ function getVisibleEvents(events: RullerietEvent[]) {
     });
 }
 
-export default async function RullerietsPage() {
+type RullerietsPageProps = {
+  searchParams?: Promise<{ preview?: string; postId?: string; eventId?: string }>;
+};
+
+export default async function RullerietsPage({ searchParams }: RullerietsPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const preview = resolvedSearchParams?.preview === "1";
+  const selectedPostId = resolvedSearchParams?.postId;
+  const selectedEventId = resolvedSearchParams?.eventId;
+  const session = preview ? await getCmsSession() : null;
   const { rulleriet, contact } = await readSiteContent();
-  const posts = getPublishedRullerietPosts(rulleriet);
-  const events = getVisibleEvents(rulleriet.events);
+  const posts = getVisibleRullerietPosts(rulleriet, { preview, hasSession: Boolean(session) });
+  const events = getVisibleEvents(rulleriet.events, { preview, hasSession: Boolean(session) });
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -41,6 +53,11 @@ export default async function RullerietsPage() {
           <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light">
             {rulleriet.heroSubtitle}
           </p>
+          {preview && session && (
+            <div className="mt-6 inline-flex rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-950">
+              Förhandsvisning av Rulleriet
+            </div>
+          )}
         </div>
       </section>
 
@@ -67,13 +84,17 @@ export default async function RullerietsPage() {
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {events.map((event) => {
-              const eventDate = new Date(event.date);
-              const isPast = `${event.date}T${event.time || "00:00"}` < new Date().toISOString();
+              const eventDay = getDateOnlyDay(event.date);
+              const eventMonthLabel = formatDateOnly(event.date, "sv-SE", { month: "long", year: "numeric" });
+              const isPast = isDateTimeInPast(event.date, event.time);
               
               return (
                 <div 
                   key={event.id} 
-                  className={`overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 ${isPast ? 'opacity-60' : ''}`}
+                  id={`rulleriet-event-${event.id}`}
+                  className={`overflow-hidden bg-white shadow-lg hover:shadow-xl transition-all duration-300 ${isPast ? 'opacity-60' : ''} ${
+                    preview && selectedEventId === event.id ? "ring-2 ring-amber-400 ring-offset-4 ring-offset-stone-100" : ""
+                  }`}
                 >
                   {event.image && (
                     <div
@@ -83,10 +104,10 @@ export default async function RullerietsPage() {
                   )}
                   <div className="bg-amber-600 text-white p-4 text-center">
                     <div className="text-3xl font-bold">
-                      {eventDate.getDate()}
+                      {eventDay ?? "?"}
                     </div>
                     <div className="text-sm uppercase tracking-wider">
-                      {eventDate.toLocaleDateString('sv-SE', { month: 'long', year: 'numeric' })}
+                      {eventMonthLabel}
                     </div>
                     <div className="text-sm mt-1 font-semibold">
                       {event.time}{event.endTime ? `-${event.endTime}` : ""}
@@ -117,14 +138,12 @@ export default async function RullerietsPage() {
                       </div>
                     )}
                     {event.ticketUrl && (
-                      <a
+                      <Link
                         href={event.ticketUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
                         className="mt-5 inline-flex rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold text-stone-800 transition hover:border-amber-700 hover:text-amber-700"
                       >
                         Läs mer / boka
-                      </a>
+                      </Link>
                     )}
                   </div>
                 </div>
@@ -147,13 +166,19 @@ export default async function RullerietsPage() {
 
           <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
             {posts.map((post) => (
-              <article key={post.id} className="overflow-hidden bg-stone-50 shadow-lg transition hover:-translate-y-1 hover:shadow-xl">
-                <a href={`/rulleriet/${post.slug}`} className="block">
+              <article
+                key={post.id}
+                id={`rulleriet-post-${post.id}`}
+                className={`overflow-hidden bg-stone-50 shadow-lg transition hover:-translate-y-1 hover:shadow-xl ${
+                  preview && selectedPostId === post.id ? "ring-2 ring-amber-400 ring-offset-4 ring-offset-white" : ""
+                }`}
+              >
+                <Link href={`/rulleriet/${post.slug}${preview && session ? "?preview=1" : ""}`} className="block">
                   <div className="h-56 bg-cover bg-center" style={{ backgroundImage: `url('${post.image}')` }}></div>
                   <div className="p-6">
                     <div className="mb-3 flex items-center justify-between gap-3">
                       <time className="text-xs font-semibold uppercase tracking-[0.2em] text-amber-700">
-                        {new Date(post.publishedAt).toLocaleDateString("sv-SE", { year: "numeric", month: "long", day: "numeric" })}
+                        {formatDateOnly(post.publishedAt, "sv-SE", { year: "numeric", month: "long", day: "numeric" })}
                       </time>
                       {post.featured && (
                         <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
@@ -167,7 +192,7 @@ export default async function RullerietsPage() {
                       Läs inlägg
                     </span>
                   </div>
-                </a>
+                </Link>
               </article>
             ))}
           </div>

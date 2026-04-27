@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
+import ContentListFilters from "@/components/admin/ContentListFilters";
 import MediaPickerField from "@/components/admin/MediaPickerField";
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
 import FieldIssueHint from "@/components/admin/FieldIssueHint";
@@ -9,7 +11,7 @@ import PublishingFields from "@/components/admin/PublishingFields";
 import QualityChecklist from "@/components/admin/QualityChecklist";
 import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
-import { validateRecipe } from "@/lib/content-quality";
+import { summarizeQualityIssues, validateRecipe } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { SiteContent } from "@/lib/content-schema";
 import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
@@ -18,6 +20,10 @@ type Recipe = SiteContent["recipes"][number];
 
 function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
+}
+
+function splitDraftLines(value: string) {
+  return value.split("\n");
 }
 
 const emptyRecipe: Recipe = {
@@ -43,12 +49,14 @@ export default function RecipesManager({
   onSave,
   initialSelectedId,
   initialTab,
+  initialFocusField,
   focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
   initialSelectedId?: string;
   initialTab?: "page" | "recipes";
+  initialFocusField?: string;
   focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.recipes[0]?.id ?? null);
@@ -57,8 +65,44 @@ export default function RecipesManager({
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"page" | "recipes">("page");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [publishingFilter, setPublishingFilter] = useState<"all" | "published" | "scheduled" | "draft" | "expired">("all");
+  const [qualityFilter, setQualityFilter] = useState<"all" | "ready" | "warnings" | "errors">("all");
+  const [sortOrder, setSortOrder] = useState<"manual" | "title-asc" | "title-desc">("manual");
 
   const recipes = useMemo(() => content.recipes, [content.recipes]);
+  const filteredRecipes = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const nextRecipes = recipes.filter((recipe) => {
+      const publishingStatus = getPublishingStatus(recipe);
+      const qualitySummary = summarizeQualityIssues(validateRecipe(recipe));
+      const matchesSearch =
+        !normalizedSearch ||
+        [recipe.title, recipe.description, recipe.difficulty, recipe.time, recipe.pairing]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+      const matchesPublishing = publishingFilter === "all" || publishingStatus === publishingFilter;
+      const matchesQuality =
+        qualityFilter === "all" ||
+        (qualityFilter === "ready" && qualitySummary.errors === 0 && qualitySummary.warnings === 0) ||
+        (qualityFilter === "warnings" && qualitySummary.warnings > 0) ||
+        (qualityFilter === "errors" && qualitySummary.errors > 0);
+
+      return matchesSearch && matchesPublishing && matchesQuality;
+    });
+
+    return nextRecipes.sort((left, right) => {
+      switch (sortOrder) {
+        case "title-desc":
+          return (right.title || "").localeCompare(left.title || "", "sv");
+        case "title-asc":
+          return (left.title || "").localeCompare(right.title || "", "sv");
+        default:
+          return 0;
+      }
+    });
+  }, [publishingFilter, qualityFilter, recipes, searchTerm, sortOrder]);
   const selected = recipes.find((recipe) => recipe.id === selectedId) ?? null;
   const qualityIssues = useMemo(() => draft ? validateRecipe(draft) : [], [draft]);
 
@@ -83,6 +127,21 @@ export default function RecipesManager({
       setSelectedId(initialSelectedId);
     }
   }, [focusToken, initialSelectedId, initialTab]);
+
+  useEffect(() => {
+    if (activeTab !== "recipes") {
+      return;
+    }
+
+    if (filteredRecipes.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+
+    if (!selectedId || !filteredRecipes.some((recipe) => recipe.id === selectedId)) {
+      setSelectedId(filteredRecipes[0].id);
+    }
+  }, [activeTab, filteredRecipes, selectedId]);
 
   async function saveRecipes(nextRecipes: SiteContent["recipes"]) {
     setSaving(true);
@@ -119,7 +178,11 @@ export default function RecipesManager({
       return;
     }
 
-    await saveRecipes(content.recipes.map((recipe) => recipe.id === draft.id ? draft : recipe));
+    await saveRecipes(content.recipes.map((recipe) => recipe.id === draft.id ? {
+      ...draft,
+      ingredients: splitLines(draft.ingredients.join("\n")),
+      instructions: splitLines(draft.instructions.join("\n")),
+    } : recipe));
   }
 
   async function handleSavePage() {
@@ -137,6 +200,35 @@ export default function RecipesManager({
     } finally {
       setSaving(false);
     }
+  }
+
+  async function autoSavePageImage(nextValue: string) {
+    const nextPageDraft = { ...pageDraft, heroImage: nextValue };
+    setPageDraft(nextPageDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, recipesPage: nextPageDraft }, {
+        sectionKey: "recipesPage",
+        changeSummary: "Ersatte hero-bild på receptsidan",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara sidinställningarna.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveRecipeImage(nextValue: string) {
+    if (!draft) {
+      return;
+    }
+
+    const nextDraft = { ...draft, image: nextValue };
+    setDraft(nextDraft);
+    await saveRecipes(content.recipes.map((recipe) => recipe.id === nextDraft.id ? nextDraft : recipe));
   }
 
   return (
@@ -163,7 +255,7 @@ export default function RecipesManager({
             <input value={pageDraft.heroTitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroTitle: event.target.value }))} placeholder="Hero-rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
             <input value={pageDraft.heroSubtitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroSubtitle: event.target.value }))} placeholder="Hero-underrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
           </div>
-          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" fieldId="heroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSavePageImage} />
           <HeroOverlayField label="Hero-overlay" value={pageDraft.heroOverlayOpacity} onChange={(value) => setPageDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
           <div className="grid gap-4">
             <input value={pageDraft.introTitle} onChange={(event) => setPageDraft((current) => ({ ...current, introTitle: event.target.value }))} placeholder="Intro-rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
@@ -189,8 +281,25 @@ export default function RecipesManager({
     <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
       <aside className="rounded-3xl border border-stone-200 bg-white p-4 shadow-lg">
         <button type="button" onClick={() => void handleCreate()} disabled={saving} className="mb-4 w-full rounded-xl bg-amber-700 px-4 py-3 text-sm font-semibold text-white">Nytt recept</button>
+        <ContentListFilters
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          publishingValue={publishingFilter}
+          onPublishingChange={setPublishingFilter}
+          qualityValue={qualityFilter}
+          onQualityChange={setQualityFilter}
+          sortValue={sortOrder}
+          onSortChange={(value) => setSortOrder(value as typeof sortOrder)}
+          sortOptions={[
+            { value: "manual", label: "Sortera: Manuell ordning" },
+            { value: "title-asc", label: "Sortera: Titel A-Ö" },
+            { value: "title-desc", label: "Sortera: Titel Ö-A" },
+          ]}
+          totalCount={recipes.length}
+          visibleCount={filteredRecipes.length}
+        />
         <div className="space-y-3">
-          {recipes.map((recipe) => {
+          {filteredRecipes.map((recipe) => {
             const publishingStatus = getPublishingStatus(recipe);
 
             return (
@@ -216,6 +325,7 @@ export default function RecipesManager({
               </button>
             );
           })}
+          {filteredRecipes.length === 0 ? <p className="text-sm text-stone-500">Inga recept matchar aktuella filter.</p> : null}
         </div>
       </aside>
 
@@ -225,6 +335,9 @@ export default function RecipesManager({
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-stone-900">Recept</h2>
               <div className="flex gap-3">
+                <Link href={`/recept?preview=1&recipeId=${draft.id}#recipe-${draft.id}`} target="_blank" className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700">
+                  Förhandsvisa
+                </Link>
                 <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white">{saving ? "Sparar..." : "Spara"}</button>
                 <button type="button" onClick={() => void handleDelete(draft.id)} disabled={saving} className="rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700">Ta bort</button>
               </div>
@@ -246,7 +359,7 @@ export default function RecipesManager({
               <input value={draft.servings} onChange={(event) => setDraft((current) => current ? { ...current, servings: event.target.value } : current)} placeholder="Portioner" className="rounded-xl border border-stone-300 px-4 py-3" />
               <input value={draft.pairing} onChange={(event) => setDraft((current) => current ? { ...current, pairing: event.target.value } : current)} placeholder="Passar med" className="rounded-xl border border-stone-300 px-4 py-3" />
               <div className="md:col-span-2">
-                <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Receptbild" />
+                <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Receptbild" fieldId="image" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSaveRecipeImage} />
                 <FieldIssueHint issues={qualityIssues} field="image" />
               </div>
               <div>
@@ -259,11 +372,11 @@ export default function RecipesManager({
               </div>
             </div>
             <div>
-              <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, ingredients: splitLines(event.target.value) } : current)} placeholder="Ingredienser, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, ingredients: splitDraftLines(event.target.value) } : current)} placeholder="Ingredienser, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
               <FieldIssueHint issues={qualityIssues} field="ingredients" />
             </div>
             <div>
-              <textarea value={draft.instructions.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, instructions: splitLines(event.target.value) } : current)} placeholder="Instruktioner, en per rad" rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+              <textarea value={draft.instructions.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, instructions: splitDraftLines(event.target.value) } : current)} placeholder="Instruktioner, en per rad" rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
               <FieldIssueHint issues={qualityIssues} field="instructions" />
             </div>
             <FieldIssueHint issues={qualityIssues} field="pairing" />

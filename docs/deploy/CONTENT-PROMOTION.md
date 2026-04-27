@@ -53,6 +53,58 @@ Använd det inte när:
 
 ## Script
 
+Första riktiga promotionsversionen använder nu separata export/import-script i stället för att bara skriva upp `site-content.json`.
+
+Lokal export:
+
+```powershell
+npm run cms:export-content -- --output .\content-bundles\local-full --include-media-files --source local
+```
+
+Verifiera ett bundle innan import:
+
+```powershell
+npm run cms:import-content -- --input .\content-bundles\local-full --verify-only
+```
+
+Importera till en annan miljö lokalt eller i rätt shell på målmiljön:
+
+```powershell
+npm run cms:import-content -- --input .\content-bundles\local-full --mode merge-sections --copy-media-files
+```
+
+Verifiera bundle mot VPS utan att skriva:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\promote-content-bundle-vps.ps1 -InputBundle .\content-bundles\local-full -VerifyOnly
+```
+
+Promota bundle till VPS med backup före import:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\promote-content-bundle-vps.ps1 -InputBundle .\content-bundles\local-full -Force
+```
+
+Stöd i första versionen:
+
+- export av `cms_content` för valda sektioner
+- export av relevant media-metadata
+- valfri kopia av mediefiler i samma bundle
+- manifest med källa, sektioner och verifieringsresultat
+- import i `merge-sections` eller `replace`
+- VPS-wrapper med remote preflight och rollback-bundle före import
+
+Begränsningar i första versionen:
+
+- ingen automatisk rollback i scriptet
+- ingen deletion av gamla mediaobjekt
+- ingen tvåvägs-merge mellan redigerade miljöer
+- `replace` kräver fullständig export
+
+## Äldre script
+
+Det tidigare scriptet nedan finns kvar för ett smalt fallback-scenario, men ska ses som äldre och mer riskfyllt eftersom det bara skriver `frontend/content/site-content.json` till produktion.
+
 Kör från repo-roten:
 
 ```powershell
@@ -71,8 +123,19 @@ Scriptet kräver `-Force`. Utan den flaggan avbryter det utan att skriva något 
 
 1. Gör vanliga kodändringar och deploya med `deploy-vps.ps1`.
 2. Låt produktionens CMS-data vara orörd.
-3. Om innehåll verkligen ska promotas, kör `promote-content-vps.ps1` som ett separat steg.
-4. Verifiera särskilt hero-bilder, startsida, tjänster och andra visuella sektioner direkt efter promotion.
+3. Skapa ett bundle med `cms:export-content`.
+4. Kör alltid `cms:import-content --verify-only` före riktig import.
+5. Ta backup av databas och uploads före import till test eller produktion.
+6. Kör riktig import som separat steg.
+7. Verifiera särskilt hero-bilder, startsida, tjänster och andra visuella sektioner direkt efter promotion.
+
+För VPS-flödet gör `promote-content-bundle-vps.ps1` detta:
+
+1. laddar upp bundle till temporär katalog
+2. tar ett rollback-bundle på VPS:en om inte `-SkipBackup` används
+3. kör remote `--verify-only`
+4. kör riktig import först därefter
+5. kör health smoke test
 
 ## Kontrollfråga innan promotion
 

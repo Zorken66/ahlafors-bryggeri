@@ -1,4 +1,42 @@
 import crypto from "node:crypto";
+import fs from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) {
+    return;
+  }
+
+  const raw = fs.readFileSync(filePath, "utf8");
+  const lines = raw.split(/\r?\n/u);
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+
+    if (!trimmed || trimmed.startsWith("#")) {
+      continue;
+    }
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) {
+      continue;
+    }
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, "");
+
+    if (!key || key in process.env) {
+      continue;
+    }
+
+    process.env[key] = value;
+  }
+}
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+loadEnvFile(path.join(repoRoot, ".env"));
+loadEnvFile(path.join(repoRoot, "frontend", ".env.local"));
 
 export function createPasswordHash(password, salt = crypto.randomBytes(16).toString("hex")) {
   const hash = crypto.scryptSync(password, salt, 64).toString("hex");

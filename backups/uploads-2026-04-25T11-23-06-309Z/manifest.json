@@ -1,0 +1,11 @@
+{
+  "format": "ahlafors-cms-uploads-backup",
+  "version": 1,
+  "createdAt": "2026-04-25T11:23:06.368Z",
+  "uploads": {
+    "sourceDir": "C:\\Dev\\Ahlafors-Bryggerier\\ahlafors-bryggeri\\frontend\\public\\uploads",
+    "snapshotDir": "uploads",
+    "fileCount": 52,
+    "totalBytes": 15153156
+  }
+}

@@ -1,13 +1,25 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { getCmsSession } from "@/lib/cms-auth";
 import { readSiteContent } from "@/lib/content-store";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
-import { getPublishedRecipes } from "@/lib/published-content";
+import { getVisibleRecipes } from "@/lib/published-content";
 
-export default async function ReceptPage() {
-  const { recipes, recipesPage, site } = await readSiteContent();
-  const publishedRecipes = getPublishedRecipes(recipes);
+type ReceptPageProps = {
+  searchParams?: Promise<{ preview?: string; recipeId?: string }>;
+};
+
+export default async function ReceptPage({ searchParams }: ReceptPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const preview = resolvedSearchParams?.preview === "1";
+  const selectedRecipeId = resolvedSearchParams?.recipeId;
+  const session = preview ? await getCmsSession() : null;
+  const { recipes, recipesPage } = await readSiteContent();
+  const visibleRecipes = getVisibleRecipes(recipes, { preview, hasSession: Boolean(session) });
+  const sortedRecipes = selectedRecipeId
+    ? [...visibleRecipes].sort((left, right) => Number(right.id === selectedRecipeId) - Number(left.id === selectedRecipeId))
+    : visibleRecipes;
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -25,6 +37,11 @@ export default async function ReceptPage() {
           <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light">
             {recipesPage.heroSubtitle}
           </p>
+          {preview && session && (
+            <div className="mt-6 inline-flex rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-950">
+              Förhandsvisning av recept
+            </div>
+          )}
         </div>
       </section>
 
@@ -42,10 +59,13 @@ export default async function ReceptPage() {
       <section className="section-padding bg-stone-100">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {publishedRecipes.map((recipe) => (
+            {sortedRecipes.map((recipe) => (
               <div 
                 key={recipe.id} 
-                className="group bg-white shadow-lg hover:shadow-2xl transition-all duration-300"
+                id={`recipe-${recipe.id}`}
+                className={`group bg-white shadow-lg transition-all duration-300 hover:shadow-2xl ${
+                  preview && selectedRecipeId === recipe.id ? "ring-2 ring-amber-400 ring-offset-4 ring-offset-stone-100" : ""
+                }`}
               >
                 {/* Recipe Image */}
                 <div className="relative h-64 overflow-hidden">

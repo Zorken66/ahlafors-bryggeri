@@ -1,13 +1,26 @@
+import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 
+import { getCmsSession } from "@/lib/cms-auth";
 import { readSiteContent } from "@/lib/content-store";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
-import { getPublishedServices } from "@/lib/published-content";
+import { getVisibleServices } from "@/lib/published-content";
 
-export default async function TjansterPage() {
-  const { services, servicesPage, site } = await readSiteContent();
-  const publishedServices = getPublishedServices(services);
+type TjansterPageProps = {
+  searchParams?: Promise<{ preview?: string; serviceId?: string }>;
+};
+
+export default async function TjansterPage({ searchParams }: TjansterPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const preview = resolvedSearchParams?.preview === "1";
+  const selectedServiceId = resolvedSearchParams?.serviceId;
+  const session = preview ? await getCmsSession() : null;
+  const { services, servicesPage } = await readSiteContent();
+  const visibleServices = getVisibleServices(services, { preview, hasSession: Boolean(session) });
+  const sortedServices = selectedServiceId
+    ? [...visibleServices].sort((left, right) => Number(right.id === selectedServiceId) - Number(left.id === selectedServiceId))
+    : visibleServices;
 
   return (
     <div className="min-h-screen bg-stone-50">
@@ -25,6 +38,11 @@ export default async function TjansterPage() {
           <p className="text-xl md:text-2xl text-stone-200 max-w-3xl mx-auto font-light">
             {servicesPage.heroSubtitle}
           </p>
+          {preview && session && (
+            <div className="mt-6 inline-flex rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-950">
+              Förhandsvisning av tjänster
+            </div>
+          )}
         </div>
       </section>
 
@@ -39,11 +57,13 @@ export default async function TjansterPage() {
       <section className="section-padding bg-stone-100">
         <div className="container-custom">
           <div className="grid md:grid-cols-2 gap-8">
-            {publishedServices.map((service) => (
+            {sortedServices.map((service) => (
               <div 
                 key={service.id}
                 id={service.id}
-                className="bg-white shadow-lg hover:shadow-2xl transition-all duration-300 p-8 border-t-4 border-amber-600"
+                className={`bg-white p-8 shadow-lg transition-all duration-300 hover:shadow-2xl border-t-4 border-amber-600 ${
+                  preview && selectedServiceId === service.id ? "ring-2 ring-amber-400 ring-offset-4 ring-offset-stone-100" : ""
+                }`}
               >
                 <div className="text-6xl mb-4">{service.icon}</div>
                 
@@ -74,11 +94,15 @@ export default async function TjansterPage() {
 
                 {service.image && (
                   <figure className="mt-8">
-                    <img
-                      src={service.image}
-                      alt={service.title}
-                      className="w-full rounded-2xl border border-stone-200 bg-stone-50 object-contain"
-                    />
+                    <div className="relative h-80 w-full overflow-hidden rounded-2xl border border-stone-200 bg-stone-50">
+                      <Image
+                        src={service.image}
+                        alt={service.title}
+                        fill
+                        unoptimized
+                        className="object-contain"
+                      />
+                    </div>
                     {service.imageCaption ? (
                       <figcaption className="mt-3 text-center text-sm italic text-stone-500">
                         {service.imageCaption}

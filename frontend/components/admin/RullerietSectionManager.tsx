@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
 import FieldIssueHint from "@/components/admin/FieldIssueHint";
@@ -16,6 +17,10 @@ import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing"
 
 function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
+}
+
+function splitDraftLines(value: string) {
+  return value.split("\n");
 }
 
 function createEmptyEvent(): RullerietEvent {
@@ -45,11 +50,13 @@ export default function RullerietSectionManager({
   content,
   onSave,
   initialFocusEventAnchorId,
+  initialFocusField,
   focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
   initialFocusEventAnchorId?: string;
+  initialFocusField?: string;
   focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.rulleriet);
@@ -101,6 +108,7 @@ export default function RullerietSectionManager({
         ...content,
         rulleriet: {
           ...draft,
+          introParagraphs: splitLines(draft.introParagraphs.join("\n")),
           events: sortEvents(draft.events).map((event) => ({
             ...event,
             endTime: event.endTime?.trim() || undefined,
@@ -117,6 +125,64 @@ export default function RullerietSectionManager({
       }, {
         sectionKey: "rulleriet",
         changeSummary: "Uppdaterade Rulleriet-sektionen och evenemangen",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveHeroImage(nextValue: string) {
+    const nextDraft = { ...draft, heroImage: nextValue };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, rulleriet: nextDraft }, {
+        sectionKey: "rulleriet",
+        changeSummary: "Ersatte hero-bild på Rulleriet",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveEventImage(eventId: string, nextValue: string) {
+    const nextDraft = {
+      ...draft,
+      events: draft.events.map((event) => event.id === eventId ? { ...event, image: nextValue } : event),
+    };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({
+        ...content,
+        rulleriet: {
+          ...nextDraft,
+          events: sortEvents(nextDraft.events).map((event) => ({
+            ...event,
+            endTime: event.endTime?.trim() || undefined,
+            image: event.image?.trim() || undefined,
+            food: event.food?.trim() || undefined,
+            location: event.location?.trim() || undefined,
+            ticketUrl: event.ticketUrl?.trim() || undefined,
+            published: event.published ?? true,
+            publishedAt: event.publishedAt?.trim() || undefined,
+            unpublishedAt: event.unpublishedAt?.trim() || undefined,
+            featured: event.featured ?? false,
+          })),
+        },
+      }, {
+        sectionKey: "rulleriet",
+        changeSummary: "Ersatte evenemangsbild i Rulleriet",
       });
       setStatus("Sparat.");
     } catch (error) {
@@ -182,9 +248,14 @@ export default function RullerietSectionManager({
           <h2 className="text-xl font-bold text-stone-900">Rulleriet</h2>
           <p className="mt-1 text-sm text-stone-600">Hero, intro, bloggintro, SEO och en riktig evenemangshantering.</p>
         </div>
-        <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white">
-          {saving ? "Sparar..." : "Spara"}
-        </button>
+        <div className="flex gap-3">
+          <Link href="/rulleriet?preview=1" target="_blank" className="rounded-xl border border-stone-300 px-4 py-3 text-sm font-semibold text-stone-700">
+            Förhandsvisa
+          </Link>
+          <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white">
+            {saving ? "Sparar..." : "Spara"}
+          </button>
+        </div>
       </div>
 
       <QualityChecklist title="Kvalitet på Rulleriet" issues={qualityIssues} />
@@ -196,7 +267,7 @@ export default function RullerietSectionManager({
         </div>
         <input value={draft.heroSubtitle} onChange={(event) => setDraft((current) => ({ ...current, heroSubtitle: event.target.value }))} placeholder="Hero-undertitel" className="rounded-xl border border-stone-300 px-4 py-3" />
         <div className="md:col-span-2">
-          <MediaPickerField value={draft.heroImage} onChange={(value) => setDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+          <MediaPickerField value={draft.heroImage} onChange={(value) => setDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" fieldId="heroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSaveHeroImage} />
           <FieldIssueHint issues={qualityIssues} field="heroImage" />
         </div>
         <div className="md:col-span-2">
@@ -210,7 +281,7 @@ export default function RullerietSectionManager({
         <input value={draft.introTitle} onChange={(event) => setDraft((current) => ({ ...current, introTitle: event.target.value }))} placeholder="Intro-rubrik" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
         <FieldIssueHint issues={qualityIssues} field="introTitle" />
       </div>
-      <textarea value={draft.introParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, introParagraphs: splitLines(event.target.value) }))} placeholder="Introstycken, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+      <textarea value={draft.introParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, introParagraphs: splitDraftLines(event.target.value) }))} placeholder="Introstycken, en per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
 
       <div className="grid gap-4 md:grid-cols-2">
         <input value={draft.paymentTitle} onChange={(event) => setDraft((current) => ({ ...current, paymentTitle: event.target.value }))} placeholder="Betalningsrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
@@ -280,6 +351,13 @@ export default function RullerietSectionManager({
                   </p>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
+                  <Link
+                    href={`/rulleriet?preview=1&eventId=${event.id}#${anchorId}`}
+                    target="_blank"
+                    className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                  >
+                    Förhandsvisa
+                  </Link>
                   <button type="button" onClick={() => moveEvent(event.id, -1)} disabled={index === 0} className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700 disabled:opacity-40">Upp</button>
                   <button type="button" onClick={() => moveEvent(event.id, 1)} disabled={index === draft.events.length - 1} className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700 disabled:opacity-40">Ner</button>
                   <button type="button" onClick={() => duplicateEvent(event.id)} className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700">Duplicera</button>
@@ -320,6 +398,10 @@ export default function RullerietSectionManager({
                     value={event.image ?? ""}
                     onChange={(value) => updateEvent(event.id, { image: value })}
                     label="Evenemangsbild"
+                    fieldId={`event:${event.id}:image`}
+                    activeFocusField={initialFocusField}
+                    focusToken={focusToken}
+                    onAutoCommit={(value) => autoSaveEventImage(event.id, value)}
                   />
                   <FieldIssueHint issues={qualityIssues} field={`event:${event.id}:image`} />
                 </div>
@@ -372,6 +454,34 @@ export default function RullerietSectionManager({
       </section>
 
       {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
+
+      <div className="sticky bottom-4 z-30 pt-2">
+        <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.12)] backdrop-blur md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-stone-900">Rulleriet</p>
+            <p className="text-xs text-stone-500">
+              {saving ? "Sparar ändringar..." : status === "Sparat." ? "Senaste ändringen är sparad." : "Spara utan att scrolla tillbaka till toppen."}
+            </p>
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <Link
+              href="/rulleriet?preview=1"
+              target="_blank"
+              className="rounded-xl border border-stone-300 px-4 py-3 text-center text-sm font-semibold text-stone-700"
+            >
+              Förhandsvisa
+            </Link>
+            <button
+              type="button"
+              onClick={() => void handleSave()}
+              disabled={saving}
+              className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white disabled:opacity-60"
+            >
+              {saving ? "Sparar..." : "Spara"}
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

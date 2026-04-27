@@ -1,38 +1,34 @@
-import fs from "node:fs";
 import path from "node:path";
-import { spawn } from "node:child_process";
 
-const outputDir = path.resolve(process.cwd(), "backups");
-const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-const outputFile = path.join(outputDir, `ahlafors-cms-${timestamp}.dump`);
+import {
+  createBackupTimestamp,
+  createPostgresDump,
+  ensureDirectory,
+  getBackupsRoot,
+} from "./backup-lib.mjs";
 
-fs.mkdirSync(outputDir, { recursive: true });
+function parseOutputArg(argv) {
+  for (let index = 0; index < argv.length; index += 1) {
+    const argument = argv[index];
 
-const args = [
-  "compose",
-  "exec",
-  "-T",
-  "postgres",
-  "pg_dump",
-  "-U",
-  process.env.CMS_DB_USER ?? "cms",
-  "-d",
-  process.env.CMS_DB_NAME ?? "ahlafors_cms",
-  "-Fc",
-];
+    if (argument === "--output" && argv[index + 1]) {
+      return argv[index + 1];
+    }
 
-const child = spawn("docker", args, { stdio: ["ignore", "pipe", "inherit"] });
-const file = fs.createWriteStream(outputFile);
-
-child.stdout.pipe(file);
-
-child.on("close", (code) => {
-  if (code === 0) {
-    console.log(`Backup skapad: ${outputFile}`);
-    return;
+    if (argument.startsWith("--output=")) {
+      return argument.slice("--output=".length);
+    }
   }
 
-  fs.existsSync(outputFile) && fs.unlinkSync(outputFile);
-  process.exit(code ?? 1);
-});
+  return null;
+}
 
+const requestedOutput = parseOutputArg(process.argv.slice(2));
+const outputFile = requestedOutput
+  ? path.resolve(process.cwd(), requestedOutput)
+  : path.join(getBackupsRoot(process.cwd()), `ahlafors-cms-${createBackupTimestamp()}.dump`);
+
+await ensureDirectory(path.dirname(outputFile));
+await createPostgresDump({ outputFile });
+
+console.log(`Backup skapad: ${outputFile}`);

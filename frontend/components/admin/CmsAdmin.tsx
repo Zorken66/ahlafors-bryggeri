@@ -32,7 +32,12 @@ type AdminFocusState = {
   targetId?: string;
   targetTab?: string;
   targetAnchorId?: string;
+  targetField?: string;
   token: number;
+};
+
+type BrokenMediaResolvedDetail = {
+  publicUrl?: string;
 };
 
 function isJsonEditorSection(section: CmsSection): section is keyof SiteContent {
@@ -74,6 +79,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
   const [status, setStatus] = useState<AdminStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [focusState, setFocusState] = useState<AdminFocusState | null>(null);
+  const [resolvedBrokenMediaUrl, setResolvedBrokenMediaUrl] = useState<string | null>(null);
 
   useEffect(() => {
     if (!status || status.kind !== "success") {
@@ -122,6 +128,26 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
     };
   }, [activeSection]);
 
+  useEffect(() => {
+    function handleBrokenMediaResolved(event: Event) {
+      const detail = (event as CustomEvent<BrokenMediaResolvedDetail>).detail;
+
+      setResolvedBrokenMediaUrl(detail?.publicUrl ?? null);
+      setFocusState(null);
+      setActiveSection("operations");
+      setStatus({
+        kind: "success",
+        message: "Bildreferensen ar uppdaterad. Fortsatt arbete finns i oversikten.",
+      });
+    }
+
+    window.addEventListener("cms:broken-media-resolved", handleBrokenMediaResolved as EventListener);
+
+    return () => {
+      window.removeEventListener("cms:broken-media-resolved", handleBrokenMediaResolved as EventListener);
+    };
+  }, []);
+
   async function handleLogout() {
     await fetch("/api/cms/logout", { method: "POST" });
     window.location.href = "/admin/login";
@@ -129,12 +155,16 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
 
   function handleSectionChange(section: CmsSection) {
     setActiveSection(section);
+    if (section !== "operations") {
+      setResolvedBrokenMediaUrl(null);
+    }
     if (content && isJsonEditorSection(section)) {
       setEditorValue(JSON.stringify(content[section], null, 2));
     }
   }
 
   function handleDashboardOpenSection(focus: Omit<AdminFocusState, "token">) {
+    setResolvedBrokenMediaUrl(null);
     setActiveSection(focus.section);
     setFocusState({
       ...focus,
@@ -253,25 +283,36 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               content={content}
               onSave={persistContent}
               initialSelectedId={focusState?.section === "rullerietPosts" ? focusState.targetId : undefined}
+              initialFocusField={focusState?.section === "rullerietPosts" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "rullerietPosts" ? focusState.token : undefined}
             />
           ) : activeSection === "operations" && content ? (
-            <AdminDashboard content={content} allowedSections={allowedSections} onOpenSection={handleDashboardOpenSection} />
+            <AdminDashboard
+              content={content}
+              allowedSections={allowedSections}
+              onOpenSection={handleDashboardOpenSection}
+              resolvedBrokenMediaUrl={resolvedBrokenMediaUrl}
+            />
           ) : activeSection === "homepage" && content ? (
-            <HomepageSectionManager content={content} onSave={persistContent} />
+            <HomepageSectionManager content={content} onSave={persistContent} initialFocusField={focusState?.section === "homepage" ? focusState.targetField : undefined} focusToken={focusState?.section === "homepage" ? focusState.token : undefined} />
           ) : activeSection === "site" && content ? (
-            <SiteSectionManager content={content} onSave={persistContent} />
+            <SiteSectionManager content={content} onSave={persistContent} initialFocusField={focusState?.section === "site" ? focusState.targetField : undefined} focusToken={focusState?.section === "site" ? focusState.token : undefined} />
           ) : activeSection === "about" && content ? (
-            <AboutSectionManager content={content} onSave={persistContent} />
+            <AboutSectionManager content={content} onSave={persistContent} initialFocusField={focusState?.section === "about" ? focusState.targetField : undefined} focusToken={focusState?.section === "about" ? focusState.token : undefined} />
           ) : activeSection === "contact" && content ? (
-            <ContactSectionManager content={content} onSave={persistContent} />
+            <ContactSectionManager content={content} onSave={persistContent} initialFocusField={focusState?.section === "contact" ? focusState.targetField : undefined} focusToken={focusState?.section === "contact" ? focusState.token : undefined} />
           ) : activeSection === "media" ? (
-            <MediaLibraryManager />
+            <MediaLibraryManager
+              onOpenSection={handleDashboardOpenSection}
+              initialAssetId={focusState?.section === "media" ? focusState.targetId : undefined}
+              focusToken={focusState?.section === "media" ? focusState.token : undefined}
+            />
           ) : activeSection === "news" && content ? (
             <NewsManager
               content={content}
               onSave={persistContent}
               initialSelectedId={focusState?.section === "news" ? focusState.targetId : undefined}
+              initialFocusField={focusState?.section === "news" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "news" ? focusState.token : undefined}
             />
           ) : activeSection === "products" && content ? (
@@ -280,6 +321,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               onSave={persistContent}
               initialSelectedId={focusState?.section === "products" ? focusState.targetId : undefined}
               initialTab={focusState?.section === "products" ? focusState.targetTab as "page" | "settings" | "products" | undefined : undefined}
+              initialFocusField={focusState?.section === "products" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "products" ? focusState.token : undefined}
             />
           ) : activeSection === "services" && content ? (
@@ -288,6 +330,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               onSave={persistContent}
               initialSelectedId={focusState?.section === "services" ? focusState.targetId : undefined}
               initialTab={focusState?.section === "services" ? focusState.targetTab as "page" | "services" | undefined : undefined}
+              initialFocusField={focusState?.section === "services" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "services" ? focusState.token : undefined}
             />
           ) : activeSection === "recipes" && content ? (
@@ -296,6 +339,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               onSave={persistContent}
               initialSelectedId={focusState?.section === "recipes" ? focusState.targetId : undefined}
               initialTab={focusState?.section === "recipes" ? focusState.targetTab as "page" | "recipes" | undefined : undefined}
+              initialFocusField={focusState?.section === "recipes" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "recipes" ? focusState.token : undefined}
             />
           ) : activeSection === "rulleriet" && content ? (
@@ -303,6 +347,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               content={content}
               onSave={persistContent}
               initialFocusEventAnchorId={focusState?.section === "rulleriet" ? focusState.targetAnchorId : undefined}
+              initialFocusField={focusState?.section === "rulleriet" ? focusState.targetField : undefined}
               focusToken={focusState?.section === "rulleriet" ? focusState.token : undefined}
             />
           ) : activeSection === "adminUsers" ? (

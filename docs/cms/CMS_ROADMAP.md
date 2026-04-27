@@ -1,46 +1,42 @@
 # CMS Roadmap
 
 ## Syfte
-Det här dokumentet bryter ner [CMS_VISION.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_VISION.md:1) till en första konkret roadmap.
+Det här dokumentet bryter ner CMS-visionen till en prioriterad riktning utifrån dagens faktiska status i koden.
 
-Roadmapen är avsiktligt uppdelad i:
-- `Now`: det som bör göras först för att höja nytta, trygghet och fart i vardagen
-- `Next`: det som gör CMS:et starkt som redaktionellt verktyg
-- `Later`: det som gör CMS:et riktigt förstklassigt och mer framtidssäkert
+Roadmapen är uppdelad i:
+- `Done`: det som nu är byggt och verifierat
+- `Next`: det som ger högst nästa värde
+- `Later`: det som gör CMS:et ännu starkare över tid
 
-Det här är inte sprintplanering. Det är en prioriterad riktning.
+Det här är inte sprintplanering. Det är prioriterad riktning efter den implementationsfas som nu är klar.
 
 ## Nuläge
-CMS:et har redan en ovanligt bra grund för ett egenbyggt system:
-- sida + hero + SEO går att styra för centrala sektioner
-- produkter, tjänster, recept och Rulleriet är redigerbara
-- mediahantering finns
-- revisionshistorik finns
-- roller och sektionsbehörigheter finns
-- preview finns delvis för vissa innehållstyper
-- publiceringsfält finns för flera objekt
+CMS:et har nu en betydligt starkare grund än när roadmapen först skrevs.
 
-Det som saknas är främst sammanhållen publiceringsmodell, bättre redaktionell överblick, starkare validering och en mer återanvändbar kampanjmodell.
+Det som redan finns i praktiken:
+- enhetlig publiceringsmodell
+- kvalitetsvarningar i formulären
+- admin-dashboard
+- mediebibliotek med usage-spårning
+- mediaintegritet och broken-reference-flöde
+- preview för flera innehållstyper
+- revisionshistorik med fältdiff
+- roller och sektionsbehörigheter
+
+Det som nu saknas mest är inte längre grundläggande redaktionell UX, utan säkrare flöden mellan miljöer och fortsatt driftmognad.
 
 ## Prioriteringsprinciper
 Vi ska prioritera sådant som:
+- minskar risken i produktion
 - sparar redaktionell tid varje vecka
-- minskar risken för felpublicering
-- minskar behovet av utvecklare för återkommande innehållsarbete
-- gör CMS:et mer konsekvent mellan sidtyper
-- förbättrar drift och återställning utan att öka komplexiteten i onödan
+- gör återställning och promotion tryggare
+- håller CMS:et konsekvent mellan innehållstyper
+- undviker speciallogik som driver isär admin och publik rendering
 
-## Now
-Målet i `Now` är att göra CMS:et betydligt tryggare och snabbare i daglig användning utan stor ombyggnad av arkitekturen.
+## Done
 
 ### 1. Enhetlig publiceringsmodell
-Inför samma publiceringslogik för alla relevanta innehållstyper:
-- `Utkast`
-- `Publicerad`
-- `Publiceras datum`
-- `Avpublicera datum` där det är relevant
-
-Omfattar i första hand:
+Byggt för:
 - produkter
 - tjänster
 - recept
@@ -48,282 +44,146 @@ Omfattar i första hand:
 - Rulleriet-event
 - Rulleriet-inlägg
 
-Varför nu:
-- publiceringsfält finns redan delvis
-- stor nytta med relativt begränsad implementation
-- minskar risken för att gammalt innehåll ligger kvar publikt
-
 ### 2. Kvalitetsvarningar i formulären
-Lägg till enkla, tydliga varningar före spar/publicering:
-- saknad hero-bild
-- tom SEO-title eller description
-- produkt utan bild
-- produkt utan extern länk
-- event med passerat datum men fortfarande publicerat
-- CTA utan länk
-- tomma viktiga rubrikfält
+Byggt som central kvalitetsmotor med checklistor, inline-varningar och koppling till publicering.
 
-Varför nu:
-- hög nytta
-- låg till medelhög teknisk kostnad
-- gör CMS:et direkt tryggare
+### 3. Dashboard
+Byggt som egen adminöversikt med:
+- kvalitets- och publiceringssammanfattning
+- uppgifter som kräver åtgärd
+- kommande datum
+- senaste aktivitet
+- mediahälsa
 
-### 3. Förbättrad preview
-Bygg ut preview så att den fungerar konsekvent för:
-- sidor
+### 4. Preview
+Byggt och standardiserat vidare för:
 - produkter
-- tjänster
+- nyheter
 - recept
+- tjänster
+- Rulleriet
 - Rulleriet-inlägg
-- event där det är relevant
+
+### 5. Mediebibliotek
+Byggt i fungerande grundversion med:
+- uppladdning
+- metadata
+- filersättning utan URL-byte
+- usage-spårning
+- säker delete
+- integritetskontroll
+
+### 6. Revisioner
+Byggt med:
+- lista
+- detaljvy
+- restore
+- fältdiff
+
+### 7. Roller och publiceringsbehörighet
+Byggt i första riktiga version med sektionsstyrning och restore-rättigheter.
+
+## Next
+
+### 1. Content promotion mellan miljöer
+Det här är nu nästa starkaste behov.
+
+Målet är:
+- export/import av innehåll per sektion eller innehållstyp
+- säker promotion av media
+- verifiering före promotion
+- dokumenterad rollback
 
 Varför nu:
-- preview finns redan som idé och delvis i produktflödet
-- borde bli en standardfunktion i hela CMS:et
+- redaktionella flöden är tillräckligt mogna
+- drift och miljöflytt är nästa verkliga riskyta
 
-### 4. Tydligare admin-start
-Skapa en enkel dashboard på `/admin` med:
-- snabbgenvägar till vanligaste sektionerna
-- senaste ändringar
-- opublicerat innehåll
-- snart passerade eller redan passerade event
-- innehåll med saknade bilder eller SEO
+Nu påbörjat:
+- första CLI-bundle för export/import finns
+- nästa nivå är rollback, tydligare VPS-runbook och bättre preflight-diff
 
-Varför nu:
-- gör stor skillnad för redaktionell användbarhet
-- kräver inte att hela CMS:et byggs om
-
-### 5. Sök och filtrering i större listor
-Inför sök/filter i:
+### 2. Sök och filtrering i större listor
+Inför bättre sök/filter i:
 - produkter
 - tjänster
 - recept
-- Rulleriet-event
+- nyheter
 - Rulleriet-inlägg
 - media
 
 Varför nu:
-- datamängden växer redan
-- snabbt värde
+- mängden innehåll och media börjar bli stor nog
+- mycket hög nytta per relativt liten insats
 
-### 6. Driftspår: backup och restore som rutin
-Formalisera detta i repo och drift:
-- schemalagd databasbackup
-- schemalagd backup av uploads
+Nu påbörjat:
+- sök/filter är byggt för produkter, tjänster, recept, nyheter och Rulleriet-inlägg
+- motsvarande filter/sortering finns nu också i media
+- batchåtgärder finns nu för vanlig mediahygien
+- nästa nivå är mer avancerad sortering, sparade filter och starkare kvalitetsrekommendationer
+
+### 3. Fördjupad revisionsupplevelse
+Nästa nivå efter nuvarande fältdiff:
+- bättre gruppering per objekt
+- tydligare redaktionella etiketter
+- enklare överblick över vad som ändrats i en sektion
+
+Nu påbörjat:
+- revisionslistan har nu tydligare sektionsetiketter och daggruppering
+- diffen grupperas nu per objekt/fältkluster i stället för bara platt lista
+
+### 4. Starkare media-kvalitet
+Bygg vidare på det nuvarande kvalitetslagret med:
+- bättre heuristik eller metadata för bildkvalitet
+- tydligare rekommendationer
+- eventuellt batchåtgärder för alt-text och oanvänt media
+
+### 5. Backup och restore som rutin
+Formalisera driftspåret ytterligare:
+- schemalagda backups
 - dokumenterad restore-test
 - enkel checklista för återställning
 
-Varför nu:
-- hög riskreducering
-- särskilt viktigt innan produktion öppnas fullt
-
-## Next
-Målet i `Next` är att gå från fungerande CMS till stark redaktionell produkt.
-
-### 1. Standardiserade redigeringsvyer per sidtyp
-Alla sidtyper bör följa samma grundstruktur:
-- `Sida`
-- `Innehåll`
-- `SEO`
-- `Förhandsvisning`
-- `Historik`
-
-Detta gäller särskilt:
-- startsida
-- om oss
-- kontakt
-- produkter
-- tjänster
-- recept
-- Rulleriet
-
-Varför next:
-- kräver mer UI-arbete än `Now`
-- stor effekt på konsekvens och onboarding
-
-### 2. Riktig eventmodell
-Gör event till en mer komplett innehållstyp med:
-- status
-- publicering
-- plats
-- arrangör/foodtruck
-- biljettlänk
-- bild
-- featured
-- eventuell kapacitet eller bokningsinfo
-- arkivläge
-
-Dessutom:
-- möjliggör visning både på Rulleriet och på startsidan/nyhetsytor
-
-### 3. Kampanj- och temamodell
-Skapa en återanvändbar modell för teman som:
-- jubileum
-- sommar
-- jul
-- lanseringar
-
-Ett tema ska kunna styra:
-- badges
-- utvalda produkter
-- startsideblock
-- CTA-ytor
-- eventlyft
-
-Det här ersätter behovet av att bygga specialfält varje gång verksamheten vill göra en satsning.
-
-### 4. Starkare mediebibliotek
-Bygg vidare på nuvarande mediahantering med:
-- alt-text som tydligt redigerbart fält
-- filtrering på användning
-- bättre namn/metadata
-- användningsspårning: var används bilden
-- möjlighet att byta fil utan att bryta innehåll
-
-Om tekniken tillåter:
-- fokalpunkt eller enkel beskärning
-
-### 5. Diff i revisionshistoriken
-Nu finns revisioner. Nästa steg är att göra dem mer användbara:
-- visa vad som ändrats
-- sektion för sektion
-- textdiff där det är relevant
-- lättare återställning
-
-### 6. Fler och bättre roller
-Gå från dagens modell till mer verksamhetsnära roller:
-- superadmin
-- redaktör
-- produktredaktör
-- eventredaktör
-- kampanjredaktör
-- kontakt/kundservice
-
-Behörighet ska kunna skiljas mellan:
-- läsa
-- redigera
-- publicera
-- återställa revisioner
-- hantera media
+Nu påbörjat:
+- lokal databasbackup finns
+- uploads-backup finns
+- kombinerad CMS-backup med manifest finns
+- enkel restore-runbook finns för lokal Docker-miljö
+- första VPS-backupscript finns
+- retentionstöd finns
+- nattligt backupscript finns och är aktivt efter sanerad crontab
 
 ## Later
-Målet i `Later` är att göra CMS:et verkligt starkt över tid, utan att kompromissa med enkel drift.
 
-### 1. Blockbaserad sidbyggare
-Inför återanvändbara block för utvalda typer av innehåll:
-- hero
-- text + bild
-- citat
-- galleri
-- produktlyft
-- eventblock
-- CTA
-- kampanjblock
+### 1. Standardiserade redigeringsvyer per sidtyp
+Alla större managers bör på sikt följa en ännu tydligare gemensam struktur.
 
-Det här ska inte vara en helt fri page builder från början, utan en kontrollerad blockmodell som håller designen konsekvent.
+### 2. Riktig eventmodell
+Rulleriet fungerar, men en mer komplett eventdomän är fortfarande ett senare steg.
 
-### 2. Schemalagda flöden och automation
-Bygg ut publiceringsmotorn med:
-- schemalagd publicering
-- schemalagd avpublicering
-- automatiskt arkiv för gamla event
-- påminnelser om innehåll som snart blir inaktuellt
+### 3. Kampanj- och temamodell
+Återanvändbara teman och kampanjer finns fortfarande som framtida utveckling.
 
-### 3. Miljöflytt av innehåll
-Skapa kontrollerade flöden för att flytta innehåll mellan:
-- lokal miljö
-- test/VPS
-- produktion
+### 4. Blockbaserad sidbyggare
+Inte prioriterat nu, men kan bli relevant senare om redaktionell flexibilitet behöver ökas.
 
-Målet är:
-- export/import per innehållstyp
-- säker migrering av mediareferenser
-- mindre manuellt arbete
-
-### 4. Interna CMS-API-kontrakt
-Tydliggör CMS:et som intern plattform genom stabila API-kontrakt för:
-- innehåll
-- media
-- preview
-- revisioner
-- publiceringsstatus
-
-Det gör senare integrationer enklare utan att kräva en extern headless-arkitektur i dag.
-
-### 5. Observability och driftmognad
-På längre sikt bör CMS-driften ha:
+### 5. Djupare observability
+Health checks finns, men på sikt behövs:
 - bättre loggning
-- larm på centrala fel
-- tydligare health checks
+- larm
 - backupövervakning
-- återställningstester som körs återkommande
+- återställningstester
 
-## Föreslagen ordning på epics
-Om vi översätter roadmapen till epics bör de tas ungefär i den här ordningen:
+## Rekommenderad ordning från idag
 
-1. Enhetlig publiceringsmodell
-2. Kvalitetsvarningar i formulären
-3. Förbättrad preview
-4. Admin-dashboard
-5. Sök och filtrering i listvyer
-6. Backup/restore-rutin
-7. Standardiserade sidvyer
-8. Riktig eventmodell
-9. Kampanj- och temamodell
-10. Starkare mediebibliotek
-11. Revisionsdiff
-12. Förfinade roller och publiceringsbehörighet
-
-## Rekommenderad leveransstrategi
-
-### Fas 1
-Fokusera på trygghet och överblick:
-- publicering
-- preview
-- validering
-- dashboard
-
-### Fas 2
-Fokusera på redaktionell skala:
-- sök/filter
-- standardiserade sidvyer
-- eventmodell
-- mediaförbättringar
-
-### Fas 3
-Fokusera på affärsstöd:
-- kampanjteman
-- återanvändbara promotions
-- bättre styrning av säsongsinnehåll
-
-### Fas 4
-Fokusera på plattformsmognad:
-- blockmodell
-- automation
-- miljöflytt
-- observability
-
-## Vad jag skulle prioritera först i praktiken
-Om vi ska börja direkt i nuvarande repo och få snabbast verkligt värde skulle jag ta:
-
-1. Enhetlig publiceringsmodell
-2. Kvalitetsvarningar
-3. Admin-dashboard
-4. Preview över fler innehållstyper
-5. Riktig eventmodell
-
-Det är den bästa kombinationen av:
-- redaktionell nytta
-- låg till medelhög teknisk risk
-- tydlig förbättring i hur CMS:et upplevs
+1. Content promotion mellan miljöer
+2. Sök och filtrering i större listor
+3. Fördjupad revisionsupplevelse
+4. Starkare media-kvalitet
+5. Backup/restore-rutin
+6. Riktig eventmodell
+7. Kampanj- och temamodell
 
 ## Nästa steg
-Nästa steg efter detta dokument bör vara att bryta ut roadmapen till konkreta epics med:
-- mål
-- scope
-- icke-mål
-- beroenden
-- acceptanskriterier
-
-Det mest naturliga är att börja med epic nummer 1:
-- `Enhetlig publiceringsmodell`
+Nästa steg efter detta dokument bör vara:
+- att fortsätta i `docs/cms/CMS_EPIC_10_CONTENT_PROMOTION_AND_DEPLOY.md`
+- att bryta ner promotion-spåret i konkret implementation för export/import, verifiering och rollback

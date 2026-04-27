@@ -1,44 +1,51 @@
 # CMS Status
 
-Senast uppdaterad: `2026-04-23`
+Senast uppdaterad: `2026-04-27`
 
 ## Syfte
-Det här dokumentet beskriver faktiskt genomfört CMS-arbete, nuvarande status och rekommenderat nästa steg. Det är tänkt som startpunkt för nästa arbetspass.
+Det här dokumentet beskriver faktiskt genomfört CMS-arbete, nuläge i koden och vad som återstår. Det ska gå att använda som startpunkt för nästa arbetspass utan att först läsa hela historiken.
 
 ## Sammanfattning
-Vi har genomfört den första stora implementationsfasen för:
-- `Epic 01: Enhetlig publiceringsmodell`
-- `Epic 02: Kvalitetsvarningar i formulären`
+CMS:et har nu passerat första prototypfasen och fungerar som ett sammanhållet redaktionellt system i samma Next.js-app som den publika sajten.
+
+Det som nu är byggt och verifierat:
+- enhetlig publiceringsmodell för prioriterade innehållstyper
+- kvalitetsvarningar och checklistor i admin
+- admin-dashboard med redaktionella arbetslistor
+- sök och filtrering i större listvyer för produkter, nyheter, tjänster, recept och Rulleriet-inlägg
+- fungerande mediebibliotek med usage-spårning och säker delete
+- integritetskontroll för media med brutna referenser, saknad alt-text, oanvänt media och enkel bildkvalitetskontroll
+- arbetskö för att åtgärda brutna mediareferenser direkt från dashboarden
+- revisionshistorik med faktisk fältdiff, inte bara rå JSON
+- preview-flöden för produkter, nyheter, recept, tjänster och Rulleriet
+- roller och sektionsbehörigheter
+- första backup/restore-rutin för lokal Docker-miljö
+- första VPS-backupscript för CMS
+- retentionstöd för VPS-backups
+- förberett nattligt backupscript för VPS
+- nattlig VPS-backup aktiv via renad `deploy`-crontab
 
 Status just nu:
-- gemensam publiceringsmodell är införd för prioriterade innehållstyper
-- kvalitetsmotor och checklistor finns
-- inline-varningar finns på viktiga fält
-- publiceringssektionen är kopplad till kvalitetsstatus
-- listvyer visar både publiceringsstatus och kvalitetsstatus
-- första admin-dashboarden finns som egen översiktsvy
-- ändringarna är utrullade i lokal Docker-testmiljö och på VPS-testappen
+- lokal build är grön
+- lokal lint är grön
+- kvarvarande varning är endast `baseline-browser-mapping`, vilket är låg prioritet
+- produkten är redo för koddeploy till produktion via `deploy-vps.ps1`
 
 ## Genomfört arbete
 
-### 1. Gemensam publiceringsmodell
-Infört central logik i:
+### 1. Enhetlig publiceringsmodell
+Central logik finns i:
 - `frontend/lib/publishing.ts`
 - `frontend/lib/published-content.ts`
 - `frontend/lib/content-schema.ts`
 
-Det som nu stöds:
+Det som stöds:
 - `Utkast`
 - `Schemalagd`
 - `Publik`
 - `Utgången`
 
-Publiceringsfält som används:
-- `published`
-- `publishedAt`
-- `unpublishedAt`
-
-Innehållstyper som nu använder modellen:
+Innehållstyper som använder modellen:
 - produkter
 - tjänster
 - recept
@@ -46,155 +53,237 @@ Innehållstyper som nu använder modellen:
 - Rulleriet-event
 - Rulleriet-inlägg
 
-Adminstöd finns via:
+UI-stöd finns via:
 - `frontend/components/admin/PublishingFields.tsx`
 
-### 2. Utrullning i adminmanagers
-Publiceringsmodellen är inkopplad i:
-- `frontend/components/admin/ProductsManager.tsx`
-- `frontend/components/admin/ServicesManager.tsx`
-- `frontend/components/admin/RecipesManager.tsx`
-- `frontend/components/admin/NewsManager.tsx`
-- `frontend/components/admin/RullerietSectionManager.tsx`
-- `frontend/components/admin/RullerietPostsManager.tsx`
-
-Detta innebär att:
-- redigeringsvyerna har en gemensam publiceringssektion
-- listor och kort visar riktig statusbadge
-- frontend använder samma regler som admin
-
-### 3. Kvalitetsmotor
-Infört central kvalitetslogik i:
+### 2. Kvalitetsmotor och kvalitets-UI
+Central kvalitetslogik finns i:
 - `frontend/lib/content-quality.ts`
 
-Det som finns nu:
-- `QualityIssue`
-- `error` och `warning`
-- gemensamma hjälpfunktioner
-- validatorer för startsida, produkt, tjänst, recept, nyhet, Rulleriet-event och Rulleriet-inlägg
-
-### 4. Kvalitets-UI
-Infört återanvändbara komponenter:
+Återanvändbara adminkomponenter:
 - `frontend/components/admin/QualityChecklist.tsx`
 - `frontend/components/admin/FieldIssueHint.tsx`
 - `frontend/components/admin/QualityStatusBadge.tsx`
 
-Det som dessa ger:
-- summeringsruta med fel och varningar i editorn
-- inline-markeringar nära viktiga fält
-- kvalitetsstatus direkt i listvyer
+Det som detta ger:
+- summering av fel och varningar per objekt
+- inline-markering på viktiga fält
+- kvalitetsstatus i listor och kort
+- blockering av publicering när objektet inte är redo
 
-### 5. Koppling mellan kvalitet och publicering
-Publiceringssektionen i:
-- `frontend/components/admin/PublishingFields.tsx`
-
-är nu kvalitetsmedveten.
-
-Det betyder:
-- innehåll med fel markeras som `Inte redo`
-- redaktören får tydlig förklaring i publiceringssektionen
-- publicering kan inte slås på om objektet har fel
-- utkast kan fortfarande sparas
-
-Viktigt:
-- för Rulleriet-event blockeras varje event bara av sina egna fel, inte av fel i andra event på samma sida
-
-### 6. Kvalitetsstöd som nu är inkopplat i admin
-Checklistor och/eller inline-varningar finns nu i:
-- `HomepageSectionManager`
-- `ProductsManager`
-- `ServicesManager`
-- `RecipesManager`
-- `NewsManager`
-- `RullerietSectionManager`
-- `RullerietPostsManager`
-
-Listvyer med kvalitetsbadge finns nu för:
-- produkter
-- tjänster
-- recept
-- nyheter
-- Rulleriet-inlägg
-- Rulleriet-eventkort
-
-### 7. Admin-dashboard och redaktionell överblick
-Infört första dashboard-versionen i:
+### 3. Dashboard och redaktionella arbetslistor
+Dashboarden finns i:
 - `frontend/lib/cms-dashboard.ts`
 - `frontend/components/admin/AdminDashboard.tsx`
 - `frontend/components/admin/CmsAdmin.tsx`
 
 Det som finns nu:
-- egen adminsektion `Översikt`
-- standardstart i dashboarden för roller som har åtkomst till `operations`
-- summering av spårade objekt, publicerade objekt, schemalagda objekt och objekt med fel
+- översikt över publiceringsstatus och kvalitetsstatus
 - lista över innehåll som kräver åtgärd
-- lista över kommande publiceringar och datum
+- kommande datum och publiceringar
 - senaste aktivitet via revisions-API
+- mediahälsa som egen sektion
+- klickbara arbetslistor för:
+  - brutna mediareferenser
+  - bilder utan alt-text
+  - oanvänt media
+  - bilder med svag kvalitet
 
-Dashboarden bygger på samma centrala publicerings- och kvalitetslogik som resten av adminen, inte på separat speciallogik.
+### 3b. Sök och filtrering i större listor
+Listmanagers för större innehållsmängder har nu ett gemensamt filterlager via:
+- `frontend/components/admin/ContentListFilters.tsx`
+
+Det som nu finns:
+- fritextsökning
+- filtrering på publiceringsstatus
+- filtrering på kvalitetsstatus
+- enkel sortering i större listvyer
+- produktkategori-filter i produktlistan
+
+Detta är inkopplat i:
+- `frontend/components/admin/ProductsManager.tsx`
+- `frontend/components/admin/NewsManager.tsx`
+- `frontend/components/admin/ServicesManager.tsx`
+- `frontend/components/admin/RecipesManager.tsx`
+- `frontend/components/admin/RullerietPostsManager.tsx`
+
+Mediebiblioteket har nu också:
+- fritextsökning
+- filter för använd/oinanvänd
+- filter för alt-textstatus
+- sortering på datum, namn, filstorlek och användning
+- batchåtgärder för:
+  - sätta alt-text från bildnamn på markerade bilder
+  - ta bort markerade oanvända bilder
+
+Detta finns i:
+- `frontend/components/admin/MediaLibraryManager.tsx`
+
+### 4. Mediebibliotek och mediahälsa
+Central logik finns i:
+- `frontend/lib/cms-media.ts`
+- `frontend/lib/cms-media-schema.ts`
+- `frontend/lib/media-usage.ts`
+- `frontend/app/api/cms/media/integrity/route.ts`
+
+UI finns i:
+- `frontend/components/admin/MediaLibraryManager.tsx`
+- `frontend/components/admin/MediaPickerField.tsx`
+
+Det som nu fungerar:
+- uppladdning
+- metadataredigering
+- ersättning av fil utan att byta URL
+- beskärning
+- usage-spårning: var en bild används
+- blockering av delete när bilden fortfarande används
+- integritetsrapport för brutna referenser
+- arbetskö för att åtgärda brutna mediareferenser från dashboarden
+- direktlänk från dashboard till rätt asset i mediebiblioteket
+
+### 5. Revisionshistorik och återställning
+Revisionslogik finns i:
+- `frontend/lib/content-revisions.ts`
+- `frontend/components/admin/RevisionsManager.tsx`
+- `frontend/app/api/cms/revisions`
+
+Det som nu finns:
+- revisionslista
+- detaljvy
+- restore
+- faktisk fältdiff med summering av:
+  - ändrade fält
+  - tillagda värden
+  - borttagna värden
+- sektionsetiketter i revisionslistan
+- daggruppering i revisionslistan
+- gruppering av diffen per objekt/fältkluster
+- fortsatt rå JSON-vy för teknisk kontroll
+
+### 6. Preview
+Preview-stöd finns nu för:
+- produkter
+- nyheter
+- recept
+- tjänster
+- Rulleriet-sidan
+- Rulleriet-inlägg
+
+Central logik finns i:
+- `frontend/lib/published-content.ts`
+- `frontend/lib/rulleriet-posts.ts`
+
+Publika sidor använder preview-aware selektorer, och adminmanagers länkar in till rätt preview-URL med fokus på rätt objekt.
+
+### 7. Roller och behörigheter
+Behörighetsmodellen finns i:
+- `frontend/lib/cms-permissions.ts`
+- `frontend/lib/cms-route-guards.ts`
+
+Det som finns:
+- roller
+- sektionsbehörigheter
+- separata rättigheter för t.ex. revisions-restore
 
 ## Miljöstatus
 
-### Lokal Docker-testmiljö
-Uppdaterad.
+### Lokal utvecklingsmiljö
+Verifierat lokalt:
+- `npm run build --workspace=frontend`
+- `npm run lint --workspace=frontend`
 
-Verifierat:
-- `http://localhost:3001/admin/login` svarar `200`
+Resultat:
+- build går igenom
+- lint går igenom
+- kvar finns bara `baseline-browser-mapping`-varningen
 
-### VPS-testapp
-Uppdaterad.
+### VPS/produktion
+Koddeploy sker via:
+- `deploy-vps.ps1`
 
-Verifierat:
-- intern app kör på `http://127.0.0.1:3002`
-- `http://127.0.0.1:3002/admin/login` svarar `200`
-- deploy sker via `deploy-vps.ps1`
+Scriptet är uttryckligen byggt för koddeploy och ska inte skriva över CMS-innehåll i produktion.
 
-## Tekniska beslut vi har bekräftat i praktiken
-- status- och kvalitetslogik ska ligga centralt i `lib`, inte i varje manager
-- återanvändbara adminkomponenter fungerar bra för detta CMS
-- första versionen ska vara tydlig och handlingsbar, inte överbyggd
-- kvalitetsfel ska påverka publicering, men inte stoppa spar av utkast
+### Backup/restore
+Första driftbara backupkedjan finns nu lokalt via:
+- `scripts/backup-postgres.mjs`
+- `scripts/backup-uploads.mjs`
+- `scripts/backup-cms-environment.mjs`
+- `scripts/restore-postgres.mjs`
+- `scripts/restore-uploads.mjs`
+
+VPS-backup finns nu också via:
+- `backup-cms-vps.ps1`
+- `install-vps-backup-cron.ps1`
+
+Tillgängliga npm-script:
+- `npm run db:backup`
+- `npm run uploads:backup`
+- `npm run cms:backup`
+- `npm run db:restore -- <dump-eller-backupkatalog>`
+- `npm run uploads:restore -- <backupkatalog> [--verify-only]`
+
+Runbook:
+- `docs/deploy/BACKUP-RESTORE.md`
+- `docs/deploy/VPS-BACKUP.md`
 
 ## Det som ännu inte är gjort
 
-### Epic 01
-I praktiken färdig för prioriterade innehållstyper, men fortfarande värd att verifiera vidare i redaktionell användning.
+Det här är de tydligaste kvarvarande luckorna:
 
-Kvar att överväga:
-- eventuell bredare användning på fler sidinställningar om behov uppstår
-- eventuell extra indikator i fler publika selectorer eller adminlistor
+### 1. Content promotion mellan miljöer
+Första CLI-versionen finns nu i:
+- `scripts/export-cms-content.mjs`
+- `scripts/import-cms-content.mjs`
+- `scripts/cms-promotion-lib.mjs`
 
-### Epic 02
-Bra första version är på plats, men inte slutligt färdig.
+Det som nu finns:
+- bundle-format med `manifest.json`, `content.json` och `media.json`
+- export av valda sektioner
+- export av relevant media-metadata
+- valfri kopia av mediefiler i bundle
+- verifieringsläge före import
+- import i `merge-sections` eller full `replace`
 
-Saker som inte är gjorda ännu:
-- inline-markering för alla fält i alla managers
-- kvalitetsregler för fler sidinställningar utöver nuvarande fokus
-- mer finmaskiga redaktionella varningar, t.ex. textlängd på fler fält
-- tydligare filtrering och gruppering av kvalitetsstatus över flera sektioner
+Det som återstår:
+- tydligare rollback-script
+- enklare målmiljöflöde för VPS/produktion
+- mer detaljerad diff/preview före import
+
+### 2. Mer redaktionell revisionsupplevelse
+Fältdiff finns nu, men diffen är fortfarande tekniskt orienterad. Nästa nivå vore mer redaktionella etiketter, bättre gruppering och objektfokuserad historik.
+
+### 3. Starkare media-kvalitet
+Bildkvalitetskontrollen är just nu avsiktligt enkel. Den är användbar för att fånga uppenbart svaga bilder, men är inte en full kvalitetsbedömning.
+
+### 4. Backup/restore på VPS och som rutin
+Lokal backupkedja och första VPS-backup finns nu, men nästa nivå är:
+- verifierad restore-rutin i driftmiljö
+- enkel backupstatus eller senaste-backup-spårning
+- djupare säkerhetsgenomgång av VPS utanför CMS-spåret
+
+### 5. Sök och filtrering i större listor
+Flera större managers skulle fortfarande vinna på bättre sök, sortering och filter.
+
+### 6. Eventmodell och kampanjmodell
+Rulleriet fungerar, men det finns ännu ingen mer komplett eventdomän eller generell kampanj-/temamodell.
 
 ## Rekommenderat nästa steg
-Nästa naturliga huvudspår är:
-- fortsättning på `Epic 03: Admin-dashboard och redaktionell överblick`
+Nästa starkaste huvudspår är nu:
+- verifierad restore-test i driftmiljö
 
 Motivering:
-- vi har nu både publiceringsstatus och kvalitetsstatus
-- första dashboard-versionen är på plats och nästa steg är att fördjupa den
+- backup finns nu lokalt, på VPS och nattligt via cron
+- den största återstående operativa risken är att restorekedjan ännu inte är körd och dokumenterad i VPS-miljö
+- Epic 10 och Epic 11 möts nu främst i att rollback måste vara bevisat, inte bara teoretiskt
 
-Konkreta första dashboard-delar att bygga:
-- filtrering och drilldown från dashboard till berörd sektion eller objekt
-- utgångna objekt som egen åtgärdslista
-- mer redaktionell prioritering, t.ex. “bör publiceras snart” och “saknar SEO”
-- eventuellt rollanpassad dashboard per redaktörstyp
-
-## Alternativt nästa steg om vi vill stanna i Epic 02 lite längre
-Om vi inte vill gå vidare till dashboard ännu är nästa förbättring inom samma epic:
-- fler inline-indikatorer på sidinställningsnivå
-- bättre koppling mellan kvalitetsstatus och listfiltrering
-- fler kvalitetsregler för CTA, SEO och tomma listor
+Konkreta första delar att bygga där:
+- dokumenterad restore-test i driftmiljö
+- enkel backupstatus eller senaste-backup-spårning
+- separat säkerhetsuppföljning för VPS:en
 
 ## Snabb start nästa gång
 Om nästa pass ska fortsätta direkt i CMS-spåret, börja med:
 1. läs detta dokument
-2. läs `docs/cms/CMS_IMPLEMENTATION_PLAN.md`
-3. fortsätt i `docs/cms/CMS_EPIC_03_ADMIN_DASHBOARD.md`
+2. läs `docs/cms/CMS_HANDOFF.md`
+3. läs `docs/cms/CMS_ROADMAP.md`
+4. fortsätt i `docs/cms/CMS_EPIC_11_OPERATIONS_AND_OBSERVABILITY.md`

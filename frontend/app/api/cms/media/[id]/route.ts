@@ -18,7 +18,9 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
     const contentType = request.headers.get("content-type") ?? "";
 
     if (contentType.includes("multipart/form-data")) {
-      const formData = await request.formData();
+      const formData = await request.formData().catch(() => {
+        throw new Error("Kunde inte läsa uppladdad fil. Försök välja filen igen.");
+      });
       const file = formData.get("file");
 
       if (!(file instanceof File)) {
@@ -28,7 +30,8 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
       return NextResponse.json(await replaceCmsMediaAssetFile(id, file));
     }
 
-    const body = (await request.json()) as { altText?: string | null; displayName?: string | null };
+    const rawBody = await request.text();
+    const body = (rawBody ? JSON.parse(rawBody) : {}) as { altText?: string | null; displayName?: string | null };
     const asset = await updateCmsMediaAsset(id, { altText: body.altText, displayName: body.displayName });
     return NextResponse.json(asset);
   } catch (error) {

@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { buildCmsDashboard } from "@/lib/cms-dashboard";
+import type { CmsMediaIntegrityReport } from "@/lib/cms-media-schema";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { SiteContent } from "@/lib/content-schema";
 
@@ -11,6 +12,7 @@ type AdminDashboardFocus = {
   targetId?: string;
   targetTab?: string;
   targetAnchorId?: string;
+  targetField?: string;
 };
 
 type RevisionSummary = {
@@ -20,6 +22,31 @@ type RevisionSummary = {
   changeSummary: string | null;
   createdAt: string;
 };
+
+type MediaIntegrityResponse = CmsMediaIntegrityReport | { error?: string };
+
+function openUsage(
+  onOpenSection: (focus: AdminDashboardFocus) => void,
+  usage: CmsMediaIntegrityReport["brokenReferences"][number]["usage"][number],
+) {
+  onOpenSection({
+    section: usage.section as CmsManagedSection,
+    targetId: usage.targetId,
+    targetTab: usage.targetTab,
+    targetAnchorId: usage.targetAnchorId,
+    targetField: usage.targetField,
+  });
+}
+
+function openMediaTask(
+  onOpenSection: (focus: AdminDashboardFocus) => void,
+  assetId: string,
+) {
+  onOpenSection({
+    section: "media",
+    targetId: assetId,
+  });
+}
 
 function SummaryCard({
   label,
@@ -49,14 +76,37 @@ export default function AdminDashboard({
   content,
   allowedSections,
   onOpenSection,
+  resolvedBrokenMediaUrl,
 }: {
   content: SiteContent;
   allowedSections: CmsManagedSection[];
   onOpenSection: (focus: AdminDashboardFocus) => void;
+  resolvedBrokenMediaUrl?: string | null;
 }) {
   const overview = useMemo(() => buildCmsDashboard(content, allowedSections), [content, allowedSections]);
   const [revisions, setRevisions] = useState<RevisionSummary[]>([]);
   const [revisionsError, setRevisionsError] = useState<string | null>(null);
+  const [mediaIntegrity, setMediaIntegrity] = useState<CmsMediaIntegrityReport | null>(null);
+  const [mediaIntegrityError, setMediaIntegrityError] = useState<string | null>(null);
+  const mediaHealthRef = useRef<HTMLDivElement | null>(null);
+  const nextBrokenActionRef = useRef<HTMLButtonElement | null>(null);
+  const mediaLibraryActionRef = useRef<HTMLButtonElement | null>(null);
+
+  async function loadMediaIntegrity(signal?: AbortSignal) {
+    setMediaIntegrityError(null);
+
+    const response = await fetch("/api/cms/media/integrity", {
+      cache: "no-store",
+      signal,
+    });
+    const data = (await response.json()) as MediaIntegrityResponse;
+
+    if (!response.ok) {
+      throw new Error("error" in data ? data.error : "Kunde inte lasa mediahalsa.");
+    }
+
+    setMediaIntegrity(data as CmsMediaIntegrityReport);
+  }
 
   useEffect(() => {
     if (!allowedSections.includes("revisions")) {
@@ -91,6 +141,71 @@ export default function AdminDashboard({
     };
   }, [allowedSections]);
 
+  const nextBrokenReference = mediaIntegrity?.brokenReferences[0] ?? null;
+  const resolvedReferenceStillBroken = resolvedBrokenMediaUrl
+    ? mediaIntegrity?.brokenReferences.some((reference) => reference.publicUrl === resolvedBrokenMediaUrl) ?? false
+    : false;
+  const remainingBrokenReferences = mediaIntegrity?.brokenReferenceCount ?? 0;
+
+  useEffect(() => {
+    if (!resolvedBrokenMediaUrl || !mediaHealthRef.current) {
+      return;
+    }
+
+    mediaHealthRef.current.scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+  }, [resolvedBrokenMediaUrl, remainingBrokenReferences]);
+
+  useEffect(() => {
+    if (!resolvedBrokenMediaUrl || !nextBrokenReference || !nextBrokenActionRef.current) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      nextBrokenActionRef.current?.focus();
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
+  }, [nextBrokenReference, resolvedBrokenMediaUrl]);
+
+  useEffect(() => {
+    if (!resolvedBrokenMediaUrl || remainingBrokenReferences > 0 || !mediaLibraryActionRef.current) {
+      return;
+    }
+
+    const timeout = window.setTimeout(() => {
+      mediaLibraryActionRef.current?.focus();
+    }, 250);
+
+    return () => window.clearTimeout(timeout);
+  }, [remainingBrokenReferences, resolvedBrokenMediaUrl]);
+
+  useEffect(() => {
+    if (!allowedSections.includes("media")) {
+      return;
+    }
+
+    const controller = new AbortController();
+
+    async function syncMediaIntegrity() {
+      try {
+        await loadMediaIntegrity(controller.signal);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setMediaIntegrityError(error instanceof Error ? error.message : "Kunde inte lasa mediahalsa.");
+        }
+      }
+    }
+
+    void syncMediaIntegrity();
+
+    return () => {
+      controller.abort();
+    };
+  }, [allowedSections, resolvedBrokenMediaUrl]);
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-lg">
@@ -106,6 +221,15 @@ export default function AdminDashboard({
         <SummaryCard label="Schemalagda" value={String(overview.publishing.scheduled)} tone="amber" />
         <SummaryCard label="Objekt med fel" value={String(overview.quality.itemsWithErrors)} tone="red" />
       </div>
+
+      {allowedSections.includes("media") && (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          <SummaryCard label="Oanvänt media" value={String(mediaIntegrity?.unusedAssets ?? "0")} tone="amber" />
+          <SummaryCard label="Saknar alt-text" value={String(mediaIntegrity?.assetsMissingAltText ?? "0")} tone="stone" />
+          <SummaryCard label="Svag bildkvalitet" value={String(mediaIntegrity?.lowQualityAssets ?? "0")} tone="amber" />
+          <SummaryCard label="Brutna mediaref." value={String(mediaIntegrity?.brokenReferenceCount ?? "0")} tone={(mediaIntegrity?.brokenReferenceCount ?? 0) > 0 ? "red" : "green"} />
+        </div>
+      )}
 
       <div className="grid gap-6 xl:grid-cols-[1.4fr_minmax(0,1fr)]">
         <div className="space-y-6">
@@ -209,6 +333,295 @@ export default function AdminDashboard({
               )}
             </div>
           </div>
+
+          {allowedSections.includes("media") && (
+            <div
+              ref={mediaHealthRef}
+              className={`rounded-3xl border bg-white p-6 shadow-lg transition ${
+                resolvedBrokenMediaUrl
+                  ? "border-amber-300 ring-2 ring-amber-100"
+                  : "border-stone-200"
+              }`}
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h3 className="text-xl font-bold text-stone-900">Mediahälsa</h3>
+                  <p className="mt-1 text-sm text-stone-600">Visar oanvänt media, saknade alt-texter och referenser där filen eller asseten saknas.</p>
+                </div>
+                <button
+                  ref={mediaLibraryActionRef}
+                  type="button"
+                  onClick={() => onOpenSection({ section: "media" })}
+                  className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-stone-500"
+                >
+                  Öppna media
+                </button>
+              </div>
+              <div className="mt-5 space-y-3">
+                {mediaIntegrityError ? (
+                  <p className="text-sm text-red-700">{mediaIntegrityError}</p>
+                ) : !mediaIntegrity ? (
+                  <p className="text-sm text-stone-500">Läser mediahälsa...</p>
+                ) : mediaIntegrity.brokenReferences.length === 0 ? (
+                  <>
+                    <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-semibold text-green-800">
+                      Inga brutna mediareferenser hittades.
+                    </div>
+                    {(mediaIntegrity.assetsMissingAltTextItems.length > 0 || mediaIntegrity.unusedAssetItems.length > 0 || mediaIntegrity.lowQualityAssetItems.length > 0) && (
+                      <div className="grid gap-4 xl:grid-cols-3">
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Saknar alt-text</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.assetsMissingAltTextItems.map((asset) => (
+                              <div key={`missing-alt-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.publicUrl}</p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Oanvänt media</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.unusedAssetItems.map((asset) => (
+                              <div key={`unused-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.publicUrl}</p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Svag bildkvalitet</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.lowQualityAssetItems.map((asset) => (
+                              <div key={`low-quality-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.issueLabel ?? "Bildkvalitet behöver ses över"}</p>
+                                  {asset.details && <p className="truncate text-xs text-stone-500">{asset.details}</p>}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {resolvedBrokenMediaUrl && (
+                      <div className={`rounded-2xl border p-4 text-sm ${resolvedReferenceStillBroken ? "border-amber-200 bg-amber-50 text-amber-900" : "border-green-200 bg-green-50 text-green-900"}`}>
+                        <p className="font-semibold">
+                          {resolvedReferenceStillBroken ? "Senast uppdaterade referensen finns fortfarande kvar i kön." : "Senast uppdaterade referensen är borta från fellistan."}
+                        </p>
+                        <p className="mt-1 break-all">{resolvedBrokenMediaUrl}</p>
+                        {nextBrokenReference && (
+                          <p className="mt-2">
+                            Nasta brutna referens ar <span className="font-semibold break-all">{nextBrokenReference.publicUrl}</span>.
+                          </p>
+                        )}
+                        <p className="mt-2 font-semibold">
+                          {remainingBrokenReferences} brutna referenser kvar.
+                        </p>
+                        {remainingBrokenReferences > 0 && (
+                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em]">
+                            Fortsatt arbetsko aktiv
+                          </p>
+                        )}
+                        {remainingBrokenReferences === 0 && !resolvedReferenceStillBroken && (
+                          <p className="mt-1 text-xs font-semibold uppercase tracking-[0.2em]">
+                            Ko rensad
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {resolvedBrokenMediaUrl && remainingBrokenReferences === 0 && !resolvedReferenceStillBroken && (
+                      <div className="rounded-2xl border border-green-300 bg-green-100 p-4">
+                        <p className="text-sm font-semibold text-green-950">Alla brutna mediareferenser ar nu atgardade.</p>
+                        <p className="mt-1 text-sm text-green-900">
+                          Om du vill kan du ga vidare till mediebiblioteket for att rensa oanvant media eller komplettera alt-texter.
+                        </p>
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => onOpenSection({ section: "media" })}
+                            className="rounded-xl bg-green-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-green-800"
+                          >
+                            Oppna media
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                            className="rounded-xl border border-green-400 bg-white px-4 py-2 text-sm font-semibold text-green-900 transition hover:bg-green-50"
+                          >
+                            Tillbaka till oversikt
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {nextBrokenReference && (
+                      <div className="rounded-2xl border border-red-300 bg-red-100 p-4">
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-red-700">Nasta i kon</p>
+                            <p className="mt-2 text-sm font-semibold text-red-950 break-all">{nextBrokenReference.publicUrl}</p>
+                            <p className="mt-1 text-xs uppercase tracking-[0.2em] text-red-700">
+                              {nextBrokenReference.reason === "missing_asset" ? "Saknas i mediaregistret" : "Filen saknas på disk"}
+                            </p>
+                          </div>
+                          <span className="rounded-full bg-white px-3 py-1 text-xs font-semibold text-red-900">
+                            {nextBrokenReference.usage.length} referenser
+                          </span>
+                        </div>
+                        {nextBrokenReference.usage[0] && (
+                          <div className="mt-3">
+                            <button
+                              ref={nextBrokenActionRef}
+                              type="button"
+                              onClick={() => openUsage(onOpenSection, nextBrokenReference.usage[0])}
+                              className="rounded-xl bg-red-900 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-800"
+                            >
+                              Oppna nasta brutna referens
+                            </button>
+                            <p className="mt-2 text-xs font-semibold uppercase tracking-[0.2em] text-red-800">
+                              Enter fortsatter arbetskon
+                            </p>
+                          </div>
+                        )}
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {nextBrokenReference.usage.map((usage, usageIndex) => (
+                            <button
+                              key={`${nextBrokenReference.publicUrl}-next-usage-${usageIndex}`}
+                              type="button"
+                              onClick={() => openUsage(onOpenSection, usage)}
+                              className="rounded-xl border border-red-300 bg-white px-4 py-2 text-left text-sm font-semibold text-red-900 transition hover:bg-red-50"
+                            >
+                              Ersatt bild i {usage.sectionLabel.toLowerCase()} · {usage.itemLabel}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {mediaIntegrity.brokenReferences.slice(nextBrokenReference ? 1 : 0, 6).map((reference, index) => (
+                      <div key={`${reference.publicUrl}-${index}`} className="rounded-2xl border border-red-200 bg-red-50 p-4">
+                        <p className="text-sm font-semibold text-red-900 break-all">{reference.publicUrl}</p>
+                        <p className="mt-1 text-xs uppercase tracking-[0.2em] text-red-700">
+                          {reference.reason === "missing_asset" ? "Saknas i mediaregistret" : "Filen saknas på disk"}
+                        </p>
+                        <div className="mt-3 space-y-2">
+                          {reference.usage.map((usage, usageIndex) => (
+                            <button
+                              key={`${reference.publicUrl}-usage-${usageIndex}`}
+                              type="button"
+                              onClick={() => openUsage(onOpenSection, usage)}
+                              className="block rounded-xl border border-red-300 bg-white px-4 py-2 text-left text-sm font-semibold text-red-900 transition hover:bg-red-100"
+                            >
+                              Ersatt bild i {usage.sectionLabel.toLowerCase()} · {usage.itemLabel}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    {(mediaIntegrity.assetsMissingAltTextItems.length > 0 || mediaIntegrity.unusedAssetItems.length > 0 || mediaIntegrity.lowQualityAssetItems.length > 0) && (
+                      <div className="grid gap-4 xl:grid-cols-3">
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Saknar alt-text</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.assetsMissingAltTextItems.map((asset) => (
+                              <div key={`missing-alt-with-broken-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.publicUrl}</p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Oanvänt media</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.unusedAssetItems.map((asset) => (
+                              <div key={`unused-with-broken-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.publicUrl}</p>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                        <div className="rounded-2xl border border-stone-200 bg-stone-50 p-4">
+                          <h4 className="text-sm font-semibold uppercase tracking-[0.2em] text-stone-700">Svag bildkvalitet</h4>
+                          <div className="mt-3 space-y-2">
+                            {mediaIntegrity.lowQualityAssetItems.map((asset) => (
+                              <div key={`low-quality-with-broken-${asset.id}`} className="flex items-center justify-between gap-3 rounded-xl border border-stone-200 bg-white p-3">
+                                <div className="min-w-0">
+                                  <p className="truncate text-sm font-semibold text-stone-900">{asset.displayName}</p>
+                                  <p className="truncate text-xs text-stone-500">{asset.issueLabel ?? "Bildkvalitet behöver ses över"}</p>
+                                  {asset.details && <p className="truncate text-xs text-stone-500">{asset.details}</p>}
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={() => openMediaTask(onOpenSection, asset.id)}
+                                  className="rounded-xl border border-stone-300 px-3 py-2 text-xs font-semibold text-stone-700"
+                                >
+                                  Öppna media
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className="space-y-6">

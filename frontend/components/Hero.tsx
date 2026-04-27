@@ -15,32 +15,34 @@ export default function Hero({ homepage }: { homepage: SiteContent["homepage"] }
            }}>
       </div>
 
-      <div className="relative z-20 container-custom text-center">
-        <p className="mb-4 text-sm uppercase tracking-[0.35em] text-amber-300">{homepage.heroEyebrow}</p>
-        
-        <h1 className="heading-xl mb-6 text-white">
-          {homepage.heroTitle}
-        </h1>
-        
-        <p className="text-xl md:text-2xl mb-4 text-stone-200 max-w-3xl mx-auto font-light">
-          {homepage.heroLead}
-        </p>
-        
-        <p className="text-lg md:text-xl mb-4 text-amber-400 font-serif italic">
-          {homepage.heroTagline}
-        </p>
+      <div className="relative z-20 container-custom px-4 text-center">
+        <div className="mx-auto max-w-5xl rounded-[2rem] border border-white/18 bg-stone-950/28 px-6 py-8 shadow-[0_24px_60px_rgba(0,0,0,0.24)] backdrop-blur-[6px] md:px-10 md:py-12">
+          <p className="mb-4 text-sm uppercase tracking-[0.35em] text-amber-300">{homepage.heroEyebrow}</p>
+          
+          <h1 className="heading-xl mb-6 text-white">
+            {homepage.heroTitle}
+          </h1>
+          
+          <p className="text-xl md:text-2xl mb-4 text-stone-100 max-w-3xl mx-auto font-light">
+            {homepage.heroLead}
+          </p>
+          
+          <p className="text-lg md:text-xl mb-4 text-amber-300 font-serif italic">
+            {homepage.heroTagline}
+          </p>
 
-        <p className="text-base md:text-lg mb-12 text-stone-300 max-w-2xl mx-auto">
-          {homepage.heroBody}
-        </p>
+          <p className="text-base md:text-lg mb-12 text-stone-200 max-w-2xl mx-auto">
+            {homepage.heroBody}
+          </p>
 
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link href={homepage.heroPrimaryCtaLink} className="btn-primary">
-            {homepage.heroPrimaryCtaLabel}
-          </Link>
-          <Link href={homepage.heroSecondaryCtaLink} className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
-            {homepage.heroSecondaryCtaLabel}
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <Link href={homepage.heroPrimaryCtaLink} className="btn-primary">
+              {homepage.heroPrimaryCtaLabel}
+            </Link>
+            <Link href={homepage.heroSecondaryCtaLink} className="btn-secondary bg-transparent text-white border-white hover:bg-white hover:text-stone-900">
+              {homepage.heroSecondaryCtaLabel}
+            </Link>
+          </div>
         </div>
 
         <div className="craft-divider mt-12"></div>

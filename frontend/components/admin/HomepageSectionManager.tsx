@@ -14,6 +14,10 @@ function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+function splitDraftLines(value: string) {
+  return value.split("\n");
+}
+
 const sectionLabels: Record<HomepageSectionId, string> = {
   hero: "Hero",
   anniversary: "Jubileum",
@@ -27,9 +31,13 @@ const sectionLabels: Record<HomepageSectionId, string> = {
 export default function HomepageSectionManager({
   content,
   onSave,
+  initialFocusField,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialFocusField?: string;
+  focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.homepage);
   const [saving, setSaving] = useState(false);
@@ -61,9 +69,35 @@ export default function HomepageSectionManager({
     setStatus(null);
 
     try {
-      await onSave({ ...content, homepage: draft }, {
+      await onSave({ ...content, homepage: {
+        ...draft,
+        anniversaryHighlights: splitLines(draft.anniversaryHighlights.join("\n")),
+        ctaCards: draft.ctaCards.map((card) => ({
+          ...card,
+          lines: splitLines(card.lines.join("\n")),
+        })),
+      } }, {
         sectionKey: "homepage",
         changeSummary: "Uppdaterade förstasidan",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveField(field: "heroBackgroundImage" | "anniversaryImage", nextValue: string) {
+    const nextDraft = { ...draft, [field]: nextValue };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, homepage: nextDraft }, {
+        sectionKey: "homepage",
+        changeSummary: field === "heroBackgroundImage" ? "Ersatte hero-bild på förstasidan" : "Ersatte jubileumsbild på förstasidan",
       });
       setStatus("Sparat.");
     } catch (error) {
@@ -138,7 +172,7 @@ export default function HomepageSectionManager({
             <textarea value={draft.heroBody} onChange={(e) => setDraft((current) => ({ ...current, heroBody: e.target.value }))} placeholder="Kort brödtext under hero" rows={3} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </div>
           <div className="md:col-span-2">
-            <MediaPickerField value={draft.heroBackgroundImage} onChange={(value) => setDraft((current) => ({ ...current, heroBackgroundImage: value }))} label="Hero-bakgrund" />
+            <MediaPickerField value={draft.heroBackgroundImage} onChange={(value) => setDraft((current) => ({ ...current, heroBackgroundImage: value }))} label="Hero-bakgrund" fieldId="heroBackgroundImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveField("heroBackgroundImage", value)} />
             <FieldIssueHint issues={qualityIssues} field="heroBackgroundImage" />
           </div>
           <div className="md:col-span-2">
@@ -173,11 +207,11 @@ export default function HomepageSectionManager({
             <textarea value={draft.anniversaryBody} onChange={(e) => setDraft((current) => ({ ...current, anniversaryBody: e.target.value }))} placeholder="Brödtext" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </div>
           <div className="md:col-span-2">
-            <MediaPickerField value={draft.anniversaryImage} onChange={(value) => setDraft((current) => ({ ...current, anniversaryImage: value }))} label="Jubileumsbild" />
+            <MediaPickerField value={draft.anniversaryImage} onChange={(value) => setDraft((current) => ({ ...current, anniversaryImage: value }))} label="Jubileumsbild" fieldId="anniversaryImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveField("anniversaryImage", value)} />
             <FieldIssueHint issues={qualityIssues} field="anniversaryImage" />
           </div>
           <div className="md:col-span-2">
-            <textarea value={draft.anniversaryHighlights.join("\n")} onChange={(e) => setDraft((current) => ({ ...current, anniversaryHighlights: splitLines(e.target.value) }))} placeholder="Höjdpunkter, en per rad" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <textarea value={draft.anniversaryHighlights.join("\n")} onChange={(e) => setDraft((current) => ({ ...current, anniversaryHighlights: splitDraftLines(e.target.value) }))} placeholder="Höjdpunkter, en per rad" rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </div>
           <input value={draft.anniversaryPrimaryCtaLabel} onChange={(e) => setDraft((current) => ({ ...current, anniversaryPrimaryCtaLabel: e.target.value }))} placeholder="Primär knapptext" className="rounded-xl border border-stone-300 px-4 py-3" />
           <input value={draft.anniversaryPrimaryCtaLink} onChange={(e) => setDraft((current) => ({ ...current, anniversaryPrimaryCtaLink: e.target.value }))} placeholder="Primär knapplänk" className="rounded-xl border border-stone-300 px-4 py-3" />
@@ -238,7 +272,7 @@ export default function HomepageSectionManager({
               <div className="grid gap-3">
                 <input value={card.icon} onChange={(e) => setDraft((current) => ({ ...current, ctaCards: current.ctaCards.map((entry, entryIndex) => entryIndex === index ? { ...entry, icon: e.target.value } : entry) }))} placeholder="Ikon" className="rounded-xl border border-stone-300 px-4 py-3" />
                 <input value={card.title} onChange={(e) => setDraft((current) => ({ ...current, ctaCards: current.ctaCards.map((entry, entryIndex) => entryIndex === index ? { ...entry, title: e.target.value } : entry) }))} placeholder="Rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
-                <textarea value={card.lines.join("\n")} onChange={(e) => setDraft((current) => ({ ...current, ctaCards: current.ctaCards.map((entry, entryIndex) => entryIndex === index ? { ...entry, lines: splitLines(e.target.value) } : entry) }))} placeholder="En rad per rad" rows={4} className="rounded-xl border border-stone-300 px-4 py-3" />
+                <textarea value={card.lines.join("\n")} onChange={(e) => setDraft((current) => ({ ...current, ctaCards: current.ctaCards.map((entry, entryIndex) => entryIndex === index ? { ...entry, lines: splitDraftLines(e.target.value) } : entry) }))} placeholder="En rad per rad" rows={4} className="rounded-xl border border-stone-300 px-4 py-3" />
               </div>
             </div>
           ))}

@@ -2,12 +2,17 @@
 
 import { useEffect, useState } from "react";
 
+import MediaPickerField from "@/components/admin/MediaPickerField";
 import SectionTabs from "@/components/admin/SectionTabs";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { FooterLink, FooterSocialLink, RedirectEntry, SiteContent } from "@/lib/content-schema";
 
 function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
+}
+
+function splitDraftLines(value: string) {
+  return value.split("\n");
 }
 
 function formatFooterLinks(links: FooterLink[]) {
@@ -86,17 +91,25 @@ function createEmptyRedirect(): RedirectEntry {
 export default function SiteSectionManager({
   content,
   onSave,
+  initialFocusField,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialFocusField?: string;
+  focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.site);
+  const [navigationLinksText, setNavigationLinksText] = useState(formatFooterLinks(content.site.footer.navigationLinks));
+  const [socialLinksText, setSocialLinksText] = useState(formatFooterSocialLinks(content.site.footer.socialLinks));
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"metadata" | "footer" | "redirects">("metadata");
 
   useEffect(() => {
     setDraft(content.site);
+    setNavigationLinksText(formatFooterLinks(content.site.footer.navigationLinks));
+    setSocialLinksText(formatFooterSocialLinks(content.site.footer.socialLinks));
   }, [content.site]);
 
   async function handleSave() {
@@ -104,8 +117,19 @@ export default function SiteSectionManager({
     setStatus(null);
 
     try {
+      const nextSite = {
+        ...draft,
+        metadataKeywords: splitLines(draft.metadataKeywords.join("\n")),
+        footer: {
+          ...draft.footer,
+          navigationLinks: parseFooterLinks(navigationLinksText),
+          contactLines: splitLines(draft.footer.contactLines.join("\n")),
+          socialLinks: parseFooterSocialLinks(socialLinksText),
+        },
+      };
+
       await onSave(
-        { ...content, site: draft },
+        { ...content, site: nextSite },
         {
           sectionKey: "site",
           changeSummary: activeTab === "footer"
@@ -115,6 +139,25 @@ export default function SiteSectionManager({
               : "Uppdaterade webbplatsmetadata",
         },
       );
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveMetadataField(field: "ogImage", nextValue: string) {
+    const nextDraft = { ...draft, [field]: nextValue };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, site: nextDraft }, {
+        sectionKey: "site",
+        changeSummary: "Ersatte Open Graph-bild",
+      });
       setStatus("Sparat.");
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Kunde inte spara.");
@@ -163,9 +206,17 @@ export default function SiteSectionManager({
             <textarea value={draft.metadataDescription} onChange={(event) => setDraft((current) => ({ ...current, metadataDescription: event.target.value }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </label>
 
+          <div className="grid gap-4 md:grid-cols-2">
+            <label className="block">
+              <span className="mb-2 block text-sm font-semibold text-stone-700">Canonical-URL</span>
+              <input value={draft.canonicalUrl ?? ""} onChange={(event) => setDraft((current) => ({ ...current, canonicalUrl: event.target.value }))} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            </label>
+            <MediaPickerField value={draft.ogImage ?? ""} onChange={(value) => setDraft((current) => ({ ...current, ogImage: value }))} label="Open Graph-bild" fieldId="ogImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveMetadataField("ogImage", value)} />
+          </div>
+
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-stone-700">Metadata-nyckelord, ett per rad</span>
-            <textarea value={draft.metadataKeywords.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, metadataKeywords: splitLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <textarea value={draft.metadataKeywords.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, metadataKeywords: splitDraftLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           </label>
         </div>
       ) : activeTab === "footer" ? (
@@ -206,12 +257,7 @@ export default function SiteSectionManager({
 
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-stone-700">Navigationslänkar</span>
-            <textarea
-              value={formatFooterLinks(draft.footer.navigationLinks)}
-              onChange={(event) => setDraft((current) => ({ ...current, footer: { ...current.footer, navigationLinks: parseFooterLinks(event.target.value) } }))}
-              rows={6}
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 font-mono text-sm"
-            />
+            <textarea value={navigationLinksText} onChange={(event) => setNavigationLinksText(event.target.value)} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3 font-mono text-sm" />
           </label>
 
           <div className="grid gap-4 md:grid-cols-2">
@@ -237,7 +283,7 @@ export default function SiteSectionManager({
             <span className="mb-2 block text-sm font-semibold text-stone-700">Kontaktuppgifter, en rad per rad</span>
             <textarea
               value={draft.footer.contactLines.join("\n")}
-              onChange={(event) => setDraft((current) => ({ ...current, footer: { ...current.footer, contactLines: splitLines(event.target.value) } }))}
+              onChange={(event) => setDraft((current) => ({ ...current, footer: { ...current.footer, contactLines: splitDraftLines(event.target.value) } }))}
               rows={5}
               className="w-full rounded-xl border border-stone-300 px-4 py-3"
             />
@@ -264,12 +310,7 @@ export default function SiteSectionManager({
 
           <label className="block">
             <span className="mb-2 block text-sm font-semibold text-stone-700">Sociala länkar</span>
-            <textarea
-              value={formatFooterSocialLinks(draft.footer.socialLinks)}
-              onChange={(event) => setDraft((current) => ({ ...current, footer: { ...current.footer, socialLinks: parseFooterSocialLinks(event.target.value) } }))}
-              rows={4}
-              className="w-full rounded-xl border border-stone-300 px-4 py-3 font-mono text-sm"
-            />
+            <textarea value={socialLinksText} onChange={(event) => setSocialLinksText(event.target.value)} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3 font-mono text-sm" />
           </label>
 
           <div className="grid gap-4 md:grid-cols-2">

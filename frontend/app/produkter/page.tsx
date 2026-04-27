@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 
 import ProductImageFrame from "@/components/ProductImageFrame";
+import ProductCategoryNav from "@/components/ProductCategoryNav";
 import { readSiteContent } from "@/lib/content-store";
 import { buildHeroOverlayStyle } from "@/lib/hero-overlay";
 import { getPublishedProducts } from "@/lib/published-content";
@@ -47,26 +48,7 @@ export default async function ProdukterPage({ searchParams }: ProductsPageProps)
         </div>
       </section>
 
-      <section className="sticky top-[72px] z-40 border-b-2 border-amber-500 bg-white shadow-md md:top-[84px]">
-        <div className="container-custom">
-          <div className="flex items-center justify-center gap-2 py-6 overflow-x-auto">
-            {categories.map((category) => (
-              <Link
-                key={category.id}
-                href={category.id === "alla" ? "/produkter" : `/produkter?category=${category.id}`}
-                className={`px-6 py-3 rounded-full font-semibold text-sm uppercase tracking-wider transition-all duration-300 whitespace-nowrap ${
-                  activeCategory === category.id
-                    ? "bg-amber-600 text-white shadow-lg scale-105"
-                    : "bg-stone-100 text-stone-700 hover:bg-stone-200 hover:shadow-md"
-                }`}
-              >
-                <span className="mr-2">{category.icon}</span>
-                {category.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ProductCategoryNav categories={categories} activeCategory={activeCategory} />
 
       <section className="section-padding bg-linear-to-b from-stone-50 to-stone-100">
         <div className="container-custom">

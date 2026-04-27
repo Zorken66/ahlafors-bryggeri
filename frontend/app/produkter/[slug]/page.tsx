@@ -18,7 +18,7 @@ export default async function ProductDetailPage({ params, searchParams }: Produc
   const { slug } = await params;
   const preview = (await searchParams)?.preview === "1";
   const session = preview ? await getCmsSession() : null;
-  const { products, productDetailPage, site } = await readSiteContent();
+  const { products, productDetailPage } = await readSiteContent();
   const productSource = preview && session ? products : getPublishedProducts(products);
   const product = findProductBySlug(productSource, slug);
 

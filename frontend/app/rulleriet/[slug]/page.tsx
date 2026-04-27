@@ -3,7 +3,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import RichTextContent from "@/components/RichTextContent";
+import { getCmsSession } from "@/lib/cms-auth";
 import { readSiteContent } from "@/lib/content-store";
+import { formatDateOnly } from "@/lib/date-utils";
 import { richTextToPlainText } from "@/lib/rich-text";
 import { getRullerietPostBySlug } from "@/lib/rulleriet-posts";
 
@@ -11,12 +13,15 @@ type RullerietPostPageProps = {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<{ preview?: string }>;
 };
 
-export default async function RullerietPostPage({ params }: RullerietPostPageProps) {
+export default async function RullerietPostPage({ params, searchParams }: RullerietPostPageProps) {
   const { slug } = await params;
+  const preview = (await searchParams)?.preview === "1";
+  const session = preview ? await getCmsSession() : null;
   const { rulleriet } = await readSiteContent();
-  const post = getRullerietPostBySlug(rulleriet, slug);
+  const post = getRullerietPostBySlug(rulleriet, slug, { preview, hasSession: Boolean(session) });
 
   if (!post) {
     notFound();
@@ -32,10 +37,15 @@ export default async function RullerietPostPage({ params }: RullerietPostPagePro
             Tillbaka till Rulleriet
           </Link>
           <p className="mb-3 text-sm uppercase tracking-[0.25em] text-amber-300">
-            {new Date(post.publishedAt).toLocaleDateString("sv-SE", { year: "numeric", month: "long", day: "numeric" })}
+            {formatDateOnly(post.publishedAt, "sv-SE", { year: "numeric", month: "long", day: "numeric" })}
           </p>
           <h1 className="max-w-4xl text-4xl font-bold leading-tight md:text-6xl">{post.title}</h1>
           <RichTextContent value={post.excerpt} className="mt-4 max-w-3xl text-lg text-stone-200" />
+          {preview && session && (
+            <div className="mt-6 inline-flex rounded-full bg-amber-500 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-stone-950">
+              Förhandsvisning av utkast
+            </div>
+          )}
         </div>
       </section>
 

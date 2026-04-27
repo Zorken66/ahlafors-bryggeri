@@ -1,0 +1,16 @@
+{
+  "format": "ahlafors-cms-vps-backup",
+  "version": 1,
+  "createdAt": "2026-04-27T05:25:09Z",
+  "database": {
+    "engine": "postgres",
+    "databaseName": "ahlafors_bryggerier_cms",
+    "dumpFile": "postgres.dump"
+  },
+  "uploads": {
+    "sourceDir": "/var/www/ahlafors-bryggerier/shared/uploads",
+    "snapshotDir": "uploads",
+    "fileCount": 51,
+    "totalBytes": 15188667
+  }
+}

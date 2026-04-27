@@ -30,6 +30,23 @@ Data:
 - CMS-innehåll lagras i PostgreSQL
 - uppladdade mediafiler lagras på disk utanför själva deploymappen
 
+## Kakor i nuvarande produktion
+
+Publika sajten använder nu:
+
+- `ahlafors_cookie_consent`
+  sparar användarens cookieval på webbplatsen
+- `cms_session`
+  används bara under `/admin` för inloggad CMS-session
+
+Viktigt just nu:
+
+- inga aktiva statistikcookies används på den publika sajten
+- inga aktiva marknadsföringscookies används på den publika sajten
+- cookie-banner, settings-knapp i footer och sidan `/kakor` finns nu i produktion
+
+Om statistik eller tredjepartsmarknadsföring läggs till senare ska de kopplas till consent-lagret innan de aktiveras publikt.
+
 ## Viktig skillnad mot den generella VPS-mallen
 
 Den generella mallen i `templates/vps` behöver anpassas för detta projekt av två skäl:
@@ -245,16 +262,39 @@ sudo systemctl status postgresql --no-pager
 7. Kör smoke test mot `http://127.0.0.1:3000/api/health`.
 8. Verifiera publikt via domänen.
 
+## Backup och restore
+
+För lokal Docker-miljö finns nu följande script:
+
+```bash
+npm run db:backup
+npm run uploads:backup
+npm run cms:backup
+npm run db:restore -- <dump-eller-backupkatalog>
+npm run uploads:restore -- <backupkatalog> [--verify-only]
+```
+
+Den kombinerade backupen skapar:
+
+```text
+backups/cms-backup-<timestamp>/
+  manifest.json
+  postgres.dump
+  uploads/
+```
+
+Det här är avsett som första riktiga restorekedja för CMS-innehåll plus media. Full runbook finns i:
+
+- `docs/deploy/BACKUP-RESTORE.md`
+- `docs/deploy/VPS-BACKUP.md`
+
 ## Nästa steg för detta repo
 
 Följande är nästa rimliga implementationer i repot:
 
-1. Skapa en projektspecifik `deploy-vps.ps1` baserad på mallen i `templates/vps`, men anpassad för:
-   - workspace-projektet
-   - `shared/.env.local`
-   - persistent uploads via symlink
-2. Lägga till en kort checklista för första Inleed-uppsättningen.
-3. Eventuellt lägga till backup-script på VPS för PostgreSQL och uploads.
+1. Lägga till schemalagd backup och retention.
+2. Lägga till enkel backupstatus i driftkontroller eller admin.
+3. Dokumentera en verifierad restore-test för VPS.
 
 ## Säkerhetsregler
 

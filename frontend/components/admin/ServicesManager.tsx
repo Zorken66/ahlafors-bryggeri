@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
+import ContentListFilters from "@/components/admin/ContentListFilters";
 import type { SiteContent } from "@/lib/content-schema";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import FieldIssueHint from "@/components/admin/FieldIssueHint";
@@ -11,13 +13,17 @@ import PublishingFields from "@/components/admin/PublishingFields";
 import QualityChecklist from "@/components/admin/QualityChecklist";
 import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
-import { validateService } from "@/lib/content-quality";
+import { summarizeQualityIssues, validateService } from "@/lib/content-quality";
 import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
 
 type Service = SiteContent["services"][number];
 
 function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
+}
+
+function splitDraftLines(value: string) {
+  return value.split("\n");
 }
 
 const emptyService: Service = {
@@ -43,12 +49,14 @@ export default function ServicesManager({
   onSave,
   initialSelectedId,
   initialTab,
+  initialFocusField,
   focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
   initialSelectedId?: string;
   initialTab?: "page" | "services";
+  initialFocusField?: string;
   focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.services[0]?.id ?? null);
@@ -57,8 +65,44 @@ export default function ServicesManager({
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"page" | "services">("page");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [publishingFilter, setPublishingFilter] = useState<"all" | "published" | "scheduled" | "draft" | "expired">("all");
+  const [qualityFilter, setQualityFilter] = useState<"all" | "ready" | "warnings" | "errors">("all");
+  const [sortOrder, setSortOrder] = useState<"manual" | "title-asc" | "title-desc">("manual");
 
   const services = useMemo(() => content.services, [content.services]);
+  const filteredServices = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const nextServices = services.filter((service) => {
+      const publishingStatus = getPublishingStatus(service);
+      const qualitySummary = summarizeQualityIssues(validateService(service));
+      const matchesSearch =
+        !normalizedSearch ||
+        [service.title, service.shortDescription, service.description, service.icon]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+      const matchesPublishing = publishingFilter === "all" || publishingStatus === publishingFilter;
+      const matchesQuality =
+        qualityFilter === "all" ||
+        (qualityFilter === "ready" && qualitySummary.errors === 0 && qualitySummary.warnings === 0) ||
+        (qualityFilter === "warnings" && qualitySummary.warnings > 0) ||
+        (qualityFilter === "errors" && qualitySummary.errors > 0);
+
+      return matchesSearch && matchesPublishing && matchesQuality;
+    });
+
+    return nextServices.sort((left, right) => {
+      switch (sortOrder) {
+        case "title-desc":
+          return (right.title || "").localeCompare(left.title || "", "sv");
+        case "title-asc":
+          return (left.title || "").localeCompare(right.title || "", "sv");
+        default:
+          return 0;
+      }
+    });
+  }, [publishingFilter, qualityFilter, searchTerm, services, sortOrder]);
   const selected = services.find((service) => service.id === selectedId) ?? null;
   const qualityIssues = useMemo(() => draft ? validateService(draft) : [], [draft]);
 
@@ -83,6 +127,21 @@ export default function ServicesManager({
       setSelectedId(initialSelectedId);
     }
   }, [focusToken, initialSelectedId, initialTab]);
+
+  useEffect(() => {
+    if (activeTab !== "services") {
+      return;
+    }
+
+    if (filteredServices.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+
+    if (!selectedId || !filteredServices.some((service) => service.id === selectedId)) {
+      setSelectedId(filteredServices[0].id);
+    }
+  }, [activeTab, filteredServices, selectedId]);
 
   async function saveServices(nextServices: SiteContent["services"]) {
     setSaving(true);
@@ -118,7 +177,11 @@ export default function ServicesManager({
       return;
     }
 
-    await saveServices(content.services.map((service) => service.id === draft.id ? draft : service));
+    await saveServices(content.services.map((service) => service.id === draft.id ? {
+      ...draft,
+      bodyParagraphs: splitLines((draft.bodyParagraphs ?? []).join("\n")),
+      details: splitLines(draft.details.join("\n")),
+    } : service));
   }
 
   async function handleSavePage() {
@@ -135,6 +198,35 @@ export default function ServicesManager({
     } finally {
       setSaving(false);
     }
+  }
+
+  async function autoSavePageImage(nextValue: string) {
+    const nextPageDraft = { ...pageDraft, heroImage: nextValue };
+    setPageDraft(nextPageDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, servicesPage: nextPageDraft }, {
+        sectionKey: "servicesPage",
+        changeSummary: "Ersatte hero-bild på tjänstesidan",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara sidinställningarna.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveServiceImage(nextValue: string) {
+    if (!draft) {
+      return;
+    }
+
+    const nextDraft = { ...draft, image: nextValue };
+    setDraft(nextDraft);
+    await saveServices(content.services.map((service) => service.id === nextDraft.id ? nextDraft : service));
   }
 
   return (
@@ -161,7 +253,7 @@ export default function ServicesManager({
             <input value={pageDraft.heroTitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroTitle: event.target.value }))} placeholder="Hero-rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
             <input value={pageDraft.heroSubtitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroSubtitle: event.target.value }))} placeholder="Hero-underrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
           </div>
-          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" fieldId="heroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSavePageImage} />
           <HeroOverlayField label="Hero-overlay" value={pageDraft.heroOverlayOpacity} onChange={(value) => setPageDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
           <textarea value={pageDraft.introText} onChange={(event) => setPageDraft((current) => ({ ...current, introText: event.target.value }))} rows={4} placeholder="Introduktion" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           <div className="grid gap-4 md:grid-cols-2">
@@ -186,8 +278,25 @@ export default function ServicesManager({
         <button type="button" onClick={() => void handleCreate()} disabled={saving} className="mb-4 w-full rounded-xl bg-amber-700 px-4 py-3 text-sm font-semibold text-white">
           Ny tjänst
         </button>
+        <ContentListFilters
+          searchValue={searchTerm}
+          onSearchChange={setSearchTerm}
+          publishingValue={publishingFilter}
+          onPublishingChange={setPublishingFilter}
+          qualityValue={qualityFilter}
+          onQualityChange={setQualityFilter}
+          sortValue={sortOrder}
+          onSortChange={(value) => setSortOrder(value as typeof sortOrder)}
+          sortOptions={[
+            { value: "manual", label: "Sortera: Manuell ordning" },
+            { value: "title-asc", label: "Sortera: Titel A-Ö" },
+            { value: "title-desc", label: "Sortera: Titel Ö-A" },
+          ]}
+          totalCount={services.length}
+          visibleCount={filteredServices.length}
+        />
         <div className="space-y-3">
-          {services.map((service) => {
+          {filteredServices.map((service) => {
             const publishingStatus = getPublishingStatus(service);
 
             return (
@@ -212,6 +321,7 @@ export default function ServicesManager({
               </button>
             );
           })}
+          {filteredServices.length === 0 ? <p className="text-sm text-stone-500">Inga tjänster matchar aktuella filter.</p> : null}
         </div>
       </aside>
 
@@ -221,6 +331,9 @@ export default function ServicesManager({
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-bold text-stone-900">Tjänster</h2>
               <div className="flex gap-3">
+                <Link href={`/tjanster?preview=1&serviceId=${draft.id}#${draft.id}`} target="_blank" className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700">
+                  Förhandsvisa
+                </Link>
                 <button type="button" onClick={() => void handleSave()} disabled={saving} className="rounded-xl bg-stone-900 px-4 py-2 text-sm font-semibold text-white">{saving ? "Sparar..." : "Spara"}</button>
                 <button type="button" onClick={() => void handleDelete(draft.id)} disabled={saving} className="rounded-xl border border-red-300 px-4 py-2 text-sm font-semibold text-red-700">Ta bort</button>
               </div>
@@ -245,10 +358,10 @@ export default function ServicesManager({
               <FieldIssueHint issues={qualityIssues} field="shortDescription" />
             </div>
             <textarea value={draft.description} onChange={(event) => setDraft((current) => current ? { ...current, description: event.target.value } : current)} placeholder="Lång beskrivning" rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
-            <textarea value={(draft.bodyParagraphs ?? []).join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, bodyParagraphs: splitLines(event.target.value) } : current)} placeholder="Brödtext, en paragraf per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
-            <textarea value={draft.details.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, details: splitLines(event.target.value) } : current)} placeholder="Detaljer, en per rad" rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <textarea value={(draft.bodyParagraphs ?? []).join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, bodyParagraphs: splitDraftLines(event.target.value) } : current)} placeholder="Brödtext, en paragraf per rad" rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+            <textarea value={draft.details.join("\n")} onChange={(event) => setDraft((current) => current ? { ...current, details: splitDraftLines(event.target.value) } : current)} placeholder="Detaljer, en per rad" rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
             <div className="grid gap-4 md:grid-cols-2">
-              <MediaPickerField value={draft.image ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Tjänstebild" />
+              <MediaPickerField value={draft.image ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Tjänstebild" fieldId="image" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSaveServiceImage} />
               <div>
                 <label className="mb-2 block text-sm font-semibold text-stone-700">Bildtext</label>
                 <input value={draft.imageCaption ?? ""} onChange={(event) => setDraft((current) => current ? { ...current, imageCaption: event.target.value } : current)} placeholder="Bildtext" className="w-full rounded-xl border border-stone-300 px-4 py-3" />

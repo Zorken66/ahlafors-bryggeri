@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import CookieSettingsButton from "@/components/FooterCookieSettingsButton";
 import { readSiteContent } from "@/lib/content-store";
 
 function isExternalHref(href: string) {
@@ -102,6 +103,12 @@ export default async function Footer() {
         <div className="mt-12 border-t border-stone-700 pt-8 text-center text-sm">
           <p>{footer.legalText}</p>
           <p className="mt-2 text-stone-400">{footer.disclaimerText}</p>
+          <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+            <Link href="/kakor" className="font-semibold text-amber-500 transition hover:text-amber-400">
+              Kakor
+            </Link>
+            <CookieSettingsButton />
+          </div>
         </div>
       </div>
     </footer>

@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
 
+import ContentListFilters from "@/components/admin/ContentListFilters";
 import MediaPickerField from "@/components/admin/MediaPickerField";
 import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import PublishingFields from "@/components/admin/PublishingFields";
 import QualityChecklist from "@/components/admin/QualityChecklist";
 import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import RichTextEditor from "@/components/admin/RichTextEditor";
-import { validateRullerietPost } from "@/lib/content-quality";
+import { summarizeQualityIssues, validateRullerietPost } from "@/lib/content-quality";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import type { RullerietPost, SiteContent } from "@/lib/content-schema";
 import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
@@ -45,22 +47,62 @@ export default function RullerietPostsManager({
   content,
   onSave,
   initialSelectedId,
+  initialFocusField,
   focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
   initialSelectedId?: string;
+  initialFocusField?: string;
   focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.rulleriet.blogPosts[0]?.id ?? null);
   const [draft, setDraft] = useState<DraftPost | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [publishingFilter, setPublishingFilter] = useState<"all" | "published" | "scheduled" | "draft" | "expired">("all");
+  const [qualityFilter, setQualityFilter] = useState<"all" | "ready" | "warnings" | "errors">("all");
+  const [sortOrder, setSortOrder] = useState<"newest" | "oldest" | "title-asc" | "title-desc">("newest");
 
   const posts = useMemo(
     () => [...content.rulleriet.blogPosts].sort((a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()),
     [content.rulleriet.blogPosts],
   );
+  const filteredPosts = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const nextPosts = posts.filter((post) => {
+      const publishingStatus = getPublishingStatus(post);
+      const qualitySummary = summarizeQualityIssues(validateRullerietPost(post));
+      const matchesSearch =
+        !normalizedSearch ||
+        [post.title, post.slug, post.excerpt, post.content]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+      const matchesPublishing = publishingFilter === "all" || publishingStatus === publishingFilter;
+      const matchesQuality =
+        qualityFilter === "all" ||
+        (qualityFilter === "ready" && qualitySummary.errors === 0 && qualitySummary.warnings === 0) ||
+        (qualityFilter === "warnings" && qualitySummary.warnings > 0) ||
+        (qualityFilter === "errors" && qualitySummary.errors > 0);
+
+      return matchesSearch && matchesPublishing && matchesQuality;
+    });
+
+    return nextPosts.sort((left, right) => {
+      switch (sortOrder) {
+        case "oldest":
+          return new Date(left.publishedAt || 0).getTime() - new Date(right.publishedAt || 0).getTime();
+        case "title-asc":
+          return (left.title || "").localeCompare(right.title || "", "sv");
+        case "title-desc":
+          return (right.title || "").localeCompare(left.title || "", "sv");
+        default:
+          return new Date(right.publishedAt || 0).getTime() - new Date(left.publishedAt || 0).getTime();
+      }
+    });
+  }, [posts, publishingFilter, qualityFilter, searchTerm, sortOrder]);
   const qualityIssues = useMemo(() => draft ? validateRullerietPost(draft) : [], [draft]);
 
   const selectedPost = posts.find((post) => post.id === selectedId) ?? null;
@@ -74,6 +116,17 @@ export default function RullerietPostsManager({
       setSelectedId(initialSelectedId);
     }
   }, [focusToken, initialSelectedId]);
+
+  useEffect(() => {
+    if (filteredPosts.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+
+    if (!selectedId || !filteredPosts.some((post) => post.id === selectedId)) {
+      setSelectedId(filteredPosts[0].id);
+    }
+  }, [filteredPosts, selectedId]);
 
   async function updatePosts(nextPosts: RullerietPost[]) {
     setSaving(true);
@@ -149,6 +202,17 @@ export default function RullerietPostsManager({
     await updatePosts(nextPosts);
   }
 
+  async function autoSaveImage(nextValue: string) {
+    if (!draft) {
+      return;
+    }
+
+    const nextDraft = { ...draft, image: nextValue };
+    setDraft(nextDraft);
+    const nextPosts = content.rulleriet.blogPosts.map((post) => post.id === nextDraft.id ? nextDraft : post);
+    await updatePosts(nextPosts);
+  }
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-lg">
@@ -172,8 +236,26 @@ export default function RullerietPostsManager({
 
       <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
         <aside className="rounded-3xl border border-stone-200 bg-white p-4 shadow-lg">
+          <ContentListFilters
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            publishingValue={publishingFilter}
+            onPublishingChange={setPublishingFilter}
+            qualityValue={qualityFilter}
+            onQualityChange={setQualityFilter}
+            sortValue={sortOrder}
+            onSortChange={(value) => setSortOrder(value as typeof sortOrder)}
+            sortOptions={[
+              { value: "newest", label: "Sortera: Nyast forst" },
+              { value: "oldest", label: "Sortera: Aldst forst" },
+              { value: "title-asc", label: "Sortera: Titel A-Ö" },
+              { value: "title-desc", label: "Sortera: Titel Ö-A" },
+            ]}
+            totalCount={posts.length}
+            visibleCount={filteredPosts.length}
+          />
           <div className="space-y-3">
-            {posts.map((post) => {
+            {filteredPosts.map((post) => {
               const publishingStatus = getPublishingStatus(post);
 
               return (
@@ -209,6 +291,7 @@ export default function RullerietPostsManager({
               );
             })}
             {posts.length === 0 && <p className="text-sm text-stone-500">Inga inlägg ännu.</p>}
+            {posts.length > 0 && filteredPosts.length === 0 ? <p className="text-sm text-stone-500">Inga inlägg matchar aktuella filter.</p> : null}
           </div>
         </aside>
 
@@ -218,6 +301,13 @@ export default function RullerietPostsManager({
               <div className="flex items-center justify-between gap-4">
                 <h3 className="text-lg font-bold text-stone-900">Redigera inlägg</h3>
                 <div className="flex items-center gap-3">
+                  <Link
+                    href={`/rulleriet/${draft?.slug || slugify(draft?.title || "")}?preview=1`}
+                    target="_blank"
+                    className="rounded-xl border border-stone-300 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-stone-500"
+                  >
+                    Förhandsvisa
+                  </Link>
                   <button
                     type="button"
                     onClick={() => void handleSave()}
@@ -267,6 +357,10 @@ export default function RullerietPostsManager({
                 label="Inläggsbild"
                 value={draft?.image ?? ""}
                 onChange={(value) => handleFieldChange("image", value)}
+                fieldId="image"
+                activeFocusField={initialFocusField}
+                focusToken={focusToken}
+                onAutoCommit={autoSaveImage}
               />
               <FieldIssueHint issues={qualityIssues} field="image" />
 
@@ -335,6 +429,34 @@ export default function RullerietPostsManager({
               <FieldIssueHint issues={qualityIssues} field="publishedAt" />
 
               {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
+
+              <div className="sticky bottom-4 z-30 pt-2">
+                <div className="flex flex-col gap-3 rounded-2xl border border-stone-200 bg-white/95 px-4 py-4 shadow-[0_18px_40px_rgba(0,0,0,0.12)] backdrop-blur md:flex-row md:items-center md:justify-between">
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-stone-900">Rulleriet-inlägg</p>
+                    <p className="text-xs text-stone-500">
+                      {saving ? "Sparar ändringar..." : status === "Sparat." ? "Inlägget är sparat." : "Spara eller förhandsvisa direkt från nederkanten."}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                    <Link
+                      href={`/rulleriet/${draft?.slug || slugify(draft?.title || "")}?preview=1`}
+                      target="_blank"
+                      className="rounded-xl border border-stone-300 px-4 py-3 text-center text-sm font-semibold text-stone-700 transition hover:border-stone-500"
+                    >
+                      Förhandsvisa
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => void handleSave()}
+                      disabled={saving || !draft}
+                      className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700 disabled:opacity-60"
+                    >
+                      {saving ? "Sparar..." : "Spara inlägg"}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           ) : (
             <p className="text-sm text-stone-500">Välj ett inlägg eller skapa ett nytt.</p>

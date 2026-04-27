@@ -11,12 +11,20 @@ function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+function splitDraftLines(value: string) {
+  return value.split("\n");
+}
+
 export default function AboutSectionManager({
   content,
   onSave,
+  initialFocusField,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialFocusField?: string;
+  focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.about);
   const [status, setStatus] = useState<string | null>(null);
@@ -31,9 +39,38 @@ export default function AboutSectionManager({
     setStatus(null);
 
     try {
-      await onSave({ ...content, about: draft }, {
+      await onSave({ ...content, about: {
+        ...draft,
+        homepageParagraphs: splitLines(draft.homepageParagraphs.join("\n")),
+        historyParagraphs: splitLines(draft.historyParagraphs.join("\n")),
+        ingredients: splitLines(draft.ingredients.join("\n")),
+        distributionParagraphs: splitLines(draft.distributionParagraphs.join("\n")),
+        boardMembers: splitLines(draft.boardMembers.join("\n")),
+        alaforsParagraphs: splitLines(draft.alaforsParagraphs.join("\n")),
+        alaforsHistoryParagraphs: splitLines(draft.alaforsHistoryParagraphs.join("\n")),
+        spinnerParagraphs: splitLines(draft.spinnerParagraphs.join("\n")),
+      } }, {
         sectionKey: "about",
         changeSummary: "Uppdaterade Om oss-sektionen",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara sektionen.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveField(field: "homepageImage" | "pageHeroImage" | "historyImage", nextValue: string) {
+    const nextDraft = { ...draft, [field]: nextValue };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, about: nextDraft }, {
+        sectionKey: "about",
+        changeSummary: "Ersatte bild i Om oss",
       });
       setStatus("Sparat.");
     } catch (error) {
@@ -88,21 +125,21 @@ export default function AboutSectionManager({
       </label>
 
       <div className="grid gap-4 md:grid-cols-3">
-        <MediaPickerField value={draft.homepageImage} onChange={(value) => setDraft((current) => ({ ...current, homepageImage: value }))} label="Startsidebild" />
-        <MediaPickerField value={draft.pageHeroImage} onChange={(value) => setDraft((current) => ({ ...current, pageHeroImage: value }))} label="Hero-bild" />
-        <MediaPickerField value={draft.historyImage} onChange={(value) => setDraft((current) => ({ ...current, historyImage: value }))} label="Historiebild" />
+        <MediaPickerField value={draft.homepageImage} onChange={(value) => setDraft((current) => ({ ...current, homepageImage: value }))} label="Startsidebild" fieldId="homepageImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveField("homepageImage", value)} />
+        <MediaPickerField value={draft.pageHeroImage} onChange={(value) => setDraft((current) => ({ ...current, pageHeroImage: value }))} label="Hero-bild" fieldId="pageHeroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveField("pageHeroImage", value)} />
+        <MediaPickerField value={draft.historyImage} onChange={(value) => setDraft((current) => ({ ...current, historyImage: value }))} label="Historiebild" fieldId="historyImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveField("historyImage", value)} />
       </div>
 
       <HeroOverlayField value={draft.pageHeroOverlayOpacity} onChange={(value) => setDraft((current) => ({ ...current, pageHeroOverlayOpacity: value }))} />
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Startsidans stycken, en per rad</span>
-        <textarea value={draft.homepageParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, homepageParagraphs: splitLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.homepageParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, homepageParagraphs: splitDraftLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Historietext, en per rad</span>
-        <textarea value={draft.historyParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, historyParagraphs: splitLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.historyParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, historyParagraphs: splitDraftLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -118,12 +155,12 @@ export default function AboutSectionManager({
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Ingredienser, en per rad</span>
-        <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, ingredients: splitLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.ingredients.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, ingredients: splitDraftLines(event.target.value) }))} rows={5} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Distribution, en per rad</span>
-        <textarea value={draft.distributionParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, distributionParagraphs: splitLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.distributionParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, distributionParagraphs: splitDraftLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <div className="rounded-3xl border border-stone-200 bg-stone-50 p-5">
@@ -165,7 +202,7 @@ export default function AboutSectionManager({
 
         <label className="mt-4 block">
           <span className="mb-2 block text-sm font-semibold text-stone-700">Ledamöter, en per rad</span>
-          <textarea value={draft.boardMembers.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, boardMembers: splitLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <textarea value={draft.boardMembers.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, boardMembers: splitDraftLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
         </label>
 
         <label className="mt-4 block">
@@ -189,12 +226,12 @@ export default function AboutSectionManager({
 
         <label className="mt-4 block">
           <span className="mb-2 block text-sm font-semibold text-stone-700">Inledning, en per rad</span>
-          <textarea value={draft.alaforsParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsParagraphs: splitLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <textarea value={draft.alaforsParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsParagraphs: splitDraftLines(event.target.value) }))} rows={6} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
         </label>
 
         <label className="mt-4 block">
           <span className="mb-2 block text-sm font-semibold text-stone-700">Historia, en per rad</span>
-          <textarea value={draft.alaforsHistoryParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsHistoryParagraphs: splitLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <textarea value={draft.alaforsHistoryParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, alaforsHistoryParagraphs: splitDraftLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
         </label>
       </div>
 
@@ -207,7 +244,7 @@ export default function AboutSectionManager({
 
         <label className="mt-4 block">
           <span className="mb-2 block text-sm font-semibold text-stone-700">Stycken, en per rad</span>
-          <textarea value={draft.spinnerParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, spinnerParagraphs: splitLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <textarea value={draft.spinnerParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, spinnerParagraphs: splitDraftLines(event.target.value) }))} rows={8} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
         </label>
       </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 
 import Link from "next/link";
+import ContentListFilters from "@/components/admin/ContentListFilters";
 import FieldIssueHint from "@/components/admin/FieldIssueHint";
 import HeroOverlayField from "@/components/admin/HeroOverlayField";
 import MediaPickerField from "@/components/admin/MediaPickerField";
@@ -10,7 +11,7 @@ import PublishingFields from "@/components/admin/PublishingFields";
 import QualityChecklist from "@/components/admin/QualityChecklist";
 import QualityStatusBadge from "@/components/admin/QualityStatusBadge";
 import SectionTabs from "@/components/admin/SectionTabs";
-import { validateProduct } from "@/lib/content-quality";
+import { summarizeQualityIssues, validateProduct } from "@/lib/content-quality";
 import type { ProductEntry, ProductLink, SiteContent } from "@/lib/content-schema";
 import type { CmsManagedSection } from "@/lib/cms-permissions";
 import { getPublishingStatus, getPublishingStatusLabel } from "@/lib/publishing";
@@ -52,17 +53,23 @@ function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+function splitDraftLines(value: string) {
+  return value.split("\n");
+}
+
 export default function ProductsManager({
   content,
   onSave,
   initialSelectedId,
   initialTab,
+  initialFocusField,
   focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
   initialSelectedId?: string;
   initialTab?: "page" | "settings" | "products";
+  initialFocusField?: string;
   focusToken?: number;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(content.products[0]?.id ?? null);
@@ -72,12 +79,50 @@ export default function ProductsManager({
   const [saving, setSaving] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"page" | "settings" | "products">("page");
+  const [searchTerm, setSearchTerm] = useState("");
+  const [publishingFilter, setPublishingFilter] = useState<"all" | "published" | "scheduled" | "draft" | "expired">("all");
+  const [qualityFilter, setQualityFilter] = useState<"all" | "ready" | "warnings" | "errors">("all");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState<"manual" | "name-asc" | "name-desc">("manual");
   const [settingsDraft, setSettingsDraft] = useState({
     productCategories: content.site.productCategories ?? getProductCategories(content.site, content.products),
     featuredProductIds: content.site.featuredProductIds ?? content.products.filter((product) => product.featured).map((product) => product.id),
   });
 
   const products = useMemo(() => content.products, [content.products]);
+  const filteredProducts = useMemo(() => {
+    const normalizedSearch = searchTerm.trim().toLowerCase();
+
+    const nextProducts = products.filter((product) => {
+      const publishingStatus = getPublishingStatus(product);
+      const qualitySummary = summarizeQualityIssues(validateProduct(product));
+      const matchesSearch =
+        !normalizedSearch ||
+        [product.name, product.category, product.type, product.style, product.description, product.artikelnummer]
+          .filter(Boolean)
+          .some((value) => String(value).toLowerCase().includes(normalizedSearch));
+      const matchesPublishing = publishingFilter === "all" || publishingStatus === publishingFilter;
+      const matchesQuality =
+        qualityFilter === "all" ||
+        (qualityFilter === "ready" && qualitySummary.errors === 0 && qualitySummary.warnings === 0) ||
+        (qualityFilter === "warnings" && qualitySummary.warnings > 0) ||
+        (qualityFilter === "errors" && qualitySummary.errors > 0);
+      const matchesCategory = categoryFilter === "all" || product.category === categoryFilter;
+
+      return matchesSearch && matchesPublishing && matchesQuality && matchesCategory;
+    });
+
+    return nextProducts.sort((left, right) => {
+      switch (sortOrder) {
+        case "name-desc":
+          return (right.name || "").localeCompare(left.name || "", "sv");
+        case "name-asc":
+          return (left.name || "").localeCompare(right.name || "", "sv");
+        default:
+          return 0;
+      }
+    });
+  }, [categoryFilter, products, publishingFilter, qualityFilter, searchTerm, sortOrder]);
   const selected = products.find((product) => product.id === selectedId) ?? null;
   const qualityIssues = useMemo(() => draft ? validateProduct(draft) : [], [draft]);
 
@@ -113,6 +158,21 @@ export default function ProductsManager({
       setSelectedId(initialSelectedId);
     }
   }, [focusToken, initialSelectedId, initialTab]);
+
+  useEffect(() => {
+    if (activeTab !== "products") {
+      return;
+    }
+
+    if (filteredProducts.length === 0) {
+      setSelectedId(null);
+      return;
+    }
+
+    if (!selectedId || !filteredProducts.some((product) => product.id === selectedId)) {
+      setSelectedId(filteredProducts[0].id);
+    }
+  }, [activeTab, filteredProducts, selectedId]);
 
   async function saveProducts(nextProducts: SiteContent["products"]) {
     setSaving(true);
@@ -194,7 +254,10 @@ export default function ProductsManager({
     setStatus(null);
 
     try {
-      await onSave({ ...content, productsPage: pageDraft, productDetailPage: detailPageDraft }, {
+      await onSave({ ...content, productsPage: {
+        ...pageDraft,
+        heroHighlights: splitLines(pageDraft.heroHighlights.join("\n")),
+      }, productDetailPage: detailPageDraft }, {
         sectionKey: "products",
         changeSummary: "Uppdaterade produktsidans och produktdetaljens inställningar",
       });
@@ -204,6 +267,41 @@ export default function ProductsManager({
     } finally {
       setSaving(false);
     }
+  }
+
+  async function autoSavePageImage(field: "heroImage", nextValue: string) {
+    const nextPageDraft = { ...pageDraft, [field]: nextValue };
+    setPageDraft(nextPageDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, productsPage: nextPageDraft, productDetailPage: detailPageDraft }, {
+        sectionKey: "products",
+        changeSummary: "Ersatte hero-bild på produktsidan",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara sidinställningarna.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveProductField(field: "image" | "ogImage", nextValue: string) {
+    if (!draft) {
+      return;
+    }
+
+    const nextDraft = { ...draft, [field]: nextValue };
+    setDraft(nextDraft);
+    await saveProducts(content.products.map((product) => product.id === nextDraft.id ? {
+      ...nextDraft,
+      links: (nextDraft.links ?? []).map((link) => ({
+        label: link.label.trim(),
+        url: link.url.trim(),
+      })).filter((link) => link.label && link.url),
+    } : product));
   }
 
   return (
@@ -234,9 +332,9 @@ export default function ProductsManager({
             <input value={pageDraft.heroTitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroTitle: event.target.value }))} placeholder="Hero-rubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
             <input value={pageDraft.heroSubtitle} onChange={(event) => setPageDraft((current) => ({ ...current, heroSubtitle: event.target.value }))} placeholder="Hero-underrubrik" className="rounded-xl border border-stone-300 px-4 py-3" />
           </div>
-          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+          <MediaPickerField value={pageDraft.heroImage} onChange={(value) => setPageDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" fieldId="heroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSavePageImage("heroImage", value)} />
           <HeroOverlayField label="Hero-overlay" value={pageDraft.heroOverlayOpacity} onChange={(value) => setPageDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
-          <textarea value={pageDraft.heroHighlights.join("\n")} onChange={(event) => setPageDraft((current) => ({ ...current, heroHighlights: splitLines(event.target.value) }))} rows={4} placeholder="Hero-punkter, en per rad" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+          <textarea value={pageDraft.heroHighlights.join("\n")} onChange={(event) => setPageDraft((current) => ({ ...current, heroHighlights: splitDraftLines(event.target.value) }))} rows={4} placeholder="Hero-punkter, en per rad" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
           <div className="grid gap-4 md:grid-cols-2">
             <input value={pageDraft.seoTitle ?? ""} onChange={(event) => setPageDraft((current) => ({ ...current, seoTitle: event.target.value }))} placeholder="SEO-titel" className="rounded-xl border border-stone-300 px-4 py-3" />
             <input value={pageDraft.seoDescription ?? ""} onChange={(event) => setPageDraft((current) => ({ ...current, seoDescription: event.target.value }))} placeholder="SEO-beskrivning" className="rounded-xl border border-stone-300 px-4 py-3" />
@@ -375,8 +473,39 @@ export default function ProductsManager({
           <button type="button" onClick={() => void handleCreate()} disabled={saving} className="mb-4 w-full rounded-xl bg-amber-700 px-4 py-3 text-sm font-semibold text-white">
             Ny produkt
           </button>
+          <ContentListFilters
+            searchValue={searchTerm}
+            onSearchChange={setSearchTerm}
+            publishingValue={publishingFilter}
+            onPublishingChange={setPublishingFilter}
+            qualityValue={qualityFilter}
+            onQualityChange={setQualityFilter}
+            sortValue={sortOrder}
+            onSortChange={(value) => setSortOrder(value as typeof sortOrder)}
+            sortOptions={[
+              { value: "manual", label: "Sortera: Manuell ordning" },
+              { value: "name-asc", label: "Sortera: Namn A-Ö" },
+              { value: "name-desc", label: "Sortera: Namn Ö-A" },
+            ]}
+            totalCount={products.length}
+            visibleCount={filteredProducts.length}
+            extraFilters={(
+              <select
+                value={categoryFilter}
+                onChange={(event) => setCategoryFilter(event.target.value)}
+                className="w-full rounded-xl border border-stone-300 px-4 py-3 text-sm"
+              >
+                <option value="all">Alla kategorier</option>
+                {settingsDraft.productCategories.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
+            )}
+          />
           <div className="space-y-3">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               (() => {
                 const publishingStatus = getPublishingStatus(product);
 
@@ -404,6 +533,7 @@ export default function ProductsManager({
                 );
               })()
             ))}
+            {filteredProducts.length === 0 ? <p className="text-sm text-stone-500">Inga produkter matchar aktuella filter.</p> : null}
           </div>
         </aside>
 
@@ -449,10 +579,10 @@ export default function ProductsManager({
             </div>
 
             <div>
-              <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Produktbild" />
+              <MediaPickerField value={draft.image} onChange={(value) => setDraft((current) => current ? { ...current, image: value } : current)} label="Produktbild" fieldId="image" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveProductField("image", value)} />
               <FieldIssueHint issues={qualityIssues} field="image" />
             </div>
-            <MediaPickerField value={draft.ogImage ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, ogImage: value } : current)} label="Open Graph-bild" />
+            <MediaPickerField value={draft.ogImage ?? ""} onChange={(value) => setDraft((current) => current ? { ...current, ogImage: value } : current)} label="Open Graph-bild" fieldId="ogImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={(value) => autoSaveProductField("ogImage", value)} />
             <div>
               <input value={draft.systembolaget} onChange={(event) => setDraft((current) => current ? { ...current, systembolaget: event.target.value } : current)} placeholder="Systembolaget-länk" className="w-full rounded-xl border border-stone-300 px-4 py-3" />
               <FieldIssueHint issues={qualityIssues} field="systembolaget" />

@@ -1,12 +1,19 @@
 # CMS Docs
 
-Samlad dokumentation för CMS-vision, roadmap och implementation.
+Samlad dokumentation för CMS-vision, roadmap, implementation och handover.
 
 ## Dokument
 - [Vision](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_VISION.md:1)
 - [Roadmap](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_ROADMAP.md:1)
 - [Implementation Plan](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_IMPLEMENTATION_PLAN.md:1)
 - [Current Status](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_STATUS.md:1)
+- [Handoff](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_HANDOFF.md:1)
+
+## Rekommenderad läsordning
+1. [Current Status](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_STATUS.md:1)
+2. [Handoff](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_HANDOFF.md:1)
+3. [Roadmap](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_ROADMAP.md:1)
+4. [Implementation Plan](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_IMPLEMENTATION_PLAN.md:1)
 
 ## Epics
 - [Epic 01: Enhetlig publiceringsmodell](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/cms/CMS_EPIC_01_UNIFIED_PUBLISHING.md:1)

@@ -54,6 +54,13 @@ Lösenord dokumenteras inte i repo.
 - persistent uploads: `/var/www/ahlafors-bryggerier/shared/uploads`
 - symlink i appen: `/var/www/ahlafors-bryggerier/current/frontend/public/uploads`
 
+## Backups
+
+- backup-root: `/var/www/ahlafors-bryggerier/shared/cms-backups`
+- backupscript lokalt: `backup-cms-vps.ps1`
+- nattligt script på VPS: `/var/www/ahlafors-bryggerier/shared/bin/backup-cms-nightly.sh`
+- aktiv cronrad för `deploy`: `15 3 * * * /var/www/ahlafors-bryggerier/shared/bin/backup-cms-nightly.sh >> /var/www/ahlafors-bryggerier/shared/logs/backup-cms-nightly.log 2>&1`
+
 ## Migrerad data
 
 Följande har migrerats från lokal miljö:
@@ -94,3 +101,4 @@ curl -I http://127.0.0.1:3002/api/health
 - [DEPLOYMENT.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/DEPLOYMENT.md:1)
 - [PRODUCTION-CUTOVER.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/PRODUCTION-CUTOVER.md:1)
 - [deploy-vps.ps1](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/deploy-vps.ps1:1)
+- [VPS-BACKUP.md](C:/Dev/Ahlafors-Bryggerier/ahlafors-bryggeri/docs/deploy/VPS-BACKUP.md:1)

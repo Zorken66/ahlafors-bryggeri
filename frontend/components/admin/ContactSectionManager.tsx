@@ -11,6 +11,10 @@ function splitLines(value: string) {
   return value.split("\n").map((item) => item.trim()).filter(Boolean);
 }
 
+function splitDraftLines(value: string) {
+  return value.split("\n");
+}
+
 function splitSocialLinks(value: string) {
   return value
     .split("\n")
@@ -25,16 +29,22 @@ function splitSocialLinks(value: string) {
 export default function ContactSectionManager({
   content,
   onSave,
+  initialFocusField,
+  focusToken,
 }: {
   content: SiteContent;
   onSave: (nextContent: SiteContent, options?: { sectionKey?: CmsManagedSection; changeSummary?: string }) => Promise<void>;
+  initialFocusField?: string;
+  focusToken?: number;
 }) {
   const [draft, setDraft] = useState(content.contact);
+  const [socialLinksText, setSocialLinksText] = useState(content.contact.socialLinks.map((item) => `${item.platform} | ${item.url}`).join("\n"));
   const [status, setStatus] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     setDraft(content.contact);
+    setSocialLinksText(content.contact.socialLinks.map((item) => `${item.platform} | ${item.url}`).join("\n"));
   }, [content.contact]);
 
   async function handleSave() {
@@ -42,9 +52,33 @@ export default function ContactSectionManager({
     setStatus(null);
 
     try {
-      await onSave({ ...content, contact: draft }, {
+      await onSave({ ...content, contact: {
+        ...draft,
+        addressLines: splitLines(draft.addressLines.join("\n")),
+        socialLinks: splitSocialLinks(socialLinksText),
+        productsInfoParagraphs: splitLines(draft.productsInfoParagraphs.join("\n")),
+      } }, {
         sectionKey: "contact",
         changeSummary: "Uppdaterade Kontakt-sektionen",
+      });
+      setStatus("Sparat.");
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "Kunde inte spara sektionen.");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function autoSaveHeroImage(nextValue: string) {
+    const nextDraft = { ...draft, heroImage: nextValue };
+    setDraft(nextDraft);
+    setSaving(true);
+    setStatus(null);
+
+    try {
+      await onSave({ ...content, contact: nextDraft }, {
+        sectionKey: "contact",
+        changeSummary: "Ersatte hero-bild på kontaktsidan",
       });
       setStatus("Sparat.");
     } catch (error) {
@@ -77,7 +111,7 @@ export default function ContactSectionManager({
         </label>
       </div>
 
-      <MediaPickerField value={draft.heroImage} onChange={(value) => setDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" />
+      <MediaPickerField value={draft.heroImage} onChange={(value) => setDraft((current) => ({ ...current, heroImage: value }))} label="Hero-bild" fieldId="heroImage" activeFocusField={initialFocusField} focusToken={focusToken} onAutoCommit={autoSaveHeroImage} />
       <HeroOverlayField value={draft.heroOverlayOpacity} onChange={(value) => setDraft((current) => ({ ...current, heroOverlayOpacity: value }))} />
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -104,17 +138,17 @@ export default function ContactSectionManager({
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Adressrader, en per rad</span>
-        <textarea value={draft.addressLines.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, addressLines: splitLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.addressLines.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, addressLines: splitDraftLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Sociala länkar, format `Plattform | URL`</span>
-        <textarea value={draft.socialLinks.map((item) => `${item.platform} | ${item.url}`).join("\n")} onChange={(event) => setDraft((current) => ({ ...current, socialLinks: splitSocialLinks(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={socialLinksText} onChange={(event) => setSocialLinksText(event.target.value)} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       <label className="block">
         <span className="mb-2 block text-sm font-semibold text-stone-700">Produktinfo, en per rad</span>
-        <textarea value={draft.productsInfoParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, productsInfoParagraphs: splitLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
+        <textarea value={draft.productsInfoParagraphs.join("\n")} onChange={(event) => setDraft((current) => ({ ...current, productsInfoParagraphs: splitDraftLines(event.target.value) }))} rows={4} className="w-full rounded-xl border border-stone-300 px-4 py-3" />
       </label>
 
       {status && <p className={`text-sm ${status === "Sparat." ? "text-green-700" : "text-red-700"}`}>{status}</p>}
