@@ -91,6 +91,56 @@ ls -lah /var/www/ahlafors-bryggerier/shared/cms-backups/<timestamp>
 cat /var/www/ahlafors-bryggerier/shared/cms-backups/<timestamp>/manifest.json
 ```
 
+## Drift-healthcheck och PM2-watchdog
+
+Manuell kontroll av domäner, PM2 och interna portar:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\check-vps-health.ps1
+```
+
+Kontrollen verifierar:
+- publika domäner: `ahlaforsfabriker.se`, `ahlaforsgym.se`, `ahlaforsbryggerier.se`
+- `pm2-deploy.service`
+- PM2-processerna `ahlafors`, `ahlafors-gym`, `ahlafors-bryggerier`
+- interna portar `3000`, `3001`, `3002`
+
+Watchdog-scriptet installeras på VPS:en med:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\install-vps-watchdog-cron.ps1
+```
+
+Det laddar upp:
+
+```text
+/var/www/ahlafors-bryggerier/shared/bin/pm2-watchdog.sh
+```
+
+och installerar en idempotent cronrad:
+
+```text
+*/5 * * * * /var/www/ahlafors-bryggerier/shared/bin/pm2-watchdog.sh >> /var/www/ahlafors-bryggerier/shared/logs/pm2-watchdog.log 2>&1 # ahlafors-pm2-watchdog
+```
+
+Watchdogen kontrollerar PM2-service, interna portar och publika domäner. Om något fallerar kör den:
+
+```bash
+sudo -n systemctl restart pm2-deploy
+```
+
+För att undvika restart-loopar sparar watchdoggen senaste restart-tid i:
+
+```text
+/var/www/ahlafors-bryggerier/shared/state/pm2-watchdog-last-restart
+```
+
+Den gör högst en automatisk restart per 15 minuter. Om samma fel kvarstår under cooldown-fönstret loggas `ACTION skipped restart ... due to cooldown` i:
+
+```text
+/var/www/ahlafors-bryggerier/shared/logs/pm2-watchdog.log
+```
+
 ## Restore-princip
 
 Den här iterationen automatiserar backup, men inte restore på VPS.

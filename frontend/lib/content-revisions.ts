@@ -75,6 +75,18 @@ function getSectionLabel(sectionKey: string) {
   return SECTION_LABELS[sectionKey] ?? sectionKey;
 }
 
+function getRevisionSectionContent(content: SiteContent, sectionKey: string): unknown {
+  if (sectionKey === "rullerietPosts") {
+    return content.rulleriet.blogPosts;
+  }
+
+  if (sectionKey in content) {
+    return content[sectionKey as keyof SiteContent];
+  }
+
+  throw new Error(`Okänd CMS-sektion: ${sectionKey}`);
+}
+
 function stringifyValue(value: unknown) {
   if (value === undefined) {
     return "Tomt";
@@ -305,7 +317,7 @@ export async function createContentRevisions(previous: SiteContent, next: SiteCo
       [
         key,
         JSON.stringify(next),
-        JSON.stringify(next[key as keyof SiteContent]),
+        JSON.stringify(getRevisionSectionContent(next, key)),
         metadata.changedBy,
         metadata.changeSummary ?? null,
       ],
@@ -392,7 +404,7 @@ export async function getContentRevisionDetail(id: number): Promise<ContentRevis
   }
 
   const current = await import("@/lib/content-store").then((module) => module.readSiteContent());
-  const currentSection = current[row.section_key as keyof SiteContent];
+  const currentSection = getRevisionSectionContent(current, row.section_key);
   const revisionSection = JSON.parse(row.section_content_json) as unknown;
   const diffEntries = buildDiffEntries(revisionSection, currentSection).slice(0, 120);
   const groupedDiffEntries = groupDiffEntries(diffEntries, revisionSection, currentSection);
