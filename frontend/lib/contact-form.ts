@@ -33,6 +33,13 @@ export type ContactMessageListItem = {
   createdAt: string;
 };
 
+export type ContactMessageSummary = {
+  newCount: number;
+  readCount: number;
+  archivedCount: number;
+  totalCount: number;
+};
+
 type ContactMessageRow = {
   id: number;
   name: string;
@@ -42,6 +49,13 @@ type ContactMessageRow = {
   message: string;
   status: ContactMessageStatus;
   created_at: string;
+};
+
+type ContactMessageSummaryRow = {
+  new_count: string;
+  read_count: string;
+  archived_count: string;
+  total_count: string;
 };
 
 type ContactAttemptRow = {
@@ -250,6 +264,30 @@ export async function listContactMessages(): Promise<ContactMessageListItem[]> {
     status: row.status,
     createdAt: new Date(row.created_at).toISOString(),
   }));
+}
+
+export async function getContactMessageSummary(): Promise<ContactMessageSummary> {
+  await ensureCmsDatabaseReady();
+  const pool = getCmsDbPool();
+  const { rows } = await pool.query<ContactMessageSummaryRow>(
+    `
+      SELECT
+        COUNT(*) FILTER (WHERE status = 'new') AS new_count,
+        COUNT(*) FILTER (WHERE status = 'read') AS read_count,
+        COUNT(*) FILTER (WHERE status = 'archived') AS archived_count,
+        COUNT(*) AS total_count
+      FROM cms_contact_messages
+    `,
+  );
+
+  const row = rows[0];
+
+  return {
+    newCount: Number(row?.new_count ?? 0),
+    readCount: Number(row?.read_count ?? 0),
+    archivedCount: Number(row?.archived_count ?? 0),
+    totalCount: Number(row?.total_count ?? 0),
+  };
 }
 
 export async function updateContactMessageStatus(id: number, status: ContactMessageStatus) {

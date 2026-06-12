@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 type ContactMessage = {
   id: number;
@@ -13,12 +13,12 @@ type ContactMessage = {
   createdAt: string;
 };
 
-export default function ContactMessagesManager() {
+export default function ContactMessagesManager({ onMessagesChanged }: { onMessagesChanged?: () => void }) {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState<string | null>(null);
 
-  async function loadMessages() {
+  const loadMessages = useCallback(async () => {
     setLoading(true);
     setStatus(null);
 
@@ -31,16 +31,17 @@ export default function ContactMessagesManager() {
       }
 
       setMessages(data as ContactMessage[]);
+      onMessagesChanged?.();
     } catch (error) {
       setStatus(error instanceof Error ? error.message : "Kunde inte läsa kontaktmeddelanden.");
     } finally {
       setLoading(false);
     }
-  }
+  }, [onMessagesChanged]);
 
   useEffect(() => {
     void loadMessages();
-  }, []);
+  }, [loadMessages]);
 
   async function updateStatus(id: number, nextStatus: ContactMessage["status"]) {
     setLoading(true);

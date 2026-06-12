@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import AdminUsersManager from "@/components/admin/AdminUsersManager";
 import AdminDashboard from "@/components/admin/AdminDashboard";
@@ -25,6 +25,13 @@ type CmsSection = CmsManagedSection;
 type AdminStatus = {
   kind: "success" | "error";
   message: string;
+};
+
+type ContactMessageSummary = {
+  newCount: number;
+  readCount: number;
+  archivedCount: number;
+  totalCount: number;
 };
 
 type AdminFocusState = {
@@ -80,6 +87,8 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
   const [loading, setLoading] = useState(false);
   const [focusState, setFocusState] = useState<AdminFocusState | null>(null);
   const [resolvedBrokenMediaUrl, setResolvedBrokenMediaUrl] = useState<string | null>(null);
+  const [contactMessageSummary, setContactMessageSummary] = useState<ContactMessageSummary | null>(null);
+  const unreadContactMessages = contactMessageSummary?.newCount ?? 0;
 
   useEffect(() => {
     if (!status || status.kind !== "success") {
@@ -127,6 +136,60 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
       cancelled = true;
     };
   }, [activeSection]);
+
+  const loadContactMessageSummary = useCallback(async () => {
+    if (!allowedSections.includes("contactMessages")) {
+      setContactMessageSummary(null);
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/cms/contact-messages/summary", { cache: "no-store" });
+      const data = (await response.json()) as ContactMessageSummary | { error?: string };
+
+      if (response.ok) {
+        setContactMessageSummary(data as ContactMessageSummary);
+      }
+    } catch {
+      setContactMessageSummary(null);
+    }
+  }, [allowedSections]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSummary() {
+      try {
+        if (!allowedSections.includes("contactMessages")) {
+          if (!cancelled) {
+            setContactMessageSummary(null);
+          }
+          return;
+        }
+
+        const response = await fetch("/api/cms/contact-messages/summary", { cache: "no-store" });
+        const data = (await response.json()) as ContactMessageSummary | { error?: string };
+
+        if (!response.ok) {
+          return;
+        }
+
+        if (!cancelled) {
+          setContactMessageSummary(data as ContactMessageSummary);
+        }
+      } catch {
+        if (!cancelled) {
+          setContactMessageSummary(null);
+        }
+      }
+    }
+
+    void loadSummary();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [allowedSections]);
 
   useEffect(() => {
     function handleBrokenMediaResolved(event: Event) {
@@ -259,6 +322,19 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               >
                 <span className="flex items-center justify-between gap-3">
                   <span>{section.label}</span>
+                  {isAllowed && section.key === "contactMessages" && unreadContactMessages > 0 && (
+                    <span
+                      className={`inline-flex min-w-10 items-center justify-center gap-1 rounded-full px-2 py-1 text-xs font-bold ${
+                        activeSection === section.key
+                          ? "bg-white text-amber-800"
+                          : "bg-amber-100 text-amber-900"
+                      }`}
+                      aria-label={`${unreadContactMessages} olästa kontaktmeddelanden`}
+                    >
+                      <span aria-hidden="true">✉</span>
+                      {unreadContactMessages > 99 ? "99+" : unreadContactMessages}
+                    </span>
+                  )}
                   {!isAllowed && <span className="rounded-full bg-stone-200 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500">Låst</span>}
                 </span>
               </button>
@@ -292,6 +368,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
               allowedSections={allowedSections}
               onOpenSection={handleDashboardOpenSection}
               resolvedBrokenMediaUrl={resolvedBrokenMediaUrl}
+              contactMessageSummary={contactMessageSummary}
             />
           ) : activeSection === "homepage" && content ? (
             <HomepageSectionManager content={content} onSave={persistContent} initialFocusField={focusState?.section === "homepage" ? focusState.targetField : undefined} focusToken={focusState?.section === "homepage" ? focusState.token : undefined} />
@@ -353,7 +430,7 @@ export default function CmsAdmin({ username, role }: { username: string; role: C
           ) : activeSection === "adminUsers" ? (
             <AdminUsersManager currentUsername={username} />
           ) : activeSection === "contactMessages" ? (
-            <ContactMessagesManager />
+            <ContactMessagesManager onMessagesChanged={loadContactMessageSummary} />
           ) : activeSection === "revisions" ? (
             <RevisionsManager canRestore={canRestoreRevisions(role)} />
           ) : (

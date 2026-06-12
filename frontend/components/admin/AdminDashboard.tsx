@@ -25,6 +25,13 @@ type RevisionSummary = {
 
 type MediaIntegrityResponse = CmsMediaIntegrityReport | { error?: string };
 
+type ContactMessageSummary = {
+  newCount: number;
+  readCount: number;
+  archivedCount: number;
+  totalCount: number;
+};
+
 function openUsage(
   onOpenSection: (focus: AdminDashboardFocus) => void,
   usage: CmsMediaIntegrityReport["brokenReferences"][number]["usage"][number],
@@ -77,11 +84,13 @@ export default function AdminDashboard({
   allowedSections,
   onOpenSection,
   resolvedBrokenMediaUrl,
+  contactMessageSummary,
 }: {
   content: SiteContent;
   allowedSections: CmsManagedSection[];
   onOpenSection: (focus: AdminDashboardFocus) => void;
   resolvedBrokenMediaUrl?: string | null;
+  contactMessageSummary?: ContactMessageSummary | null;
 }) {
   const overview = useMemo(() => buildCmsDashboard(content, allowedSections), [content, allowedSections]);
   const [revisions, setRevisions] = useState<RevisionSummary[]>([]);
@@ -206,6 +215,11 @@ export default function AdminDashboard({
     };
   }, [allowedSections, resolvedBrokenMediaUrl]);
 
+  const hasContactMessageSummary = contactMessageSummary !== null;
+  const unreadContactMessageCount = contactMessageSummary?.newCount ?? 0;
+  const totalContactMessageCount = contactMessageSummary?.totalCount ?? 0;
+  const hasUnreadContactMessages = unreadContactMessageCount > 0;
+
   return (
     <div className="space-y-6">
       <div className="rounded-3xl border border-stone-200 bg-white p-6 shadow-lg">
@@ -214,6 +228,58 @@ export default function AdminDashboard({
           Här ser du publiceringsläge, innehåll som kräver åtgärd och den senaste aktiviteten i CMS:et.
         </p>
       </div>
+
+      {allowedSections.includes("contactMessages") && (
+        <div className={`rounded-3xl border p-6 shadow-lg ${
+          hasUnreadContactMessages
+            ? "border-amber-300 bg-amber-50"
+            : hasContactMessageSummary
+              ? "border-green-200 bg-green-50"
+              : "border-stone-200 bg-white"
+        }`}>
+          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-start gap-4">
+              <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl text-xl ${
+                hasUnreadContactMessages
+                  ? "bg-amber-200 text-amber-900"
+                  : hasContactMessageSummary
+                    ? "bg-green-200 text-green-900"
+                    : "bg-stone-100 text-stone-600"
+              }`} aria-hidden="true">
+                ✉
+              </div>
+              <div>
+                <h3 className="text-xl font-bold text-stone-900">Kontaktmeddelanden</h3>
+                <p className="mt-1 text-sm leading-6 text-stone-700">
+                  {!hasContactMessageSummary
+                    ? "Läser meddelandestatus..."
+                    : hasUnreadContactMessages
+                      ? `${unreadContactMessageCount} olästa av ${totalContactMessageCount} meddelanden.`
+                      : `Inga olästa meddelanden av ${totalContactMessageCount} totalt.`}
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-3">
+              <span className={`rounded-full px-4 py-2 text-sm font-bold ${
+                hasUnreadContactMessages
+                  ? "bg-amber-200 text-amber-950"
+                  : hasContactMessageSummary
+                    ? "bg-green-200 text-green-950"
+                    : "bg-stone-100 text-stone-700"
+              }`}>
+                {hasContactMessageSummary ? unreadContactMessageCount : "..."} olästa
+              </span>
+              <button
+                type="button"
+                onClick={() => onOpenSection({ section: "contactMessages" })}
+                className="rounded-xl bg-stone-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-stone-700"
+              >
+                Öppna kontaktmeddelanden
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         <SummaryCard label="Spårade objekt" value={String(overview.totalTrackedItems)} />
